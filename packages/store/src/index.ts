@@ -14,22 +14,19 @@ import { reducer } from './reducer';
 import createResolvers from './resolvers';
 import * as selectors from './selectors';
 export * as hooks from './hooks';
-
-
-type AnyConfig = import('@wordpress/data/src/types').AnyConfig;
-type StoreDescriptor = import('@wordpress/data/src/types').StoreDescriptor<AnyConfig>;
+import { DEFAULT_STATE } from './default';
 
 // Cache the stores.
-const stores: { [key: string]: StoreDescriptor } = {};
+const stores: { [key: string]: object } = {};
 
 /**
  * Initializes the store.
  *
  * @param {string} namespace The namespace.
  * @param {string} collection The collection.
- * @return {StoreDescriptor} The store.
+ * @return {object} The store descriptor.
  */
-export default function initStore(namespace: string, collection: string): StoreDescriptor {
+export default function initStore(namespace: string, collection: string): object {
     const STORE_NAME = `${namespace}/${collection}`;
 
     // If the store already exists, return it.
@@ -44,6 +41,7 @@ export default function initStore(namespace: string, collection: string): StoreD
         selectors: { ...selectors },
         controls: { ...controls, ...dataControls },
         resolvers: createResolvers(namespace, collection),
+        initialState: { ...DEFAULT_STATE },
     });
 
     register(stores[STORE_NAME]);
