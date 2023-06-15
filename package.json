@@ -8,7 +8,8 @@
   "scripts": {
     "build": "npx lerna run build",
     "start": "npx lerna run start",
-    "test": "npx lerna run test"
+    "test": "npx lerna run test",
+    "publish": "npx lerna publish --no-private --conventional-commits --yes"
   },
   "devDependencies": {
     "@babel/core": "^7.22.5",
