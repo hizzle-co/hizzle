@@ -1,5 +1,5 @@
 {
-  "name": "@hizzle/store",
+  "name": "@hizzlewp/store",
   "version": "0.0.1",
   "description": "Hizzle store",
   "main": "index.js",
@@ -15,5 +15,6 @@
     "@wordpress/data-controls": "^3.4.0",
     "@wordpress/element": "^5.12.0",
     "@wordpress/url": "^3.36.0"
-  }
+  },
+  "gitHead": "4428a84673be9a0f158d20c68211782259e278c0"
 }

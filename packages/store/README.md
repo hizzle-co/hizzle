@@ -3,13 +3,13 @@
 ### Installation
 
 ```bash
-npm install @hizzle/store
+npm install @hizzlewp/store
 ```
 
 ### Usage
 
 ```typescript
-import { initStore, useRecords } from '@hizzle/store';
+import { initStore, useRecords } from '@hizzlewp/store';
 
 // Init a store for a specific namespace and collection.
 // Do this once in your app.
