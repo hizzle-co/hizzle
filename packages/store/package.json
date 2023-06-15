@@ -1,6 +1,6 @@
 {
   "name": "@hizzlewp/store",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Hizzle store",
   "main": "index.js",
   "scripts": {
