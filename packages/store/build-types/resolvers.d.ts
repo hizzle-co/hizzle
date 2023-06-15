@@ -17,7 +17,11 @@ export default function createResolvers(namespace: string, collection: string): 
      * @return {Object} Action.
      */
     getRecord(id: number): Generator<{
-        type: string;
+        type: string; /**
+         * Fetches the records from the API.
+         *
+         * @return {Object} Action.
+         */
         request: import("@wordpress/api-fetch/build-types/types").APIFetchOptions;
     }, import("./types").Action, unknown>;
     /**
@@ -26,7 +30,11 @@ export default function createResolvers(namespace: string, collection: string): 
      * @return {Object} Action.
      */
     getSchema(): Generator<{
-        type: string;
+        type: string; /**
+         * Fetches the records from the API.
+         *
+         * @return {Object} Action.
+         */
         request: import("@wordpress/api-fetch/build-types/types").APIFetchOptions;
     }, import("./types").Action, unknown>;
     /**
@@ -35,7 +43,11 @@ export default function createResolvers(namespace: string, collection: string): 
      * @return {Object} Action.
      */
     getTabContent(id: number, tab_id: string): Generator<{
-        type: string;
+        type: string; /**
+         * Fetches the records from the API.
+         *
+         * @return {Object} Action.
+         */
         request: import("@wordpress/api-fetch/build-types/types").APIFetchOptions;
     }, import("./types").Action, unknown>;
     /**
@@ -44,7 +56,11 @@ export default function createResolvers(namespace: string, collection: string): 
      * @return {Object} Action.
      */
     getRecordOverview(id: number): Generator<{
-        type: string;
+        type: string; /**
+         * Fetches the records from the API.
+         *
+         * @return {Object} Action.
+         */
         request: import("@wordpress/api-fetch/build-types/types").APIFetchOptions;
     }, import("./types").Action, unknown>;
 };
