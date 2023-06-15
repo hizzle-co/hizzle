@@ -16,17 +16,16 @@ import { setRecords, setRecord, setPartialRecords, setSchema, setTabContent, set
  * @param {string} collection The collection.
  * @link https://unfoldingneurons.com/2020/wordpress-data-store-properties-resolvers
  */
-export default function createResolvers( namespace, collection ) {
+export default function createResolvers( namespace: string, collection: string ) {
 
 	return {
 
 		/**
 		 * Fetches the records from the API.
 		 *
-		 * @param {String} queryString
 		 * @return {Object} Action.
 		 */
-		*getRecords( queryString ) {
+		*getRecords( queryString: string ) {
 			const path    = `${namespace}/v1/${collection}${queryString}`;
 			const _fields = getQueryArg( queryString, '__fields' );
 			const records = yield apiFetch( { path } );
@@ -66,10 +65,9 @@ export default function createResolvers( namespace, collection ) {
 		/**
 		 * Fetches a record from the API.
 		 *
-		 * @param {string} id
 		 * @return {Object} Action.
 		 */
-		*getRecord( id ) {
+		*getRecord( id: number ) {
 			const path   = `${namespace}/v1/${collection}/${id}`;
 			const record = yield apiFetch( { path } );
 
@@ -91,11 +89,9 @@ export default function createResolvers( namespace, collection ) {
 		/**
 		 * Fetch a single record tab's content from the API.
 		 *
-		 * @param {string} id
-		 * @param {string} tab_id
 		 * @return {Object} Action.
 		 */
-		*getTabContent( id, tab_id ) {
+		*getTabContent( id: number, tab_id: string ) {
 			const path    = `${namespace}/v1/${collection}/${id}/${tab_id}`;
 			const content = yield apiFetch( { path } );
 
@@ -105,10 +101,9 @@ export default function createResolvers( namespace, collection ) {
 		/**
 		 * Retrieves a single record's overview data.
 		 *
-		 * @param {string} id
 		 * @return {Object} Action.
 		 */
-		*getRecordOverview( id ) {
+		*getRecordOverview( id: number ) {
 			const path     = `${namespace}/v1/${collection}/${id}/overview`;
 			const overview = yield apiFetch( { path } );
 

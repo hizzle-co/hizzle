@@ -282,11 +282,14 @@ export type Schema = {
 /**
  * State descriptor.
  */
-export interface StateDescriptor {
+export type StateDescriptor = {
     recordIDs: RecordIDs;
     records: {
         [id: number]: RecordDescriptor;
     };
+    /**
+     * Partial records that do not have all the fields.
+     */
     partialRecords: PartialRecords;
     schema: Schema;
     tabContent: {
@@ -295,7 +298,7 @@ export interface StateDescriptor {
     recordOverview: {
         [id: number]: RecordOverview[];
     };
-}
+};
 /**
  * Single action.
  */
@@ -305,7 +308,15 @@ export type Action = {
      */
     type: string;
     /**
-     * Copy from args.
+     * Some actions pass the schema.
+     */
+    schema?: Schema;
+    /**
+     * Some actions pass a query string of the current URL.
+     */
+    queryString?: any;
+    /**
+     * Action arg.
      */
     [key: string]: any;
 };

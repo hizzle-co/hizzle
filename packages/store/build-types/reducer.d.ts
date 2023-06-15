@@ -1,5 +1,10 @@
-export function reducer(state: import("./types").StateDescriptor | undefined, action: any): {
-    schema: any;
+type StateDescriptor = import('./types').StateDescriptor;
+type Action = import('./types').Action;
+/**
+ * The reducer for the store data
+ */
+export declare const reducer: (state: StateDescriptor, action: Action) => {
+    schema: import("./types").Schema | undefined;
     recordIDs: import("./types").RecordIDs;
     records: {
         [id: number]: import("./types").RecordDescriptor;
@@ -38,3 +43,4 @@ export function reducer(state: import("./types").StateDescriptor | undefined, ac
         [recordIdTabId: string]: any;
     };
 };
+export {};

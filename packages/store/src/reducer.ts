@@ -3,10 +3,14 @@
  */
 import { DEFAULT_STATE } from './default';
 
+type RecordDescriptor = import( './types' ).RecordDescriptor;
+type StateDescriptor = import( './types' ).StateDescriptor;
+type Action = import( './types' ).Action;
+
 /**
  * The reducer for the store data
  */
-export const reducer = (state = DEFAULT_STATE, action) => {
+export const reducer = (state: StateDescriptor, action: Action) => {
 	const queryString = '' === action.queryString ? 'all' : action.queryString;
 
 	switch (action.type) {
@@ -37,13 +41,13 @@ export const reducer = (state = DEFAULT_STATE, action) => {
 		case 'SET_RECORDS':
 
 			// Prepare constants.
-			const cachedRecords = { ...state.records };
-			const recordIds     = [];
-			const summary       = action.records.summary;
-			const total         = action.records.total;
+			const cachedRecords       = { ...state.records };
+			const recordIds: number[] = [];
+			const summary             = action.records.summary;
+			const total               = action.records.total;
 
 			// Loop through the records and add them to the cache.
-			action.records.items.forEach((record) => {
+			action.records.items.forEach((record: RecordDescriptor) => {
 				cachedRecords[ record.id ] = record;
 				recordIds.push( record.id );
 			});

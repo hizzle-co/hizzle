@@ -2,11 +2,15 @@
  * External dependencies
  */
 import {apiFetch} from '@wordpress/data-controls';
+import { UseDispatchReturn } from '@wordpress/data/build-types/types';
 
 /**
  * Internal dependencies
  */
 import {setRecord} from './actions';
+import initStore from './index';
+
+const store = initStore( 'my-namespace', 'my-collection' );
 
 /**
  * Creates dynamic actions for the store.
@@ -14,7 +18,7 @@ import {setRecord} from './actions';
  * @param {string} collection The collection.
  * @link https://unfoldingneurons.com/2020/wordpress-data-store-properties-action-creator-generators
  */
-export default function createDynamicActions( namespace, collection ) {
+export default function createDynamicActions( namespace: string, collection: string ) {
 
 	return {
 
@@ -89,7 +93,7 @@ export default function createDynamicActions( namespace, collection ) {
 			yield apiFetch( { path, method } );
 
 			// Invalidate the getRecord selector.
-			yield dispatch.invalidateResolution( 'getRecord', [ result.id ] );
+			yield dispatch.invalidateResolution( 'getRecord', [ id ] );
 
 			return {
 				type: 'DELETE_RECORD',

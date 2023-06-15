@@ -11,7 +11,7 @@ export default function createDynamicActions(namespace: string, collection: stri
      * @param {Object} data
      * @return {Object} Action.
      */
-    createRecord(data: any, dispatch: any): any;
+    createRecord(data: any, dispatch: any): Generator<any, import("./types").Action | undefined, unknown>;
     /**
      * Updates a record.
      *
@@ -19,26 +19,31 @@ export default function createDynamicActions(namespace: string, collection: stri
      * @param {Object} data
      * @return {Object} Action.
      */
-    updateRecord(id: string, data: any, dispatch: any): any;
+    updateRecord(id: any, data: any, dispatch: any): Generator<any, any, unknown>;
     /**
      * Deletes a record.
      *
      * @param {string} id
      * @return {Object} Action.
      */
-    deleteRecord(id: string, dispatch: any): any;
+    deleteRecord(id: any, dispatch: any): Generator<any, {
+        type: string;
+        id: any;
+    }, unknown>;
     /**
      * Deletes multiple records.
      *
      * @param {string} queryString
      * @return {Object} Action.
      */
-    deleteRecords(queryString: string, dispatch: any): any;
+    deleteRecords(queryString: any, dispatch: any): Generator<any, {
+        type: string;
+    }, unknown>;
     /**
      * Empties the cache.
      *
      * @param {string} queryString
      * @return {Object} Action.
      */
-    emptyCache(dispatch: any): any;
+    emptyCache(dispatch: any): Generator<any, void, unknown>;
 };

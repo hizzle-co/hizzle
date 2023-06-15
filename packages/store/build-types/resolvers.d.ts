@@ -8,36 +8,43 @@ export default function createResolvers(namespace: string, collection: string): 
     /**
      * Fetches the records from the API.
      *
-     * @param {String} queryString
      * @return {Object} Action.
      */
-    getRecords(queryString: string): any;
+    getRecords(queryString: string): Generator<Object, import("./types").Action, unknown>;
     /**
      * Fetches a record from the API.
      *
-     * @param {string} id
      * @return {Object} Action.
      */
-    getRecord(id: string): any;
+    getRecord(id: number): Generator<{
+        type: string;
+        request: import("@wordpress/api-fetch/build-types/types").APIFetchOptions;
+    }, import("./types").Action, unknown>;
     /**
      * Fetch the collection schema from the API.
      *
      * @return {Object} Action.
      */
-    getSchema(): any;
+    getSchema(): Generator<{
+        type: string;
+        request: import("@wordpress/api-fetch/build-types/types").APIFetchOptions;
+    }, import("./types").Action, unknown>;
     /**
      * Fetch a single record tab's content from the API.
      *
-     * @param {string} id
-     * @param {string} tab_id
      * @return {Object} Action.
      */
-    getTabContent(id: string, tab_id: string): any;
+    getTabContent(id: number, tab_id: string): Generator<{
+        type: string;
+        request: import("@wordpress/api-fetch/build-types/types").APIFetchOptions;
+    }, import("./types").Action, unknown>;
     /**
      * Retrieves a single record's overview data.
      *
-     * @param {string} id
      * @return {Object} Action.
      */
-    getRecordOverview(id: string): any;
+    getRecordOverview(id: number): Generator<{
+        type: string;
+        request: import("@wordpress/api-fetch/build-types/types").APIFetchOptions;
+    }, import("./types").Action, unknown>;
 };
