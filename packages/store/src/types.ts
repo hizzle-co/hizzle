@@ -66,12 +66,6 @@ export type PartialRecords = {
     };
 };
 
-export type TabContent = {
-    [id: number]: {
-        [tabName: string]: Object;
-    };
-};
-
 /**
  * Record overview is a map of record overview areas keyed by record ID.
  */
@@ -366,3 +360,19 @@ export interface StateDescriptor {
         [id: number]: RecordOverview[];
     };
 }
+
+/**
+ * Single action.
+ */
+export type Action = {
+
+	/**
+	 * The type of action.
+	 */
+	type: string;
+
+	/**
+	 * Copy from args.
+	 */
+	[key: string]: any;
+};
