@@ -4,7 +4,8 @@
 import { __experimentalInputControl as InputControl } from '@wordpress/components';
 import { useCallback, useMemo } from '@wordpress/element';
 import { MergeTagsModalButton } from './merge-tags';
-type InputControlProps = import( '@wordpress/components/src/input-control/types' ).InputControlProps;
+import type { FC } from 'react';
+import type { InputControlProps } from '@wordpress/components/build-types/input-control/types';
 type Setting = import( './types' ).Setting;
 type MergeTagsProps = import( './types' ).MergeTagsProps;
 
@@ -21,7 +22,7 @@ type InputSettingProps = MergeTagsProps & InputControlProps & {
  * Displays an input setting
  *
  */
-const InputSetting: React.FC<InputSettingProps> = ({ setting, availableSmartTags, ...attributes }) => {
+const InputSetting: FC<InputSettingProps> = ({ setting, availableSmartTags, ...attributes }) => {
 
 	// On add merge tag...
 	const onMergeTagClick = useCallback((mergeTag: string) => {

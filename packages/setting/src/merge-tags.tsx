@@ -1,11 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import { Tip, Modal, Button } from '@wordpress/components';
 import { useState } from '@wordpress/element';
-import React from 'react';
-type BaseButtonProps = import( '@wordpress/components/src/button/types' ).ButtonProps;
+import type { FC, FocusEventHandler } from 'react';
 type MergeTag = import( './types' ).MergeTag;
 type MergeTagsProps = import( './types' ).MergeTagsProps;
-
 type MergeTagProps = {
 
     /**
@@ -51,7 +49,7 @@ const getMergeTagValue = (mergeTag: MergeTag) => {
  * Displays a single merge tag.
  *
  */
-export const MergeTag: React.FC<MergeTagProps> = ({mergeTag, onMergeTagClick}) => {
+export const MergeTag: FC<MergeTagProps> = ({mergeTag, onMergeTagClick}) => {
 
     // The merge tag value to use.
     const value = `[[${getMergeTagValue( mergeTag )}]]`;
@@ -60,7 +58,7 @@ export const MergeTag: React.FC<MergeTagProps> = ({mergeTag, onMergeTagClick}) =
     const showDescription = mergeTag.description && mergeTag.description !== mergeTag.label;
 
     // Selects the merge tag.
-    const select: React.FocusEventHandler<HTMLInputElement> = (e) => {
+    const select: FocusEventHandler<HTMLInputElement> = (e) => {
 
         // Select.
         e.target.select();
@@ -91,7 +89,7 @@ export const MergeTag: React.FC<MergeTagProps> = ({mergeTag, onMergeTagClick}) =
  * Displays a list of available merge tags.
  *
  */
-export const MergeTags: React.FC<MergeTagsProps> = ({availableSmartTags, onMergeTagClick}) => {
+export const MergeTags: FC<MergeTagsProps> = ({availableSmartTags, onMergeTagClick}) => {
 
     return (
         <div className="hizzle-merge-tags-wrapper">
@@ -123,7 +121,7 @@ interface MergeTagsModalProps extends MergeTagsProps {
  * The merge tags modal.
  *
  */
-export const MergeTagsModal: React.FC<MergeTagsModalProps>  = ({isOpen, closeModal, availableSmartTags, onMergeTagClick}) => {
+export const MergeTagsModal: FC<MergeTagsModalProps>  = ({isOpen, closeModal, availableSmartTags, onMergeTagClick}) => {
 
     return (
         <>
@@ -145,7 +143,7 @@ export const MergeTagsModal: React.FC<MergeTagsModalProps>  = ({isOpen, closeMod
  * The merge tags modal button.
  *
  */
-export const MergeTagsModalButton: React.FC<MergeTagsProps & BaseButtonProps> = ({ availableSmartTags, onMergeTagClick, ...props}) => {
+export const MergeTagsModalButton: FC<MergeTagsProps> = ({ availableSmartTags, onMergeTagClick, ...props}) => {
 
     // Are we showing the modal?
 	const [showModal, setShowModal] = useState(false);

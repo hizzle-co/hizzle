@@ -13,17 +13,13 @@ import {
 import { useCallback, useState, useMemo } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import type { FC } from 'react';
-type InputControlProps = import( '@wordpress/components/src/input-control/types' ).InputControlProps;
-type BaseControlProps = import( '@wordpress/components/src/base-control/types' ).BaseControlProps;
+import type { InputControlProps } from '@wordpress/components/build-types/input-control/types';
 
 /**
  * Internal dependancies.
  */
 import { MergeTagsModalButton } from './merge-tags';
-type MergeTagsProps = import( './types' ).MergeTagsProps;
-type KeyValuePair = import( './types' ).KeyValuePair;
-type keyValueRepeaterField = import( './types' ).keyValueRepeaterField;
-type Setting = import( './types' ).Setting;
+import type { repeaterControlProps, keyValueRepeaterField, KeyValuePair, MergeTagsProps } from './types';
 
 /**
  * Key value repeater fields.
@@ -145,32 +141,10 @@ const Item: FC<itemProps> = ({ item, index, onItemChange, onDelete, setCurrentFi
 };
 
 /**
- * Field props.
- */
-interface repeaterProps extends Omit< BaseControlProps, 'children' > {
-
-	/**
-	 * The setting change handler.
-	 */
-	onChange: (items: KeyValuePair[] ) => void;
-
-	/**
-	 * The current value.
-	 */
-	value: KeyValuePair[];
-
-	/**
-	 * The current setting object.
-	 */
-	setting: Setting;
-
-}
-
-/**
  * Displays a key value repeater setting.
  *
  */
-const KeyValueRepeater: FC<repeaterProps & MergeTagsProps> = ({ setting, availableSmartTags, value, onChange, ...attributes }) => {
+const KeyValueRepeater: FC<repeaterControlProps & MergeTagsProps> = ({ setting, availableSmartTags, value, onChange, ...attributes }) => {
 
 	const [currentField, setCurrentField] = useState([0, 'key']);
 
