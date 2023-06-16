@@ -9,29 +9,52 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useMemo } from '@wordpress/element';
+import type { FC } from 'react';
+import type {
+    ConditionalLogic,
+    ConditionalLogicRule,
+    MergeTagsProps,
+    LabelValuePair,
+    Setting
+} from './types';
 
-type LabelValuePair = import( './types' ).LabelValuePair;
+// Condition type.
+interface ConditionType {
+    /**
+     * The key.
+     */
+    key: string;
 
-// Action.
-const ifOptions:LabelValuePair[] = [
-	{
-		label: __( 'Only run if', 'hizzlewp' ),
-		value: 'allow',
-	},
-	{
-		label: __( 'Do not run if', 'hizzlewp' ),
-		value: 'prevent',
-	},
-]
+    /**
+     * The label.
+     */
+    label: string;
+
+    /**
+     * The options.
+     */
+    options?: LabelValuePair[];
+
+    /**
+     * The type.
+     */
+    type: string;
+
+    /**
+     * The placeholder.
+     */
+    placeholder: string;
+}
+
 
 // Matches.
 const typeOptions = [
 	{
-		label: __( 'all', 'newsletter-optin-box' ),
+		label: __( 'all', 'hizzlewp' ),
 		value: 'all',
 	},
 	{
-		label: __( 'any', 'newsletter-optin-box' ),
+		label: __( 'any', 'hizzlewp' ),
 		value: 'any',
 	},
 ]
@@ -54,27 +77,50 @@ function addPlaceholder( array, placeholder ) {
 	];
 }
 
+interface ConditionalLogicTypeSelectorProps {
+
+    /**
+     * The type of conditional logic.
+     */
+    type: ConditionalLogic['type'];
+
+    /**
+     * The action of conditional logic.
+     */
+    action: ConditionalLogic['action'];
+
+    /**
+     * The number of rules.
+     */
+    ruleCount: number;
+
+    /**
+     * Sets a conditional logic attribute.
+     */
+    setConditionalLogicAttribute: ( key: keyof ConditionalLogic, value: any ) => void;
+
+    /**
+     * The available condition types.
+     */
+    ifOptions?: LabelValuePair[];
+}
+
 /**
  * Displays the conditional logic editor type selector.
  *
- * @param {Object} props
- * @param {String} props.type
- * @param {String} props.action
- * @param {Function} props.setConditionalLogicAttribute
- * @return {JSX.Element}
  */
-export function ConditionalLogicTypeSelector({ type, action, ruleCount, setConditionalLogicAttribute }) {
+const ConditionalLogicTypeSelector: FC<ConditionalLogicTypeSelectorProps> = ({ type, action, ruleCount, setConditionalLogicAttribute, ifOptions }) => {
 
 	const hasMultiple = ruleCount > 1;
 
 	return (
-		<Flex className="noptin-component__field-lg" wrap>
+		<Flex className="hizzle-component__field-lg" wrap>
 			<FlexItem>
 				<SelectControl
-					label={ __( 'If', 'newsletter-optin-box' ) }
+					label={ __( 'If', 'hizzlewp' ) }
 					hideLabelFromVision={ true }
 					value={ action ? action : 'allow' }
-					options={ifOptions}
+					options={ifOptions || []}
 					onChange={ ( val ) => setConditionalLogicAttribute( 'action', val ) }
 					size="default"
 					__nextHasNoMarginBottom
@@ -85,7 +131,7 @@ export function ConditionalLogicTypeSelector({ type, action, ruleCount, setCondi
 				<>
 					<FlexItem>
 						<SelectControl
-							label={ __( 'all', 'newsletter-optin-box' ) }
+							label={ __( 'all', 'hizzlewp' ) }
 							hideLabelFromVision={ true }
 							value={ type ? type : 'all' }
 							options={ typeOptions }
@@ -95,7 +141,7 @@ export function ConditionalLogicTypeSelector({ type, action, ruleCount, setCondi
 						/>
 					</FlexItem>
 					<FlexBlock>
-						{__( 'of the following rules are true:', 'newsletter-optin-box' )}
+						{__( 'of the following rules are true:', 'hizzlewp' )}
 					</FlexBlock>
 				</>
 			)}
@@ -103,30 +149,60 @@ export function ConditionalLogicTypeSelector({ type, action, ruleCount, setCondi
 	);
 }
 
+interface ConditionalLogicRuleProps {
+
+    /**
+     * The conditional logic rule.
+     */
+    rule: ConditionalLogicRule;
+
+    /**
+     * The available comparisons.
+     */
+    comparisons: LabelValuePair[];
+
+    /**
+     * The available condition types.
+     */
+    availableConditionTypes: {
+        [key: string]: ConditionType;
+    }
+
+    /**
+     * The condition type.
+     */
+    conditionType: string;
+
+    /**
+     * Whether the rule is the last rule.
+     */
+    isLastRule: boolean;
+
+    /**
+     * Callback to update a rule.
+     */
+    updateRule: ( key: string, value: string ) => void;
+
+    /**
+     * The callback to remove a rule.
+     */
+    removeRule: () => void;
+}
+
 /**
  * Displays a single conditional logic rule.
  *
- * @param {Object} props
- * @param {Object} props.rule
- * @param {Object} props.comparisons
- * @param {String} props.availableConditionTypes
- * @param {Function} props.updateRule
- * @param {Function} props.removeRule
- * @param {Boolean} props.isLastRule
- * @param {Boolean} props.isFirstRule
- * @param {String} props.conditionType
- * @return {JSX.Element}
  */
-export function ConditionalLogicRule({ rule, comparisons, availableConditionTypes, updateRule, removeRule, conditionType, isLastRule, isFirstRule }) {
+const ConditionalLogicRule: FC<ConditionalLogicRuleProps> = ({ rule, comparisons, availableConditionTypes, updateRule, removeRule, conditionType, isLastRule }) => {
 
 	// Fetches a condition type.
-	const getConditionType = ( type ) => availableConditionTypes[ type ];
+	const getConditionType = ( type: string ) => availableConditionTypes[ type ];
 
 	// Retrieves the selected condition type.
 	const selectedConditionType = useMemo( () => getConditionType( rule.type ) || {}, [ availableConditionTypes, rule.type ] );
 
 	// Contains available options.
-	const availableOptions = useMemo( () => prepareOptions( selectedConditionType.options ), [ selectedConditionType ] );
+	const availableOptions = selectedConditionType.options || [];
 
 	// Checks whether the selected condition type has options.
 	const hasOptions = availableOptions.length > 0;
@@ -136,7 +212,7 @@ export function ConditionalLogicRule({ rule, comparisons, availableConditionType
 
 	// Sets available comparisons for the selected condition.
 	const availableComparisons = useMemo( () => {
-		const types = [];
+		const types: LabelValuePair[] = [];
 
 		// Filter object of available condition types to include where key === rule.type.
 		Object.keys( comparisons ).forEach( key => {
@@ -167,7 +243,7 @@ export function ConditionalLogicRule({ rule, comparisons, availableConditionType
 
 	// Sets the default type and the available comparisons.
 	let defaultConditionType = '';
-	const conditionOptions = [];
+	const conditionOptions:LabelValuePair[] = [];
 
 	Object.keys( availableConditionTypes ).forEach( ( key ) => {
 		const conditionType = availableConditionTypes[ key ];
@@ -183,7 +259,7 @@ export function ConditionalLogicRule({ rule, comparisons, availableConditionType
 	} );
 
 	// Handles an update and sets any default values.
-	const handleUpdate = ( key, value ) => {
+	const handleUpdate = ( key:string, value:string ) => {
 		updateRule( key, value );
 
 		if ( 'type' !== key && '' === rule.type ) {
@@ -205,14 +281,14 @@ export function ConditionalLogicRule({ rule, comparisons, availableConditionType
 	const showInput = ! hasOptions && ! skipValue;
 
 	return (
-		<Flex className="noptin-component__field-lg" wrap>
+		<Flex className="hizzle-component__field-lg" wrap>
 
 			<FlexItem>
 				<SelectControl
-					label={ __( 'Condition Type', 'newsletter-optin-box' ) }
+					label={ __( 'Condition Type', 'hizzlewp' ) }
 					hideLabelFromVision={ true }
 					value={ rule.type ? rule.type : defaultConditionType }
-					options={addPlaceholder( conditionOptions, __( 'Select a condition', 'newsletter-optin-box' ) )}
+					options={addPlaceholder( conditionOptions, __( 'Select a condition', 'hizzlewp' ) )}
 					onChange={ ( val ) => handleUpdate( 'type', val ) }
 					size="default"
 					__nextHasNoMarginBottom
@@ -221,10 +297,10 @@ export function ConditionalLogicRule({ rule, comparisons, availableConditionType
 
 			<FlexItem>
 				<SelectControl
-					label={ __( 'Comparison', 'newsletter-optin-box' ) }
+					label={ __( 'Comparison', 'hizzlewp' ) }
 					hideLabelFromVision={ true }
 					value={ rule.condition ? rule.condition : 'is' }
-					options={addPlaceholder( availableComparisons, __( 'Select a comparison', 'newsletter-optin-box' ) )}
+					options={addPlaceholder( availableComparisons, __( 'Select a comparison', 'hizzlewp' ) )}
 					onChange={ ( val ) => handleUpdate( 'condition', val ) }
 					size="default"
 					__nextHasNoMarginBottom
@@ -235,10 +311,10 @@ export function ConditionalLogicRule({ rule, comparisons, availableConditionType
 
 				{showSelect && (
 					<SelectControl
-						label={ __( 'Value', 'newsletter-optin-box' ) }
+						label={ __( 'Value', 'hizzlewp' ) }
 						hideLabelFromVision={ true }
 						value={ rule.value ? rule.value : '' }
-						options={addPlaceholder( availableOptions, __( 'Select a value', 'newsletter-optin-box' ) )}
+						options={addPlaceholder( availableOptions, __( 'Select a value', 'hizzlewp' ) )}
 						onChange={ ( val ) => updateRule( 'value', val ) }
 						size="default"
 						__nextHasNoMarginBottom
@@ -248,7 +324,7 @@ export function ConditionalLogicRule({ rule, comparisons, availableConditionType
 				{showInput && (
 					<TextControl
 						type={ 'number' === dataType ? 'number' : 'text' }
-						label={ __( 'Value', 'newsletter-optin-box' ) }
+						label={ __( 'Value', 'hizzlewp' ) }
 						hideLabelFromVision={ true }
 						value={ rule.value ? rule.value : '' }
 						onChange={ ( val ) => updateRule( 'value', val ) }
@@ -264,8 +340,8 @@ export function ConditionalLogicRule({ rule, comparisons, availableConditionType
 			<FlexBlock>
 				{ ! isLastRule && (
 					<>
-						{conditionType === 'any' && __( 'or', 'newsletter-optin-box' )}
-						{conditionType === 'all' && __( 'and', 'newsletter-optin-box' )}
+						{conditionType === 'any' && __( 'or', 'hizzlewp' )}
+						{conditionType === 'all' && __( 'and', 'hizzlewp' )}
 					</>
 				)}
 			</FlexBlock>
@@ -274,63 +350,45 @@ export function ConditionalLogicRule({ rule, comparisons, availableConditionType
 }
 
 /**
- * Prepares the available options for the selected condition.
- *
- * @param {Array|Object} options
- * @return {Array}
+ * Conditional logic rules props.
  */
-function prepareOptions( options ) {
+interface conditionalLogicRulesProps extends MergeTagsProps {
 
-	const prepared = [];
+    /**
+     * The available conditional logic rules.
+     */
+    rules: ConditionalLogicRule[];
 
-	if ( ! options ) {
-		return prepared;
-	}
+    /**
+     * The condition type.
+     */
+    conditionType: "all" | "any";
 
-	// Arrays.
-	if ( Array.isArray( options ) ) {
-		options.forEach( ( option, index ) => {
-			prepared.push( {
-				label: option,
-				value: index,
-			} );
-		} );
+    /**
+     * The available comparisons.
+     */
+    comparisons?: LabelValuePair[];
 
-		return prepared;
-	}
+	/**
+     * Sets a conditional logic attribute.
+     */
+    setConditionalLogicAttribute: ( key: keyof ConditionalLogic, value: any ) => void;
 
-	// Objects.
-	Object.keys( options ).forEach( ( key ) => {
-		prepared.push( {
-			label: options[ key ],
-			value: key,
-		} );
-	});
-
-	return prepared;
 }
 
 /**
  * Displays the available conditional logic rules.
  *
- * @param {Object} props
- * @param {Array} props.rules
- * @param {String} props.conditionType
- * @param {Object} props.comparisons
- * @param {Array} props.availableSmartTags
- * @param {Function} props.setConditionalLogicAttribute
- * @return {JSX.Element}
  */
-export function ConditionalLogicRules({ rules, conditionType, comparisons, availableSmartTags, setConditionalLogicAttribute }) {
+const ConditionalLogicRules: FC<conditionalLogicRulesProps> = ({ rules, conditionType, comparisons, availableSmartTags, setConditionalLogicAttribute }) => {
 
 	const theRules = Array.isArray( rules ) ? rules : [];
 
 	/**
 	 * Removes a rule from the conditional logic.
 	 *
-	 * @param {Number} index
 	 */
-	const removeRule = ( index ) => {
+	const removeRule = ( index: number ) => {
 		const newRules = [ ...theRules ];
 		newRules.splice( index, 1 );
 		setConditionalLogicAttribute( 'rules', newRules );
@@ -339,11 +397,8 @@ export function ConditionalLogicRules({ rules, conditionType, comparisons, avail
 	/**
 	 * Updates a rule in the conditional logic.
 	 *
-	 * @param {Number} index
-	 * @param {String} key
-	 * @param {String} value
 	 */
-	const updateRule = ( index, key, value ) => {
+	const updateRule = ( index: number, key: string, value: string ) => {
 		const newRules = [ ...theRules ];
 		newRules[ index ][ key ] = value;
 		setConditionalLogicAttribute( 'rules', newRules );
@@ -351,7 +406,7 @@ export function ConditionalLogicRules({ rules, conditionType, comparisons, avail
 
 	// Sets available condition types.
 	const availableConditionTypes = useMemo( () => {
-		const types = {};
+		const types: { [key: string]: ConditionType } = {};
 
 		availableSmartTags.forEach( ( smartTag ) => {
 			if ( smartTag.conditional_logic ) {
@@ -397,9 +452,8 @@ export function ConditionalLogicRules({ rules, conditionType, comparisons, avail
 					removeRule={ () => removeRule( index ) }
 					availableConditionTypes={ availableConditionTypes }
 					isLastRule={ index === count - 1 }
-					isFirstRule={ index === 0 }
 					conditionType={ conditionType }
-					comparisons={ comparisons }
+					comparisons={ comparisons || [] }
 				/>
 			) )}
 			<Button
@@ -407,27 +461,44 @@ export function ConditionalLogicRules({ rules, conditionType, comparisons, avail
 				onClick={ addRule }
 				variant="secondary"
 			>
-				{ 0 === count ? __( 'Add a rule', 'newsletter-optin-box' ) : __( 'Add another rule', 'newsletter-optin-box' )}
+				{ 0 === count ? __( 'Add a rule', 'hizzlewp' ) : __( 'Add another rule', 'hizzlewp' )}
 			</Button>
 		</div>
 	);
 }
 
 /**
+ * Conditional logic props.
+ */
+interface conditionalLogicProps extends MergeTagsProps {
+
+	/**
+	 * The conditions change handler.
+	 */
+	onChange: (conditionalLogic: ConditionalLogic ) => void;
+
+	/**
+	 * The current value.
+	 */
+	value: ConditionalLogic;
+
+	/**
+	 * The current setting object.
+	 */
+	setting: Setting;
+
+    /**
+     * Optional class name.
+     */
+    className?: string;
+
+}
+
+/**
  * Displays the conditional logic editor.
  *
- * @param {Object} props
- * @param {String} props.className The class name.
- * @param {String} props.label The label.
- * @param {String} props.prop The prop to update.
- * @param {Array} props.availableSmartTags The available smart tags.
- * @param {Object} props.comparisons The available comparisons.
- * @param {Object} props.value The current value.
- * @param {String} props.toggleText The toggle text.
- * @param {Function} props.onChange
- * @return {JSX.Element}
  */
-export default function ConditionalLogicEditor({ onChange, value, comparisons, toggleText, availableSmartTags, className }) {
+const ConditionalLogicEditor: FC<conditionalLogicProps> = ({ onChange, value, setting, availableSmartTags, className }) => {
 
 	// If value is not an Object, set it to the default.
 	if ( typeof value !== 'object' ) {
@@ -440,7 +511,7 @@ export default function ConditionalLogicEditor({ onChange, value, comparisons, t
 	}
 
 	// Sets conditional logic attribute.
-	const setConditionalLogicAttribute = ( prop, val ) => {
+	const setConditionalLogicAttribute = ( prop: string, val: any ) => {
 		onChange( {
 			...value,
 			[ prop ]: val,
@@ -452,8 +523,8 @@ export default function ConditionalLogicEditor({ onChange, value, comparisons, t
 			<ToggleControl
 				checked={ value.enabled ? true : false }
 				onChange={ ( val ) => setConditionalLogicAttribute( 'enabled', val ) }
-				className="noptin-component__field"
-				label={ toggleText ? toggleText : __( 'Optionally enable/disable this trigger depending on specific conditions.', 'newsletter-optin-box' ) }
+				className="hizzle-component__field"
+				label={ setting.toggleLabel }
 				__nextHasNoMarginBottom
 			/>
 
@@ -464,13 +535,14 @@ export default function ConditionalLogicEditor({ onChange, value, comparisons, t
 						ruleCount={ value.rules ? value.rules.length : 0 }
 						type={ value.type }
 						action={ value.action }
+                        ifOptions={ setting.ifOptions }
 						setConditionalLogicAttribute={ setConditionalLogicAttribute }
 					/>
 
 					<ConditionalLogicRules
 						rules={ value.rules }
 						conditionType={ value.type }
-						comparisons={ comparisons }
+						comparisons={ setting.comparisons }
 						availableSmartTags={ availableSmartTags }
 						setConditionalLogicAttribute={ setConditionalLogicAttribute }
 					/>
@@ -479,3 +551,5 @@ export default function ConditionalLogicEditor({ onChange, value, comparisons, t
 		</div>
 	);
 }
+
+export default ConditionalLogicEditor;

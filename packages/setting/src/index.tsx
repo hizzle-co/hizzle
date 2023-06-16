@@ -212,8 +212,7 @@ const SettingControl: FC<settingProps> = ({ settingKey, setting, availableSmartT
 			<ConditionalLogicEditor
 				{...defaultAttributes}
 				availableSmartTags={availableSmartTags}
-				comparisons={setting.comparisons}
-				toggleText={setting.toggle_text}
+				setting={setting}
 			/>
 		);
 	}

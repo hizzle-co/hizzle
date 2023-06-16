@@ -91,6 +91,21 @@ export type MergeTag = {
      * A replacement value.
      */
     replacement?: string;
+
+    /**
+     * If the merge tag can be used in the conditional logic editor, this is the conditional logic type.
+     */
+    conditional_logic?: 'string' | 'number' | 'date';
+
+    /**
+     * An optional placeholder.
+     */
+    placeholder?: string;
+
+    /**
+     * An optional key value pair list of options.
+     */
+    options?: LabelValuePair[];
 }
 
 /**
@@ -194,5 +209,63 @@ export type Setting = {
      */
     ifOptions?: LabelValuePair[];
 
+    /**
+     * Conditional logic toggle label.
+     */
+    toggleLabel?: string;
+
+    /**
+     * Available comparisons.
+     */
+    comparisons?: LabelValuePair[];
+
     [key: string]: any;
+};
+
+/**
+ * Represents a single conditional logic rule.
+ */
+export type ConditionalLogicRule = {
+
+    /**
+     * The condition to check.
+     */
+    condition: string;
+
+    /**
+     * The object key to check.
+     */
+    type: string;
+
+    /**
+     * The value to check.
+     */
+    value: string;
+}
+
+/**
+ * Represents a single conditional logic configuration.
+ */
+export type ConditionalLogic = {
+
+    /**
+     * Whether conditional logic is enabled.
+     */
+    enabled: boolean;
+
+    /**
+     * The conditional logic action.
+     */
+    action: 'allow' | 'deny';
+
+    /**
+     * The conditional logic rules.
+     */
+    rules: ConditionalLogicRule[];
+
+    /**
+     * The conditional logic type.
+     */
+    type: 'all' | 'any';
+
 };
