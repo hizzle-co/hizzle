@@ -1,6 +1,6 @@
 {
   "name": "@hizzlewp/setting",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Hizzle setting",
   "main": "/dist/index.js",
   "scripts": {

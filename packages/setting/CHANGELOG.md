@@ -5,12 +5,4 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [0.0.3](https://github.com/hizzle-co/hizzle/compare/v0.0.1...v0.0.3) (2023-06-16)
 
-**Note:** Version bump only for package root
-
-
-
-
-
-## 0.0.1 (2023-06-15)
-
-**Note:** Version bump only for package root
+**Note:** Version bump only for package @hizzlewp/setting
