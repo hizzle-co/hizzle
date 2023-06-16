@@ -1,0 +1,37 @@
+name: subtree-matrix
+on:
+  push:
+    tags:
+      - '*'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  sync-downstream:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        path: [
+            #
+            store,
+            table,
+            setting
+        ]
+
+    name: Update downstream ${{ matrix.path }} package
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Sync downstream
+        uses: nxtlvlsoftware/git-subtree-action@1.1
+        with:
+          repo: 'hizzle-co/hizzle-store-${{ matrix.path }}'
+          path: 'packages/${{ matrix.path }}'
+          deploy_key: ${{ secrets.SYNC_DEPLOY_TOKEN }}
+          force: true # will force push to the downstream repository
+          tag: true # will use the tag name from the event if true is specified

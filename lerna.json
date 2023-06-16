@@ -12,5 +12,5 @@
 		"**/{storybook,stories}/**"
 	],
 	"packages": [ "packages/*" ],
-	"version": "independent"
+	"version": "0.0.2"
 }

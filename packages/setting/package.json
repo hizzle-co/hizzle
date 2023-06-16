@@ -1,8 +1,8 @@
 {
-  "name": "@hizzlewp/store",
+  "name": "@hizzlewp/setting",
   "version": "0.0.2",
-  "description": "Hizzle store",
-  "main": "/dist/store.js",
+  "description": "Hizzle setting",
+  "main": "/dist/index.js",
   "scripts": {
     "test": "test",
     "build": "npx webpack --mode production",
@@ -11,10 +11,8 @@
   "author": "picocodes",
   "license": "ISC",
   "dependencies": {
-    "@wordpress/data": "^9.5.0",
-    "@wordpress/data-controls": "^3.4.0",
+    "@wordpress/components": "^25.1.0",
     "@wordpress/element": "^5.12.0",
-    "@wordpress/url": "^3.36.0"
-  },
-  "gitHead": "26b2f015e15882b48f5ff4822697bf756c612952"
+    "@wordpress/i18n": "^4.35.0"
+  }
 }
