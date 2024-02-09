@@ -11,7 +11,7 @@
   "author": "picocodes",
   "license": "ISC",
   "dependencies": {
-    "@wordpress/components": "^25.1.0",
+    "@wordpress/components": "^26.0.0",
     "@wordpress/element": "^5.12.0",
     "@wordpress/i18n": "^4.35.0"
   }
