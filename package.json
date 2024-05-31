@@ -14,8 +14,8 @@
   "devDependencies": {
     "@babel/core": "^7.22.5",
     "@babel/preset-env": "^7.22.5",
-    "@wordpress/babel-preset-default": "^7.19.0",
-    "@wordpress/dependency-extraction-webpack-plugin": "^5.0.0",
+    "@wordpress/babel-preset-default": "^8.0.0",
+    "@wordpress/dependency-extraction-webpack-plugin": "^6.0.0",
     "babel-loader": "^9.1.2",
     "lerna": "^8.0.0",
     "ts-loader": "^9.4.3",
