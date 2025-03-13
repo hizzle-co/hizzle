@@ -1,0 +1,37 @@
+{
+    "name": "@hizzlewp/dependency-extraction-webpack-plugin",
+    "version": "1.0.0",
+    "description": "Hizzle Dependency Extraction Webpack Plugin",
+    "author": "picocodes",
+    "license": "GPL-2.0-or-later",
+    "keywords": [
+        "wordpress",
+        "hizzle"
+    ],
+    "engines": {
+        "node": "^20.11.1"
+    },
+    "homepage": "https://github.com/hizzle-co/hizzle/tree/trunk/packages/dependency-extraction-webpack-plugin/README.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/hizzle-co/hizzle.git"
+    },
+    "bugs": {
+        "url": "https://github.com/hizzle-co/hizzle/issues"
+    },
+    "main": "src/index.js",
+    "files": [
+        "src/",
+        "assets/"
+    ],
+    "dependencies": {
+        "@wordpress/dependency-extraction-webpack-plugin": "next"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "build": "wp-scripts build",
+        "start": "wp-scripts start"
+    }
+}
