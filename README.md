@@ -1,31 +1,74 @@
-## Commands
-- `npm run start` - Start watching file changes in development mode
-- `npm run build` - Build the project for production
-- `npm run test` - Run tests
+# HizzleWP Monorepo
 
-You can also pass --scope=PACKAGE_NAME to any of the above commands to run them only for a specific package.
-
-**Example:** `npm run start --scope=store`
+A monorepo containing shared packages for WordPress plugin development.
 
 ## Packages
-- [store](./packages/store/README.md) - State management
 
-## Contributing
+- `@hizzlewp/components`: Reusable React UI components extending @wordpress/components
+- `@hizzlewp/interface`: Shared UI Interface extending @wordpress/interface
+- `@hizzlewp/dependency-extraction-webpack-plugin`: Custom Webpack plugin for dependency extraction
 
-- Commits MUST be prefixed with a type, which consists of a noun, feat, fix, etc., followed by the OPTIONAL scope, OPTIONAL !, and REQUIRED terminal colon and space.
-- The type feat MUST be used when a commit adds a new feature to this library.
-- The type fix MUST be used when a commit represents a bug fix for your application.
-- A scope MAY be provided after a type. A scope MUST consist of a noun describing a section of the codebase surrounded by parenthesis, e.g., fix(store):
-- A description MUST immediately follow the colon and space after the type/scope prefix. The description is a short summary of the code changes, e.g., fix: array parsing issue when multiple spaces were contained in string.
+## Setup
 
-https://www.conventionalcommits.org/en/v1.0.0
-
-**Installing a dependancy to a specific package**
+1. Clone the repository:
 ```bash
-npm install abbrev -w packages/store
+git clone [repository-url]
+cd hizzlewp-monorepo
 ```
 
-## License
-GPL-3.0
+2. Install dependencies:
+```bash
+npm install
+```
 
-npm install @wordpress/i18n -w packages/setting
+3. Build all packages:
+```bash
+npm run build
+```
+
+## Development
+
+- `npm run build`: Build all packages
+- `npm run test`: Run tests across all packages
+- `npm run lint`: Run ESLint across all packages
+- `npm run format`: Format code using Prettier
+
+## Adding a new package
+
+1. Add the package to the `packages` directory.
+2. Add the package to the `dependency-extraction-webpack-plugin/assets/packages.js` file.
+3. Install npm packages:
+```bash
+npm install react --workspace=@hizzlewp/your-package
+```
+
+
+## Usage in WordPress Plugins
+
+1. Install the required packages:
+```bash
+npm install @hizzlewp/components @hizzlewp/interface
+```
+
+2. Configure your webpack build to use the dependency extraction plugin:
+```js
+const HizzleWPDependencyExtractionPlugin = require('@hizzlewp/dependency-extraction-webpack-plugin');
+
+module.exports = {
+  // ... other webpack config
+  plugins: [
+    new HizzleWPDependencyExtractionPlugin(),
+  ],
+};
+```
+
+3. Import components in your code:
+```tsx
+import { Button } from '@hizzlewp/components';
+```
+
+The imports will be automatically transformed to use the global `window.hizzlewp` object at runtime.
+
+## License
+
+MIT 

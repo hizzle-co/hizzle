@@ -1,0 +1,20 @@
+{
+  "name": "@hizzlewp/components",
+  "version": "1.0.0",
+  "description": "Reusable React UI components for WordPress plugins",
+  "main": "build/index.js",
+  "module": "build/index.mjs",
+  "types": "build-types/index.d.ts",
+  "scripts": {
+    "build": "wp-scripts build",
+    "dev": "wp-scripts start",
+    "test": "jest",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "@wordpress/components": "^25.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}

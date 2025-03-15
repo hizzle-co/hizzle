@@ -1,37 +1,22 @@
 {
-    "name": "@hizzlewp/dependency-extraction-webpack-plugin",
-    "version": "1.0.0",
-    "description": "Hizzle Dependency Extraction Webpack Plugin",
-    "author": "picocodes",
-    "license": "GPL-2.0-or-later",
-    "keywords": [
-        "wordpress",
-        "hizzle"
-    ],
-    "engines": {
-        "node": "^20.11.1"
-    },
-    "homepage": "https://github.com/hizzle-co/hizzle/tree/trunk/packages/dependency-extraction-webpack-plugin/README.md",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/hizzle-co/hizzle.git"
-    },
-    "bugs": {
-        "url": "https://github.com/hizzle-co/hizzle/issues"
-    },
-    "main": "src/index.js",
-    "files": [
-        "src/",
-        "assets/"
-    ],
-    "dependencies": {
-        "@wordpress/dependency-extraction-webpack-plugin": "next"
-    },
-    "publishConfig": {
-        "access": "public"
-    },
-    "scripts": {
-        "build": "wp-scripts build",
-        "start": "wp-scripts start"
-    }
+  "name": "@hizzlewp/dependency-extraction-webpack-plugin",
+  "version": "1.0.0",
+  "description": "Custom Webpack plugin to map @hizzlewp imports to window.hizzlewp",
+  "main": "src/index.js",
+  "files": [
+    "src/",
+    "assets/"
+  ],
+  "scripts": {
+    "build": "wp-scripts build",
+    "dev": "wp-scripts start",
+    "test": "jest",
+    "lint": "eslint src --ext .ts,.tsx"
+  },
+  "dependencies": {
+    "@wordpress/dependency-extraction-webpack-plugin": "^5.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
 }
