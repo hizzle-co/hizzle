@@ -24,7 +24,7 @@ import type { BaseControlProps } from '@wordpress/components/src/base-control/ty
 import { debounce } from '@wordpress/compose';
 import { F10, isKeyboardEvent } from '@wordpress/keycodes';
 
-interface TinyMCESettingProps extends BaseControlProps {
+interface TinyMCESettingProps extends Omit<BaseControlProps, 'children'> {
 	/**
 	 * The value.
 	 */

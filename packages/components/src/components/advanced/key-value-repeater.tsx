@@ -45,7 +45,7 @@ type KeyValueRepeaterValue = {
 	value: string;
 };
 
-interface KeyValueRepeaterProps extends BaseControlProps {
+interface KeyValueRepeaterProps extends Omit<BaseControlProps, 'children'> {
 	/**
 	 * The onChange handler.
 	 */

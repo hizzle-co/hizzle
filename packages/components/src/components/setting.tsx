@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { useCallback, useState, useEffect, useMemo, useRef } from 'react';
+import React, { useCallback } from 'react';
 
 /**
  * Wordpress dependancies.
@@ -9,36 +9,20 @@ import React, { useCallback, useState, useEffect, useMemo, useRef } from 'react'
 import { RawHTML } from '@wordpress/element';
 import {
 	__experimentalNumberControl as NumberControl,
-	__experimentalInputControl as InputControl,
 	__experimentalInputControlPrefixWrapper as InputControlPrefixWrapper,
 	__experimentalInputControlSuffixWrapper as InputControlSuffixWrapper,
 	__experimentalUnitControl as UnitControl,
-	Notice,
-	BaseControl,
-	useBaseControlProps,
 	CheckboxControl,
 	FormTokenField,
-	Spinner,
 	Tip,
 	__experimentalHStack as HStack,
-	__experimentalVStack as VStack,
-	__experimentalText as Text,
-	CardHeader,
-	CardBody,
-	Card,
-	Modal,
-	Flex,
-	FlexBlock,
-	FlexItem,
+	Button,
+	Icon,
+	Tooltip,
+	ToggleControl,
 } from '@wordpress/components';
 import { next, lock, calendar, tip } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
-import { useInstanceId, debounce } from '@wordpress/compose';
-import { F10, isKeyboardEvent } from '@wordpress/keycodes';
-import { format } from '@wordpress/date';
-import apiFetch from '@wordpress/api-fetch';
-import { addQueryArgs } from '@wordpress/url';
-
 
 /**
  * Local dependancies.
@@ -49,544 +33,27 @@ import { compare } from './operators';
 import { condition as settingCondition } from './automation-rules';
 import {
 	smartTag,
+	getNestedValue,
+	updateNestedValue,
 	SelectOption,
 	SelectSetting,
+	MultiSelectSetting,
 	MultiCheckbox,
-	MultiCheckboxSetting,
+	ComboboxSetting,
+	ToggleGroupSetting,
+	TinyMCESetting,
+	InputSetting,
+	TextareaSetting,
+	ColorSetting,
+	RepeaterControl,
+	KeyValueRepeater,
+	RemoteSettings,
 } from '.';
 
 /**
  * Input types.
  */
 const inputTypes = [ 'number', 'search', 'email', 'password', 'tel', 'url', 'date' ];
-
-/**
- * Displays remote settings.
- *
- * @return {JSX.Element}
- */
-function RemoteSettings( { setting, saved, settingKey, ...extra }: SettingProps ) {
-	const [ loading, setLoading ] = useState( false );
-	const [ settings, setSettings ] = useState( {} );
-	const [ error, setError ] = useState( null );
-
-	const remoteURL = useMemo( () => {
-		if ( !setting.rest_route ) {
-			return '';
-		}
-
-		const args = Object.entries( setting.rest_args || {} ).reduce( ( acc, [ key, value ] ) => {
-			acc[ key ] = 'string' === typeof value && value.startsWith( '!' ) ? getNestedValue( saved, value.slice( 1 ) ) : value;
-			return acc;
-		}, {} );
-
-		return addQueryArgs( setting.rest_route, args );
-	}, [ setting.rest_route, setting.rest_args, saved ] );
-
-	useEffect( () => {
-		if ( !remoteURL ) {
-			return;
-		}
-
-		setLoading( true );
-		setError( null );
-
-		apiFetch( {
-			path: remoteURL,
-		} ).then( ( data ) => {
-			setSettings( data );
-		} ).catch( ( error ) => {
-			setSettings( {} );
-			setError( error.message || 'An error occurred while fetching settings.' );
-			console.error( error );
-		} ).finally( () => {
-			setLoading( false );
-		} );
-
-	}, [ remoteURL ] );
-
-	if ( !remoteURL ) {
-		return null;
-	}
-
-	if ( loading ) {
-		return <Spinner />;
-	}
-
-	if ( error ) {
-		return <Notice status="error">{ error }</Notice>;
-	}
-
-	return (
-		<>
-			{ Object.keys( settings ).map( ( settingKey ) => (
-				<Setting
-					key={ settingKey }
-					settingKey={ settingKey }
-					saved={ saved }
-					setting={ settings[ settingKey ] }
-					{ ...extra }
-				/>
-			) ) }
-		</>
-	);
-}
-
-/**
- * Key value repeater fields.
- */
-const keyValueRepeaterFields = [
-	{
-		id: 'key',
-		label: __( 'Key', 'noptin-addons-pack' ),
-		type: 'text',
-	},
-	{
-		id: 'value',
-		label: __( 'Value', 'noptin-addons-pack' ),
-		type: 'text',
-	},
-];
-
-/**
- * Returns a merge tag's value.
- *
- * @param {Object} smartTag The smart tag.
- * @return {Array}
- */
-function getMergeTagValue( smartTag ) {
-
-	if ( smartTag.example ) {
-		return smartTag.example;
-	}
-
-	if ( !smartTag.default ) {
-		return `${ smartTag.smart_tag }`;
-	}
-
-	return `${ smartTag.smart_tag } default="${ smartTag.default }"`;
-}
-
-interface RepeaterKey {
-	from: string;
-	to: string;
-	newOnly: boolean;
-	maxLength: number;
-	display: string;
-}
-
-/**
- * Displays a repeater setting.
- *
- * @param {Object} props
- * @param {Function} props.attributes The attributes
- * @param {Object} props.setting The setting object.
- * @param {Array} props.availableSmartTags The available smart tags.
- * @return {JSX.Element}
- */
-function RepeaterControl( { availableSmartTags, value, onChange, button, fields, openModal, prepend, disable, disabled, onDisable, cardProps, repeaterKey, id, defaultItem, ...attributes } ) {
-
-	const [ isOpen, setIsOpen ] = useState( false );
-
-	// Ensure the value is an array.
-	const theValue = Array.isArray( value ) ? value : [];
-
-	// The base props.
-	const theId = id || useInstanceId( RepeaterControl, 'noptin-repeater' );
-	const { baseControlProps, controlProps } = useBaseControlProps( { ...attributes, id: theId } );
-
-	// Prepare the default value.
-	const defaultValue = defaultItem || {};
-
-	if ( repeaterKey?.newOnly ) {
-		defaultValue[ 'new' ] = true;
-	}
-
-	if ( !fields ) {
-		console.warn( 'No fields provided to repeater control.' );
-		return null;
-	}
-
-	Object.keys( fields ).forEach( ( fieldKey ) => {
-		if ( undefined !== fields[ fieldKey ].default ) {
-			defaultValue[ fieldKey ] = fields[ fieldKey ].default;
-		}
-	} );
-
-	const showInModal = !!openModal;
-	const keyOrIndex = ( item, index ) => item.key ? item.key : ( repeaterKey?.to && getNestedValue( item, repeaterKey.to ) ? getNestedValue( item, repeaterKey.to ) : index );
-
-	// The actual fields.
-	const el = (
-		<VStack>
-			{ prepend }
-			{ theValue.map( ( item, index ) => (
-				<Card
-					size="small"
-					className="noptin-no-shadow"
-					id={ `${ theId }__item-${ keyOrIndex( item, index ) }` }
-					data-index={ index }
-					borderBottom
-					borderLeft
-					borderRight
-					borderTop
-					{ ...( cardProps || {} ) }
-					key={ keyOrIndex( item, index ) }
-				>
-					<RepeaterItem
-						id={ `${ theId }__item-${ keyOrIndex( item, index ) }` }
-						fields={ fields }
-						value={ item }
-						availableSmartTags={ availableSmartTags }
-						onChange={ ( newValue ) => {
-							let theNewValue = { ...newValue };
-
-							if ( repeaterKey?.to && repeaterKey.from && getNestedValue( theNewValue, repeaterKey.from ) ) {
-								if ( !repeaterKey.newOnly || theNewValue[ 'new' ] ) {
-
-									// Generate a merge tag from the label
-									const mergeTag = getNestedValue( theNewValue, repeaterKey.from ).toString().trim().toLowerCase().replace( /[^a-z0-9]+/g, '_' );
-
-									// Limit to 64 characters.
-									theNewValue = updateNestedValue( theNewValue, repeaterKey.to, mergeTag.substring( 0, repeaterKey.maxLength || 64 ) );
-
-									// Ensure the merge tag is unique.
-									if ( theValue.find( ( value, valueIndex ) => index !== valueIndex && getNestedValue( value, repeaterKey.to ) === getNestedValue( theNewValue, repeaterKey.to ) ) ) {
-										theNewValue = updateNestedValue( theNewValue, repeaterKey.to, `${ getNestedValue( theNewValue, repeaterKey.to ) }_${ index }` );
-									}
-								}
-
-							}
-
-							const newItems = [ ...theValue ];
-							newItems[ index ] = theNewValue;
-							onChange( newItems );
-						} }
-						onDelete={ () => {
-							const newItems = [ ...theValue ];
-							newItems.splice( index, 1 );
-							onChange( newItems );
-						} }
-						onMoveUp={ index > 0 ? () => {
-							const newItems = [ ...theValue ];
-							const item = newItems[ index ];
-							newItems.splice( index, 1 );
-							newItems.splice( index - 1, 0, item );
-							onChange( newItems );
-						} : null }
-						onMoveDown={ index < theValue.length - 1 ? () => {
-							const newItems = [ ...theValue ];
-							const item = newItems[ index ];
-							newItems.splice( index, 1 );
-							newItems.splice( index + 1, 0, item );
-							onChange( newItems );
-						} : null }
-						repeaterKey={ repeaterKey }
-					/>
-				</Card>
-			) ) }
-			<HStack>
-				<Button
-					onClick={ () => {
-						const newValue = [ ...theValue ];
-						const timestamp = Date.now().toString( 36 );
-						const randomStr = Math.random().toString( 36 ).substring( 2, 8 );
-						newValue.push( { key: `${ timestamp }_${ randomStr }`, ...defaultValue } );
-						onChange( newValue );
-					} }
-					variant="primary"
-				>
-					{ button || __( 'Add Item', 'newsletter-optin-box' ) }
-				</Button>
-				{ showInModal && (
-					<Button
-						onClick={ () => setIsOpen( false ) }
-						variant="secondary"
-					>
-						{ __( 'Go Back', 'newsletter-optin-box' ) }
-					</Button>
-				) }
-			</HStack>
-		</VStack>
-	);
-
-	const showSettings = !disable || !disabled;
-
-	// Render the control.
-	return (
-		<BaseControl { ...baseControlProps }>
-			<div { ...controlProps }>
-				{ showInModal && (
-					<VStack>
-						{ disable && (
-							<ToggleControl
-								label={ disable }
-								checked={ disabled }
-								onChange={ ( newValue ) => {
-									if ( onDisable ) {
-										onDisable( newValue );
-									}
-								} }
-								__nextHasNoMarginBottom
-							/>
-						) }
-						{ showSettings && (
-							<>
-								<Button
-									onClick={ () => setIsOpen( true ) }
-									variant="secondary"
-								>
-									{ openModal || __( 'Set Items', 'newsletter-optin-box' ) }
-								</Button>
-								{ isOpen && (
-									<Modal
-										title={ attributes.label || openModal || __( 'Set Items', 'newsletter-optin-box' ) }
-										onRequestClose={ () => setIsOpen( false ) }
-										size="medium"
-									>
-										{ el }
-									</Modal>
-								) }
-							</>
-						) }
-					</VStack>
-				) }
-				{ !showInModal && el }
-			</div>
-		</BaseControl>
-	);
-}
-
-/**
- * Displays a single item in the query repeater.
- *
- * @param {Object} props
- * @param {Function} props.onChange The on change handler
- * @param {Function} props.onDelete The on delete handler
- * @param {String} props.value The current value.
- * @param {Object} props.fields The available fields object.
- * @param {Array} props.availableSmartTags The available smart tags.
- * @param {RepeaterKey} props.repeaterKey The repeater key.
- * @return {JSX.Element}
- */
-function RepeaterItem( { fields, availableSmartTags, value, onChange, repeaterKey, onDelete, onMoveUp, onMoveDown, id } ) {
-	const [ isOpen, setIsOpen ] = useState( !repeaterKey?.from );
-	const toggle = useCallback( () => { setIsOpen( !isOpen ), [ isOpen ] }, [ isOpen ] );
-	const hideBody = !isOpen && repeaterKey?.from;
-	let header: React.ReactNode = null;
-
-	if ( repeaterKey ) {
-		const badge = ( false !== repeaterKey.display && repeaterKey.to && value?.[ repeaterKey.to ] ) ? (
-			<code>
-				{ sprintf( repeaterKey.display || '%s', value?.[ repeaterKey.to ] ) }
-			</code>
-		) : null;
-
-		const style = {
-			paddingLeft: 16,
-			paddingRight: 16,
-			height: 48,
-		}
-
-		const cardLabel = getNestedValue( value, repeaterKey.from ) || getNestedValue( value, repeaterKey.fallback );
-		header = (
-			<CardHeader style={ { padding: 0 } }>
-				<Flex
-					as={ Button }
-					onClick={ toggle }
-					style={ style }
-					aria-controls={ `${ id }__body` }
-					aria-expanded={ !hideBody }
-					type="button"
-				>
-					<HStack as={ FlexBlock }>
-						<Text weight={ 600 }>
-							{ cardLabel || __( '(new)', 'newsletter-optin-box' ) }
-						</Text>
-					</HStack>
-					<FlexItem>
-						<HStack>
-							{ badge }
-							<Icon icon={ isOpen ? 'arrow-up-alt2' : 'arrow-down-alt2' } />
-						</HStack>
-					</FlexItem>
-				</Flex>
-			</CardHeader>
-		);
-	}
-
-	return (
-		<>
-			{ header }
-			{ !hideBody && (
-				<CardBody id={ `${ id }__body` } hidden={ hideBody }>
-					<VStack>
-						{ Object.keys( fields ).map( ( fieldKey ) => (
-							<Setting
-								key={ fieldKey }
-								settingKey={ fieldKey }
-								availableSmartTags={ availableSmartTags }
-								setting={ fields[ fieldKey ] }
-								saved={ value }
-								setAttributes={ ( attributes ) => {
-									onChange( { ...value, ...attributes } );
-								} }
-							/>
-						) ) }
-						<HStack className="noptin-repeater-item__actions" justify="flex-start">
-							{ !value?.predefined && (
-								<Button
-									variant="link"
-									onClick={ onDelete }
-									text={ __( 'Remove Item', 'newsletter-optin-box' ) }
-									isDestructive
-								/>
-							) }
-							{ onMoveUp && (
-								<Button
-									onClick={ onMoveUp }
-									icon="arrow-up-alt"
-									text={ __( 'Move Up', 'newsletter-optin-box' ) }
-									size="small"
-									iconSize={ 16 }
-								/>
-							) }
-							{ onMoveDown && (
-								<Button
-									onClick={ onMoveDown }
-									icon="arrow-down-alt"
-									text={ __( 'Move Down', 'newsletter-optin-box' ) }
-									size="small"
-									iconSize={ 16 }
-								/>
-							) }
-						</HStack>
-					</VStack>
-				</CardBody>
-			) }
-		</>
-	);
-}
-
-/**
- * Displays a key value repeater setting.
- *
- * @param {Object} props
- * @param {Function} props.attributes The attributes
- * @param {Object} props.setting The setting object.
- * @param {Array} props.availableSmartTags The available smart tags.
- * @return {JSX.Element}
- */
-function KeyValueRepeater( { setting, availableSmartTags, value, onChange, ...attributes } ) {
-
-	// The base props.
-	const { baseControlProps, controlProps } = useBaseControlProps( attributes );
-
-	// Ensure the value is an array.
-	if ( !Array.isArray( value ) ) {
-		value = [];
-	}
-
-	// Displays a single Item.
-	const Item = useCallback( ( { item, index } ) => {
-		return (
-			<Flex className="noptin-repeater-item" wrap>
-
-				{ keyValueRepeaterFields.map( ( field, fieldIndex ) => (
-					<KeyValueRepeaterField
-						key={ fieldIndex }
-						availableSmartTags={ availableSmartTags }
-						field={ field }
-						value={ item[ field.id ] === undefined ? '' : item[ field.id ] }
-						onChange={ ( newValue ) => {
-							const newItems = [ ...value ];
-							newItems[ index ][ field.id ] = newValue;
-							onChange( newItems );
-						} }
-					/>
-				) ) }
-
-				<FlexItem>
-					<Button
-						icon="trash"
-						variant="tertiary"
-						className="noptin-component__field"
-						label={ __( 'Delete', 'noptin-addons-pack' ) }
-						showTooltip
-						onClick={ () => {
-							const newValue = [ ...value ];
-							newValue.splice( index, 1 );
-							onChange( newValue );
-						} }
-						isDestructive
-					/>
-				</FlexItem>
-			</Flex>
-		);
-	}, [ value, onChange ] );
-
-	// Render the control.
-	return (
-		<BaseControl { ...baseControlProps }>
-
-			<div { ...controlProps }>
-				{ value.map( ( item, index ) => <Item key={ index } item={ item } index={ index } /> ) }
-				<Button
-					onClick={ () => {
-						const newValue = [ ...value ];
-						newValue.push( {} );
-						onChange( newValue );
-					} }
-					variant="secondary"
-				>
-					{ setting.add_field ? setting.add_field : __( 'Add', 'newsletter-optin-box' ) }
-				</Button>
-			</div>
-
-		</BaseControl>
-	);
-}
-
-/**
- * Displays a key value repeater setting field.
- *
- * @param {Object} props
- * @param {Function} props.onChange The on change handler
- * @param {String} props.value The current value.
- * @param {Object} props.field The field object.
- * @param {Array} props.availableSmartTags The available smart tags.
- * @return {JSX.Element}
- */
-function KeyValueRepeaterField( { field, availableSmartTags, value, onChange } ) {
-
-	// On add merge tag...
-	const onMergeTagClick = useCallback( ( mergeTag ) => {
-
-		// Add the merge tag to the value.
-		if ( onChange ) {
-			onChange( value ? `${ value } ${ mergeTag }`.trim() : mergeTag );
-		}
-	}, [ value, onChange ] );
-
-	// Merge tags.
-	const suffix = useMergeTags( { availableSmartTags, onMergeTagClick } );
-
-	return (
-		<FlexBlock>
-			<InputControl
-				label={ field.label }
-				type={ field.type }
-				value={ value }
-				placeholder={ sprintf( __( 'Enter %s', 'noptin-addons-pack' ), field.label ) }
-				className="noptin-component__field noptin-condition-field"
-				suffix={ suffix }
-				onChange={ onChange }
-				isPressEnterToChange
-				__next40pxDefaultSize
-			/>
-		</FlexBlock>
-	);
-}
 
 export interface Setting {
 	/** The element to render */
@@ -674,6 +141,16 @@ export interface SettingProps {
 }
 
 type defaultAttributesType = {
+	/**
+	 * The label.
+	 */
+	label: string;
+
+	/**
+	 * The help text.
+	 */
+	help?: string;
+
 	/**
 	 * The current value.
 	 */
@@ -993,7 +470,7 @@ export function Setting( { settingKey, setting, availableSmartTags = undefined, 
 			return (
 				<ToggleControl
 					{ ...defaultAttributes }
-					checked={ hasValue ? value : false }
+					checked={ hasValue ? !! value : false }
 					__nextHasNoMarginBottom
 				/>
 			);
@@ -1003,7 +480,7 @@ export function Setting( { settingKey, setting, availableSmartTags = undefined, 
 			return (
 				<CheckboxControl
 					{ ...defaultAttributes }
-					checked={ hasValue ? value : false }
+					checked={ hasValue ? !! value : false }
 					__nextHasNoMarginBottom
 				/>
 			);

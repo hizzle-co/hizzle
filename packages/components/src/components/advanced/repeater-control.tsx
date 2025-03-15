@@ -29,7 +29,7 @@ import { smartTag } from '../hooks';
 import { getNestedValue, updateNestedValue } from '../utils';
 import { RepeaterItem, RepeaterKey } from '.';
 
-interface RepeaterControlProps extends BaseControlProps {
+interface RepeaterControlProps extends Omit<BaseControlProps, 'children'> {
 	/**
 	 * Array of available smart tags that can be used in the repeater fields.
 	 */
@@ -49,12 +49,12 @@ interface RepeaterControlProps extends BaseControlProps {
 	/**
 	 * Text to display on the "Add Item" button.
 	 */
-	button: string;
+	button?: string;
 
 	/**
 	 * Configuration for the fields that appear in each repeater item.
 	 */
-	fields: any[];
+	fields?: any[];
 
 	/**
 	 * Provide a label if you want the user to be able to disable the repeater control.
@@ -94,7 +94,7 @@ interface RepeaterControlProps extends BaseControlProps {
 	/**
 	 * The repeater key.
 	 */
-	repeaterKey: RepeaterKey;
+	repeaterKey?: RepeaterKey;
 
 	/**
 	 * The card props.
@@ -118,7 +118,7 @@ export const RepeaterControl: React.FC<RepeaterControlProps> = ( props ) => {
 		value,
 		onChange,
 		button,
-		fields,
+		fields = [],
 		openModal,
 		prepend,
 		disable,

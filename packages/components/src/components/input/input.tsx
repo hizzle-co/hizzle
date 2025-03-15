@@ -7,7 +7,6 @@ import React, { useCallback } from 'react';
  * Wordpress dependancies.
  */
 import {
-	__experimentalNumberControl as NumberControl,
 	__experimentalInputControl as InputControl,
 	__experimentalInputControlPrefixWrapper as InputControlPrefixWrapper,
 	__experimentalInputControlSuffixWrapper as InputControlSuffixWrapper,
@@ -15,14 +14,25 @@ import {
 	Dropdown,
 	DateTimePicker,
 } from '@wordpress/components';
-import { next, lock, calendar, tip } from '@wordpress/icons';
+import type { InputControlProps } from '@wordpress/components/src/input-control/types';
+import { next, calendar, tip } from '@wordpress/icons';
 import { __, sprintf } from '@wordpress/i18n';
 import { format } from '@wordpress/date';
+
+/**
+ * Local dependencies.
+ */
+import { smartTag } from '../utils';
 
 /**
  * Input types.
  */
 const inputTypes = [ 'number', 'search', 'email', 'password', 'tel', 'url', 'date' ];
+
+interface InputSettingProps extends InputControlProps {
+	setting: Record<string, string>;
+	availableSmartTags?: smartTag[];
+}
 
 /**
  * Displays an input setting
@@ -33,12 +43,7 @@ const inputTypes = [ 'number', 'search', 'email', 'password', 'tel', 'url', 'dat
  * @param {Array} props.availableSmartTags The available smart tags.
  * @return {JSX.Element}
  */
-export const InputSetting = ( { setting, availableSmartTags, isPressEnterToChange, ...attributes } ) => {
-
-	// If press enter to change is undefined, set it to true.
-	if ( isPressEnterToChange === undefined ) {
-		isPressEnterToChange = true;
-	}
+export const InputSetting: React.FC<InputSettingProps> = ( { setting, availableSmartTags, isPressEnterToChange = true, ...attributes } ) => {
 
 	// On add merge tag...
 	const onMergeTagClick = useCallback( ( mergeTag ) => {
