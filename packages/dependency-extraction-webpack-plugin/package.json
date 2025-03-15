@@ -2,6 +2,20 @@
   "name": "@hizzlewp/dependency-extraction-webpack-plugin",
   "version": "1.0.0",
   "description": "Custom Webpack plugin to map @hizzlewp imports to window.hizzlewp",
+  "author": "picocodes",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "wordpress",
+    "hizzle"
+  ],
+  "homepage": "https://github.com/hizzle-co/hizzle/tree/trunk/packages/dependency-extraction-webpack-plugin/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hizzle-co/hizzle.git"
+  },
+  "bugs": {
+    "url": "https://github.com/hizzle-co/hizzle/issues"
+  },
   "main": "src/index.js",
   "files": [
     "src/",
@@ -18,5 +32,8 @@
   },
   "devDependencies": {
     "jest": "^29.7.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
