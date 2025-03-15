@@ -60,6 +60,11 @@ export interface smartTag {
      * Whether this is a premium tag.
      */
     isPremium?: boolean;
+
+    /**
+     * The default value.
+     */
+    default?: string;
 }
 
 /**
