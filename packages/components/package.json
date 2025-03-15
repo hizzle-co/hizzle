@@ -12,7 +12,9 @@
     "lint": "eslint src --ext .ts,.tsx"
   },
   "dependencies": {
-    "@wordpress/components": "^25.0.0"
+    "@wordpress/api-fetch": "^7.20.0",
+    "@wordpress/components": "^25.0.0",
+    "@wordpress/url": "^4.20.0"
   },
   "devDependencies": {
     "jest": "^29.7.0"
