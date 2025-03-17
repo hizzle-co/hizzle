@@ -7,6 +7,7 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces",
+    "build:modules": "webpack --config webpack.config.js",
     "dev": "npm run dev --workspaces",
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
@@ -22,13 +23,16 @@
     "@typescript-eslint/eslint-plugin": "^7.1.0",
     "@typescript-eslint/parser": "^7.1.0",
     "@wordpress/scripts": "^30.13.0",
+    "commander": "^12.0.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.34.0",
-    "prettier": "^3.2.5",
-    "commander": "^12.0.0",
     "execa": "^8.0.1",
+    "prettier": "^3.2.5",
     "semver": "^7.6.0",
-    "simple-git": "^3.22.0"
+    "simple-git": "^3.22.0",
+    "webpack": "^5.90.3",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
   }
 }

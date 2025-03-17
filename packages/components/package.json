@@ -2,8 +2,8 @@
   "name": "@hizzlewp/components",
   "version": "1.0.0",
   "description": "Reusable React UI components for WordPress plugins",
-  "main": "build/index.js",
-  "module": "build/index.mjs",
+  "main": "build-module/index.js",
+  "module": "build-module/index.esm.js",
   "types": "build-types/index.d.ts",
   "scripts": {
     "build": "wp-scripts build",

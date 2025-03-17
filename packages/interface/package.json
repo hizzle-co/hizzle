@@ -2,15 +2,19 @@
   "name": "@hizzlewp/interface",
   "version": "1.0.0",
   "description": "Shared UI Interface for WordPress plugins",
-  "main": "build/index.js",
-  "module": "build/index.mjs",
+  "main": "build-module/index.js",
+  "module": "build-module/index.esm.js",
   "types": "build-types/index.d.ts",
+  "files": [
+    "build",
+    "build-module"
+  ],
   "scripts": {
     "build": "wp-scripts build",
-    "build:module": "wp-scripts build --experimental-modules --output-module",
     "dev": "wp-scripts start",
     "test": "jest",
-    "lint": "eslint src --ext .ts,.tsx"
+    "lint": "eslint src --ext .ts,.tsx",
+    "publish": "npm publish --access public"
   },
   "dependencies": {
     "@wordpress/base-styles": "^5.20.0",

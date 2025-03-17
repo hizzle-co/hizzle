@@ -9,19 +9,14 @@ module.exports = {
         ),
         new DependencyExtractionWebpackPlugin( {
             injectPolyfill: true,
-            combineAssets: true,
-            useDefaults: true,
-            bundledPackages: [] // packages that shouldn't be externalized
         } )
     ],
-   output: {
+    output: {
         ...defaultConfig.output,
-        module: true,
+        libraryTarget: 'commonjs2',
+        clean: true,
     },
-    experiments: {
-        ...defaultConfig.experiments,
-        outputModule: true,
+    optimization: {
+        minimize: false, // Disable minification to keep the file readable
     },
 };
-
-// --config my-own-webpack-config.js

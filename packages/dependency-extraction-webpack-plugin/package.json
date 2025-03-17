@@ -16,7 +16,7 @@
   "bugs": {
     "url": "https://github.com/hizzle-co/hizzle/issues"
   },
-  "main": "src/index.js",
+  "main": "build-module/index.js",
   "files": [
     "src/",
     "assets/"
