@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "es2020",
+        "module": "esnext",
+        "lib": ["dom", "esnext"],
+        "declaration": true,
+        "declarationDir": "build-types",
+        "moduleResolution": "node",
+        "esModuleInterop": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "jsx": "react-jsx",
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        "composite": true,
+        "outDir": "build-module"
+    },
+    "exclude": ["**/node_modules", "**/build-*"]
+}

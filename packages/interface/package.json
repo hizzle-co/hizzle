@@ -2,6 +2,25 @@
   "name": "@hizzlewp/interface",
   "version": "1.0.0",
   "description": "Shared UI Interface for WordPress plugins",
+  "author": "picocodes",
+  "license": "GPL-2.0-or-later",
+  "keywords": [
+    "wordpress",
+    "hizzle"
+  ],
+  "homepage": "https://github.com/hizzle-co/hizzle/tree/trunk/packages/interface/README.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hizzle-co/hizzle.git",
+    "directory": "packages/interface"
+  },
+  "bugs": {
+    "url": "https://github.com/hizzle-co/hizzle/issues"
+  },
+  "engines": {
+    "node": ">=18.12.0",
+    "npm": ">=8.19.2"
+  },
   "main": "build-module/index.js",
   "module": "build-module/index.esm.js",
   "types": "build-types/index.d.ts",
@@ -22,5 +41,8 @@
   },
   "devDependencies": {
     "jest": "^29.7.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

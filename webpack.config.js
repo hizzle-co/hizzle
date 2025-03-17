@@ -8,6 +8,35 @@ const path = require( 'path' );
 const webpack = require( 'webpack' );
 const nodeExternals = require( 'webpack-node-externals' );
 const { sync: glob, globSync } = require( 'fast-glob' );
+const { execSync } = require( 'child_process' );
+
+/**
+ * Generate types for a package
+ * @param {string} packagePath - Path to the package
+ */
+const generateTypes = ( packagePath ) => {
+    const tsConfigPath = path.join( packagePath, 'tsconfig.json' );
+    
+    // Create package-specific tsconfig if it doesn't exist
+    if ( !fs.existsSync( tsConfigPath ) ) {
+        const tsConfig = {
+            extends: '../../tsconfig.json',
+            compilerOptions: {
+                rootDir: 'src',
+                outDir: 'build-module',
+                declarationDir: 'build-types'
+            },
+            include: ['src/**/*']
+        };
+        fs.writeFileSync( tsConfigPath, JSON.stringify( tsConfig, null, 2 ) );
+    }
+
+    // Run tsc to generate types
+    execSync( `tsc --project ${ tsConfigPath } --emitDeclarationOnly`, {
+        stdio: 'inherit',
+        cwd: packagePath
+    } );
+};
 
 /** @type {webpack.Configuration} Base configuration for all packages */
 const baseConfig = {
@@ -56,6 +85,9 @@ const createPackageConfig = ( packageName ) => {
     if ( !index ) {
         throw new Error( `Entry path not found for package ${ packageName }` );
     }
+
+    // Generate types for the package
+    generateTypes( packagePath );
 
     /** @type {webpack.Configuration} CommonJS build */
     const cjsConfig = {

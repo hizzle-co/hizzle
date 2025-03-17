@@ -8,6 +8,8 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "build:modules": "webpack --config webpack.config.js",
+    "build:types": "tsc --build",
+    "clean": "rimraf packages/*/build-* packages/*/tsconfig.tsbuildinfo",
     "dev": "npm run dev --workspaces",
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
@@ -29,8 +31,10 @@
     "eslint-plugin-react": "^7.34.0",
     "execa": "^8.0.1",
     "prettier": "^3.2.5",
+    "rimraf": "^5.0.5",
     "semver": "^7.6.0",
     "simple-git": "^3.22.0",
+    "typescript": "^5.3.3",
     "webpack": "^5.90.3",
     "webpack-cli": "^5.1.4",
     "webpack-node-externals": "^3.0.0"
