@@ -1,0 +1,73 @@
+name: Release Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: 'Comma-separated list of packages to release (leave empty for all)'
+        required: false
+        type: string
+      release_type:
+        description: 'Release type (latest or next)'
+        required: true
+        type: choice
+        options:
+          - latest
+          - next
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get changed packages
+        id: changed
+        run: |
+          if [ -z "${{ github.event.inputs.packages }}" ]; then
+            # Use conventional-commits to determine changed packages
+            npx lerna changed --json | jq -r '.[].name' > changed_packages.txt
+          else
+            echo "${{ github.event.inputs.packages }}" | tr ',' '\n' > changed_packages.txt
+          fi
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Version bump based on conventional commits
+        run: |
+          npx lerna version --conventional-commits --yes --no-private
+
+      - name: Push changes
+        run: |
+          git push
+          git push --tags
+
+      - name: Publish packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          while IFS= read -r package; do
+            if [ "${{ github.event.inputs.release_type }}" = "next" ]; then
+              npm publish "./packages/${package#@*/}" --tag next
+            else
+              npm publish "./packages/${package#@*/}"
+            fi
+          done < changed_packages.txt 

@@ -4,6 +4,15 @@
 
 This repository uses [npm workspaces](https://docs.npmjs.com/cli/v10/using-npm/workspaces) to manage WordPress packages and [lerna](https://lerna.js.org/) to publish them with to [npm](https://www.npmjs.com/).
 
+## Commit Messages
+
+Ensure your commit messages follow the [conventional commits](https://www.conventionalcommits.org/) format:
+
+- feat: New feature (minor version bump)
+- fix: Bug fix (patch version bump)
+- BREAKING CHANGE: Major changes (major version bump)
+- Other types like chore, docs, etc. won't trigger version bumps
+
 ## Creating a New Package
 
 When creating a new package, you need to provide at least the following:-
@@ -265,7 +274,3 @@ If your package includes a few files with side effects, you can list them instea
 ```
 
 Please consult the [side effects documentation](https://github.com/WordPress/gutenberg/blob/HEAD/packages/side-effects.md) for more information on identifying and declaring side effects.
-
-## Publishing to npm
-
-Publishing WordPress packages to npm is automated by synchronizing it with the bi-weekly Gutenberg plugin RC1 release. You can learn more about this process and other ways to publish new versions of npm packages in the [Gutenberg Release Process document](https://github.com/WordPress/gutenberg/blob/HEAD/docs/contributors/code/release.md#packages-releases-to-npm-and-wordpress-core-updates).
