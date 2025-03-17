@@ -17,6 +17,20 @@ import {
 	__experimentalHStack as HStack,
 } from '@wordpress/components';
 
+import type { BaseControlProps } from '@wordpress/components/src/base-control/types';
+
+interface TimeControlProps extends Omit<BaseControlProps, 'children'> {
+	/**
+	 * The value of the time control.
+	 */
+	value: string | undefined;
+
+	/**
+	 * The onChange handler.
+	 */
+	onChange: ( value: string ) => void;
+}
+
 /**
  * Creates an InputControl reducer used to pad an input so that it is always a
  * given width. For example, the hours and minutes inputs are padded to 2 so
@@ -73,7 +87,7 @@ export const TimeZone = () => {
 
 	const timezoneDetail =
 		'UTC' === timezone.string
-			? __( 'Coordinated Universal Time' )
+			? 'Coordinated Universal Time'
 			: `(${ zoneAbbr }) ${ prettyTimezoneString }`;
 
 	// When the prettyTimezoneString is empty, there is no additional timezone
@@ -138,14 +152,13 @@ const TimeWrapper = styled.div`
 	display: flex;
 `;
 
-export const TimeControl = ( { value, onChange, ...attributes } ) => {
+export const TimeControl = ( { value, onChange, ...attributes }: TimeControlProps ) => {
 	// The base props.
 	const { baseControlProps, controlProps } = useBaseControlProps( attributes );
 	const parts = value ? value.split( ':' ) : [ '07', '00' ];
-	const [ hours, setHours ] = useState( parts[ 0 ] );
-	const [ minutes, setMinutes ] = useState( parts[ 1 ] );
-	const pad = ( n: number, fallback = '00' ) => {
-
+	const [ hours, setHours ] = useState<string | undefined>( parts[ 0 ] );
+	const [ minutes, setMinutes ] = useState<string | undefined>( parts[ 1 ] );
+	const pad = ( n: number | string | undefined, fallback = '00' ) => {
 		n = Number( n );
 
 		if ( isNaN( n ) ) {

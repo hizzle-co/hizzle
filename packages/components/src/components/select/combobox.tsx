@@ -40,6 +40,16 @@ export interface SelectOption {
 	 * The raw render HTML for combo box.
 	 */
 	render?: React.ReactNode;
+
+	/**
+	 * The raw render HTML for combo box (used when filtering).
+	 */
+	render_filtered?: string;
+
+	/**
+	 * The search string for the option.
+	 */
+	search?: string;
 }
 
 interface ComboboxSettingProps extends ComboboxControlProps {

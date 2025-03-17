@@ -42,14 +42,19 @@ export interface smartTag {
     example: string;
 
     /**
-     * Whether the smart tag can be used as a conditional logic string.
+     * The data type of the smart tag when used in conditional logic, e.g, number, string, boolean, etc.
      */
-    conditional_logic: boolean;
+    conditional_logic: string;
+
+    /**
+     * @deprecated Use conditional_logic instead.
+     */
+    type: string;
 
     /**
      * The smart tag options.
      */
-    options: any[];
+    options: string[] | Record<string, string>;
 
     /**
      * An optional icon.
@@ -65,6 +70,11 @@ export interface smartTag {
      * The default value.
      */
     default?: string;
+
+    /**
+     * The smart tag deprecated versions.
+     */
+    deprecated?: string[] | string;
 }
 
 /**

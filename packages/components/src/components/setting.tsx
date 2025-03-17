@@ -21,16 +21,13 @@ import {
 	Tooltip,
 	ToggleControl,
 } from '@wordpress/components';
-import { next, lock, calendar, tip } from '@wordpress/icons';
-import { __, sprintf } from '@wordpress/i18n';
+import { tip } from '@wordpress/icons';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Local dependancies.
  */
-import { TimeControl } from './time';
-import ConditionalLogicEditor from './conditional-logic-editor';
-import { compare } from './operators';
-import { condition as settingCondition } from './automation-rules';
+import { compare } from './utils';
 import {
 	smartTag,
 	getNestedValue,
@@ -48,12 +45,28 @@ import {
 	RepeaterControl,
 	KeyValueRepeater,
 	RemoteSettings,
+	TimeControl,
+	ConditionalLogicEditor,
+	useOptions,
 } from '.';
 
-/**
- * Input types.
- */
-const inputTypes = [ 'number', 'search', 'email', 'password', 'tel', 'url', 'date' ];
+export interface SettingCondition {
+
+	/**
+	 * The condition key.
+	 */
+	key: string;
+
+	/**
+	 * The condition value.
+	 */
+	value: string | string[];
+
+	/**
+	 * The condition operator.
+	 */
+	operator?: string;
+}
 
 export interface Setting {
 	/** The element to render */
@@ -87,7 +100,7 @@ export interface Setting {
 	/**
 	 * Conditional logic.
 	 */
-	conditions?: settingCondition[];
+	conditions?: SettingCondition[];
 
 	/**
 	 * Conditional logic callback.
@@ -272,29 +285,7 @@ export function Setting( { settingKey, setting, availableSmartTags = undefined, 
 	const hasValue = value !== undefined && value !== '' && value !== null;
 
 	// If we have options, convert from object to array.
-	let options: SelectOption[] = [] as unknown as SelectOption[];
-	if ( setting.options ) {
-
-		// If options is an array of strings, convert to object with same key/value
-		if ( Array.isArray( setting.options ) && setting.options.length > 0 && typeof setting.options[ 0 ] === 'string' ) {
-			options = setting.options.reduce( ( acc, curr ) => {
-				acc.push( {
-					label: curr,
-					value: curr,
-				} );
-				return acc;
-			}, [] );
-		} else if ( Array.isArray( setting.options ) ) {
-			options = [ ...setting.options ];
-		} else {
-			options = Object.keys( setting.options ).map( ( key ) => {
-				return {
-					label: setting.options?.[ key ],
-					value: key,
-				};
-			} );
-		}
-	}
+	let options: SelectOption[] = useOptions( setting.options || [] );
 
 	// Classname for the field.
 	const className = `noptin-component__field-${ settingKey }`;
@@ -309,7 +300,7 @@ export function Setting( { settingKey, setting, availableSmartTags = undefined, 
 		value: hasValue ? value : '',
 		onChange: updateSetting,
 		className,
-		help: help,
+		help: help as string,
 		...customAttributes,
 	}
 
@@ -395,11 +386,9 @@ export function Setting( { settingKey, setting, availableSmartTags = undefined, 
 		return (
 			<ComboboxSetting
 				{ ...defaultAttributes }
-				placeholder={ setting.placeholder ? setting.placeholder : theAvailableSmartTags.length ? __( 'Select an option or map a dynamic value', 'newsletter-optin-box' ) : __( 'Select an option', 'newsletter-optin-box' ) }
 				options={ stringOptions }
 				allowReset={ setting.canSelectPlaceholder }
 				availableSmartTags={ theAvailableSmartTags }
-				expandOnFocus
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
@@ -470,7 +459,7 @@ export function Setting( { settingKey, setting, availableSmartTags = undefined, 
 			return (
 				<ToggleControl
 					{ ...defaultAttributes }
-					checked={ hasValue ? !! value : false }
+					checked={ hasValue ? !!value : false }
 					__nextHasNoMarginBottom
 				/>
 			);
@@ -480,7 +469,7 @@ export function Setting( { settingKey, setting, availableSmartTags = undefined, 
 			return (
 				<CheckboxControl
 					{ ...defaultAttributes }
-					checked={ hasValue ? !! value : false }
+					checked={ hasValue ? !!value : false }
 					__nextHasNoMarginBottom
 				/>
 			);

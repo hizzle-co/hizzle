@@ -7,6 +7,7 @@ import { useMemo } from 'react';
  * Local dependencies
  */
 import { useMergeTagGroups, smartTag } from '.';
+import { SelectOption } from '../select';
 
 /**
  * Combines options with dynamic value option.
@@ -14,7 +15,7 @@ import { useMergeTagGroups, smartTag } from '.';
  * @param options The options.
  * @param availableSmartTags The available smart tags.
  */
-export const useCombineOptions = ( options: any[], availableSmartTags: smartTag[] | undefined = [] ) => {
+export const useCombineOptions = ( options: SelectOption[], availableSmartTags: smartTag[] | undefined = [] ) => {
     const groups = useMergeTagGroups( availableSmartTags );
 
     return useMemo( () => {
