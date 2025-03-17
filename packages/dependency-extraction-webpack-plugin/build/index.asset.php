@@ -1,1 +1,1 @@
-<?php return array('dependencies' => array('wp-dependency-extraction-webpack-plugin'), 'version' => 'bb63a97319a444212f93');
+<?php return array('dependencies' => array('wp-dependency-extraction-webpack-plugin'), 'version' => '602b6e060606d5d9c59d');

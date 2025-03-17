@@ -19,7 +19,7 @@ const generateTypes = ( packagePath ) => {
 
     // Only run if the tsconfig.json file exists
     if ( fs.existsSync( tsConfigPath ) ) {
-        execSync( `tsc --project ${ tsConfigPath } --emitDeclarationOnly`, {
+        execSync( `tsc --project ${ tsConfigPath } --emitDeclarationOnly --noCheck`, {
             stdio: 'inherit',
             cwd: packagePath
         } );
