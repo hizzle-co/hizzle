@@ -7,7 +7,7 @@ const fs = require( 'fs' );
 const path = require( 'path' );
 const webpack = require( 'webpack' );
 const nodeExternals = require( 'webpack-node-externals' );
-const { sync: glob, globSync } = require( 'fast-glob' );
+const { sync: glob } = require( 'fast-glob' );
 const { execSync } = require( 'child_process' );
 
 /**
@@ -16,26 +16,14 @@ const { execSync } = require( 'child_process' );
  */
 const generateTypes = ( packagePath ) => {
     const tsConfigPath = path.join( packagePath, 'tsconfig.json' );
-    
-    // Create package-specific tsconfig if it doesn't exist
-    if ( !fs.existsSync( tsConfigPath ) ) {
-        const tsConfig = {
-            extends: '../../tsconfig.json',
-            compilerOptions: {
-                rootDir: 'src',
-                outDir: 'build-module',
-                declarationDir: 'build-types'
-            },
-            include: ['src/**/*']
-        };
-        fs.writeFileSync( tsConfigPath, JSON.stringify( tsConfig, null, 2 ) );
-    }
 
-    // Run tsc to generate types
-    execSync( `tsc --project ${ tsConfigPath } --emitDeclarationOnly`, {
-        stdio: 'inherit',
-        cwd: packagePath
-    } );
+    // Only run if the tsconfig.json file exists
+    if ( fs.existsSync( tsConfigPath ) ) {
+        execSync( `tsc --project ${ tsConfigPath } --emitDeclarationOnly`, {
+            stdio: 'inherit',
+            cwd: packagePath
+        } );
+    }
 };
 
 /** @type {webpack.Configuration} Base configuration for all packages */

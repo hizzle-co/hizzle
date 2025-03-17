@@ -5490,7 +5490,7 @@ const RepeaterItem = props => {
     availableSmartTags,
     value,
     onChange,
-    repeaterKey,
+    repeaterKey = undefined,
     onDelete,
     onMoveUp,
     onMoveDown,
@@ -6623,6 +6623,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
 /* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_3__);
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! . */ "./src/components/hooks/use-merge-tag-groups.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils */ "./src/components/utils/get-merge-tag-value.ts");
 /* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "../../node_modules/react/jsx-runtime.js");
 /**
  * External dependencies
@@ -6639,6 +6640,7 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Local dependencies
  */
+
 
 
 /**
@@ -6703,7 +6705,7 @@ const useMergeTags = ({
                 disabled: isPremium,
                 onClick: () => {
                   if (isPremium) return;
-                  const tagValue = getMergeTagValue(item);
+                  const tagValue = (0,_utils__WEBPACK_IMPORTED_MODULE_8__.getMergeTagValue)(item);
                   const value = raw ? item.smart_tag : `[[${tagValue}]]`;
                   onMergeTagClick?.(value, `[[${tagValue}]]`);
                   onClose();
@@ -7072,7 +7074,9 @@ const InputSetting = ({
             if (newDate) {
               newDate = (0,_wordpress_date__WEBPACK_IMPORTED_MODULE_2__.format)('c', newDate);
             }
-            attributes.onChange(newDate || '');
+            if (attributes.onChange) {
+              attributes.onChange(newDate || '');
+            }
           }
         })
       })

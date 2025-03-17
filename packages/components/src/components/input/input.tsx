@@ -29,9 +29,23 @@ import { smartTag } from '../utils';
  */
 const inputTypes = [ 'number', 'search', 'email', 'password', 'tel', 'url', 'date' ];
 
-interface InputSettingProps extends InputControlProps {
+interface InputSettingProps extends Omit<InputControlProps, 'onChange'> {
+	/**
+	 * The setting configuration object.
+	 */
 	setting: Record<string, string>;
+
+	/**
+	 * Array of available smart tags that can be inserted into the input.
+	 */
 	availableSmartTags?: smartTag[];
+
+	/**
+	 * Callback function triggered when the input value changes.
+	 * 
+	 * @param {string} value The new input value.
+	 */
+	onChange?: ( value: string ) => void;
 }
 
 /**
@@ -83,7 +97,9 @@ export const InputSetting: React.FC<InputSettingProps> = ( { setting, availableS
 								if ( newDate ) {
 									newDate = format( 'c', newDate );
 								}
-								attributes.onChange( newDate || '' );
+								if ( attributes.onChange ) {
+									attributes.onChange( newDate || '' );
+								}
 							} }
 						/>
 					) }

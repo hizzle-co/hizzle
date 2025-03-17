@@ -86,7 +86,7 @@ interface RepeaterItemProps {
 	/**
 	 * The repeater key.
 	 */
-	repeaterKey: RepeaterKey;
+	repeaterKey?: RepeaterKey;
 
 	/**
 	 * The on change handler.
@@ -131,7 +131,7 @@ interface RepeaterItemProps {
  */
 export const RepeaterItem: React.FC<RepeaterItemProps> = ( props ) => {
 	// Destructure props to get necessary values
-	const { fields, availableSmartTags, value, onChange, repeaterKey, onDelete, onMoveUp, onMoveDown, id } = props;
+	const { fields, availableSmartTags, value, onChange, repeaterKey = undefined, onDelete, onMoveUp, onMoveDown, id } = props;
 
 	// State to track if the repeater item is expanded or collapsed
 	// Default to open if there's no label to display in the header.

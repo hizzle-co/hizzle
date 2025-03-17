@@ -23,8 +23,9 @@ import type { DropdownMenuProps } from '@wordpress/components/src/dropdown-menu/
  * Local dependencies
  */
 import { useMergeTagGroups, smartTag } from '.';
+import { getMergeTagValue } from '../utils';
 
-interface UseMergeTagsProps extends DropdownMenuProps {
+interface UseMergeTagsProps extends Omit<DropdownMenuProps, 'label' > {
 	/**
 	 * The available smart tags.
 	 */
