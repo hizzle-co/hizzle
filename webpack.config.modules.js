@@ -9,23 +9,6 @@ const webpack = require( 'webpack' );
 const nodeExternals = require( 'webpack-node-externals' );
 const { sync: glob } = require( 'fast-glob' );
 const { execSync } = require( 'child_process' );
-const DependencyExtractionWebpackPlugin = require( '@hizzlewp/dependency-extraction-webpack-plugin' );
-
-const NODE_ONLY_PACKAGES = [ 'dependency-extraction-webpack-plugin' ];
-
-/**
- * Given a string, returns a new string with dash separators converted to
- * camelCase equivalent. This is not as aggressive as `_.camelCase` in
- * converting to uppercase, where Lodash will also capitalize letters
- * following numbers.
- *
- * @param {string} string Input dash-delimited string.
- *
- * @return {string} Camel-cased string.
- */
-function camelCaseDash( string ) {
-    return string.replace( /-([a-z])/g, ( _, letter ) => letter.toUpperCase() );
-}
 
 /**
  * Generate types for a package
@@ -51,7 +34,7 @@ const generateTypes = ( packagePath ) => {
 const baseConfig = {
     ...defaultConfig,
     mode: 'production',
-    devtool: false,
+    devtool: 'source-map',
     plugins: [
         ...defaultConfig.plugins.filter(
             ( plugin ) => plugin.constructor.name !== 'DependencyExtractionWebpackPlugin'
@@ -61,22 +44,6 @@ const baseConfig = {
     optimization: {
         minimize: false,
     },
-};
-
-/** @type {webpack.Configuration} Base configuration for browser packages */
-const BROWSER_EXCLUDE_PLUGINS = [ 'DependencyExtractionWebpackPlugin' ];
-const baseBrowserConfig = {
-    ...defaultConfig,
-    mode: 'production',
-    devtool: 'source-map',
-    plugins: [
-        ...defaultConfig.plugins.filter(
-            ( plugin ) => !BROWSER_EXCLUDE_PLUGINS.includes( plugin.constructor.name )
-        ),
-        new DependencyExtractionWebpackPlugin( {
-            injectPolyfill: false,
-        } )
-    ],
 };
 
 /**
@@ -147,26 +114,7 @@ const createPackageConfig = ( packageName ) => {
         },
     };
 
-    if ( NODE_ONLY_PACKAGES.includes( packageName ) ) {
-        return [ cjsConfig, esmConfig ];
-    }
-
-    /** @type {webpack.Configuration} Browser build */
-    const browserConfig = {
-        ...baseBrowserConfig,
-        entry: { index },
-        output: {
-            ...output,
-            path: path.resolve( __dirname, 'src', 'build', packageName ),
-            filename: '[name].js',
-            library: {
-                name: [ 'hizzlewp', camelCaseDash( packageName ) ],
-                type: 'window'
-            }
-        },
-    };
-
-    return [ cjsConfig, esmConfig, browserConfig ];
+    return [ cjsConfig, esmConfig ];
 };
 
 function getFolderNames( directoryPath ) {

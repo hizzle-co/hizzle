@@ -25,7 +25,7 @@ const hizzleRequestToExternal = ( request, excludedExternals ) => {
             return;
         }
 
-        return [ 'hizzle', camelCaseDash( handle ) ];
+        return [ 'hizzlewp', camelCaseDash( handle ) ];
     }
 };
 
@@ -33,7 +33,7 @@ const hizzleRequestToHandle = ( request ) => {
     if ( packages.includes( request ) ) {
         const handle = request.substring( HIZZLE_NAMESPACE.length );
 
-        return 'hizzle-' + handle;
+        return 'hizzlewp-' + handle;
     }
 };
 
