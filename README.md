@@ -4,16 +4,14 @@ A monorepo containing shared packages for WordPress plugin development.
 
 ## Packages
 
-- `@hizzlewp/components`: Reusable React UI components extending @wordpress/components
-- `@hizzlewp/interface`: Shared UI Interface extending @wordpress/interface
-- `@hizzlewp/dependency-extraction-webpack-plugin`: Custom Webpack plugin for dependency extraction
+Check out the [packages the directory](https://github.com/hizzle-co/hizzle/tree/main/packages) for information on each package and how to create/use them.
 
-## Setup
+## Development Setup
 
 1. Clone the repository:
 ```bash
-git clone [repository-url]
-cd hizzlewp-monorepo
+git clone https://github.com/hizzle-co/hizzle.git
+cd hizzle
 ```
 
 2. Install dependencies:
@@ -26,31 +24,20 @@ npm install
 npm run build
 ```
 
-## Development
-
-- `npm run build`: Build all packages
-- `npm run test`: Run tests across all packages
-- `npm run lint`: Run ESLint across all packages
-- `npm run format`: Format code using Prettier
-
-## Adding a new package
-
-1. Add the package to the `packages` directory.
-2. Add the package to the `dependency-extraction-webpack-plugin/assets/packages.js` file.
-3. Install npm packages:
-```bash
-npm install react --workspace=@hizzlewp/your-package
-```
-
-
 ## Usage in WordPress Plugins
 
-1. Install the required packages:
+1. Install the HizzleWP package:
 ```bash
-npm install @hizzlewp/components @hizzlewp/interface
+composer require hizzle/wp
 ```
 
-2. Configure your webpack build to use the dependency extraction plugin:
+2. Install the required npm packages:
+```bash
+npm install @hizzlewp/components
+npm install --save-dev @hizzlewp/dependency-extraction-webpack-plugin
+```
+
+3. Configure your webpack build to use the dependency extraction plugin:
 ```js
 const HizzleWPDependencyExtractionPlugin = require('@hizzlewp/dependency-extraction-webpack-plugin');
 
@@ -62,7 +49,7 @@ module.exports = {
 };
 ```
 
-3. Import components in your code:
+4. Import components in your code:
 ```tsx
 import { Button } from '@hizzlewp/components';
 ```
@@ -71,4 +58,4 @@ The imports will be automatically transformed to use the global `window.hizzlewp
 
 ## License
 
-MIT 
+GPL-2.0-or-later

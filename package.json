@@ -6,9 +6,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces",
-    "build:modules": "webpack --config webpack.config.js",
-    "build:types": "tsc --build",
+    "build": "webpack --config webpack.config.js",
     "clean": "rimraf packages/*/build-* packages/*/tsconfig.tsbuildinfo",
     "dev": "npm run dev --workspaces",
     "test": "npm run test --workspaces",

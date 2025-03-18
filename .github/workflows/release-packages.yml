@@ -44,7 +44,7 @@ jobs:
           fi
 
       - name: Build packages
-        run: npm run build:modules
+        run: npm run build
 
       - name: Configure Git
         run: |
@@ -52,22 +52,17 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
       - name: Version bump based on conventional commits
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx lerna version --conventional-commits --yes --no-private
+          npx lerna version --no-git-tag-version --conventional-commits --yes --no-private --create-release github
 
       - name: Push changes
         run: |
           git push
-          git push --tags
 
       - name: Publish packages
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          while IFS= read -r package; do
-            if [ "${{ github.event.inputs.release_type }}" = "next" ]; then
-              npm publish "./packages/${package#@*/}" --tag next
-            else
-              npm publish "./packages/${package#@*/}"
-            fi
-          done < changed_packages.txt 
+          lerna publish from-package --no-private --yes
