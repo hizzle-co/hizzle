@@ -1,0 +1,3 @@
+@hizzlewp/components
+@hizzlewp/dependency-extraction-webpack-plugin
+@hizzlewp/interface
