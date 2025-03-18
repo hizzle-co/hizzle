@@ -195,6 +195,8 @@ Ensure that the `build-types` directory will be included in the published packag
 
 In order for bundlers to tree-shake packages effectively, they often need to know whether a package includes side effects in its code. This is done through the `sideEffects` field in the package's `package.json`.
 
+IMPORTANT: CSS files won't be extracted if the `sideEffects` field is set to `false`.
+
 If your package has no side effects, simply set the field to `false`:
 
 ```json

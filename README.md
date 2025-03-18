@@ -19,7 +19,12 @@ cd hizzle
 npm install
 ```
 
-3. Build all packages:
+3. Start development watcher:
+```bash
+npm run dev
+```
+
+4. Build all packages:
 ```bash
 npm run build
 ```
@@ -51,7 +56,7 @@ module.exports = {
 
 4. Import components in your code:
 ```tsx
-import { Button } from '@hizzlewp/components';
+import { Setting } from '@hizzlewp/components';
 ```
 
 The imports will be automatically transformed to use the global `window.hizzlewp` object at runtime.
