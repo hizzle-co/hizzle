@@ -26,8 +26,8 @@
   "module": "build-module/index.esm.js",
   "types": "build-types/index.d.ts",
   "files": [
-    "build",
-    "build-module"
+    "build-module/",
+    "build-types/"
   ],
   "scripts": {
     "build": "wp-scripts build",

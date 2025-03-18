@@ -19,10 +19,14 @@ const generateTypes = ( packagePath ) => {
 
     // Only run if the tsconfig.json file exists
     if ( fs.existsSync( tsConfigPath ) ) {
-        execSync( `tsc --project ${ tsConfigPath } --emitDeclarationOnly --noCheck`, {
-            stdio: 'inherit',
-            cwd: packagePath
-        } );
+        try {
+            execSync( `tsc --project ${ tsConfigPath } --emitDeclarationOnly --noCheck`, {
+                stdio: 'inherit',
+                cwd: packagePath
+            } );
+        } catch ( error ) {
+            console.error( `Error generating types for package ${ packagePath }: ${ error.message || 'Unknown error' }` );
+        }
     }
 };
 

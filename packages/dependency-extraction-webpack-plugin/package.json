@@ -24,8 +24,8 @@
   "sideEffects": false,
   "main": "build-module/index.js",
   "files": [
-    "src/",
-    "assets/"
+    "build-module/",
+    "assets"
   ],
   "scripts": {
     "build": "wp-scripts build",

@@ -25,6 +25,10 @@
   "main": "build-module/index.js",
   "module": "build-module/index.esm.js",
   "types": "build-types/index.d.ts",
+  "files": [
+    "build-module/",
+    "build-types/"
+  ],
   "scripts": {
     "build": "wp-scripts build",
     "dev": "wp-scripts start",
