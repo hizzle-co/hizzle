@@ -9,7 +9,7 @@ const webpack = require( 'webpack' );
 const nodeExternals = require( 'webpack-node-externals' );
 const { sync: glob } = require( 'fast-glob' );
 const { execSync } = require( 'child_process' );
-const DependencyExtractionWebpackPlugin = require( '@hizzlewp/dependency-extraction-webpack-plugin' );
+const DependencyExtractionWebpackPlugin = require( './packages/dependency-extraction-webpack-plugin/src/index.js' );
 
 const NODE_ONLY_PACKAGES = [ 'dependency-extraction-webpack-plugin' ];
 
