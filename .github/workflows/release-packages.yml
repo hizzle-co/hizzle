@@ -68,4 +68,11 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          lerna publish from-package --no-private --yes
+          cat changed_packages.txt | while read pkg; do
+            if [ -n "$pkg" ]; then
+              echo "Publishing package: $pkg"
+              cd "$(npx lerna ls --json | jq -r ".[] | select(.name==\"$pkg\") | .location")" || continue
+              npm publish --access public
+              cd - || true
+            fi
+          done
