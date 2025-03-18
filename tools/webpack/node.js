@@ -26,12 +26,7 @@ const createPackageConfigs = ( packages, cwd ) => {
         generateTypes( path.resolve( cwd, 'packages', packageName ) );
 
         /** @type {webpack.EntryDescription} */
-        acc[ packageName ] = {
-            import: indexFile,
-            library: {
-                type: 'commonjs2',
-            },
-        };
+        acc[ packageName ] = indexFile;
         return acc;
     }, {} );
 
@@ -60,7 +55,22 @@ const createPackageConfigs = ( packages, cwd ) => {
         },
     };
 
-    return cjsConfig;
+    const esmConfig = {
+        ...cjsConfig,
+        output: {
+            ...cjsConfig.output,
+            filename: '[name]/build-module/index.esm.js',
+            chunkFilename: '[name]/build-module/index.esm.js?ver=[chunkhash]',
+            library: {
+                type: 'module',
+            },
+        },
+        experiments: {
+            outputModule: true,
+        },
+    };
+
+    return [ cjsConfig, esmConfig ];
 };
 
 module.exports = {
