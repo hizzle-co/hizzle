@@ -1,49 +1,49 @@
 {
-  "name": "@hizzlewp/components",
-  "version": "1.0.0",
-  "description": "Reusable React UI components for WordPress plugins",
-  "author": "picocodes",
-  "license": "GPL-2.0-or-later",
-  "keywords": [
-    "wordpress",
-    "hizzle"
-  ],
-  "homepage": "https://github.com/hizzle-co/hizzle/tree/trunk/packages/components/README.md",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/hizzle-co/hizzle.git",
-    "directory": "packages/components"
-  },
-  "bugs": {
-    "url": "https://github.com/hizzle-co/hizzle/issues"
-  },
-  "engines": {
-    "node": ">=18.12.0",
-    "npm": ">=8.19.2"
-  },
-  "sideEffects": false,
-  "main": "build-module/index.js",
-  "module": "build-module/index.esm.js",
-  "types": "build-types/index.d.ts",
-  "files": [
-    "build-module/",
-    "build-types/"
-  ],
-  "scripts": {
-    "build": "wp-scripts build",
-    "dev": "wp-scripts start",
-    "test": "jest",
-    "lint": "eslint src --ext .ts,.tsx"
-  },
-  "dependencies": {
-    "@wordpress/api-fetch": "^7.20.0",
-    "@wordpress/components": "^25.0.0",
-    "@wordpress/url": "^4.20.0"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0"
-  },
-  "publishConfig": {
-    "access": "public"
-  }
+	"name": "@hizzlewp/components",
+	"version": "1.0.1",
+	"description": "Reusable React UI components for WordPress plugins",
+	"author": "picocodes",
+	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"wordpress",
+		"hizzle"
+	],
+	"homepage": "https://github.com/hizzle-co/hizzle/tree/trunk/packages/components/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/hizzle-co/hizzle.git",
+		"directory": "packages/components"
+	},
+	"bugs": {
+		"url": "https://github.com/hizzle-co/hizzle/issues"
+	},
+	"engines": {
+		"node": ">=18.12.0",
+		"npm": ">=8.19.2"
+	},
+	"sideEffects": false,
+	"main": "build-module/index.js",
+	"module": "build-module/index.esm.js",
+	"types": "build-types/index.d.ts",
+	"files": [
+		"build-module/",
+		"build-types/"
+	],
+	"scripts": {
+		"build": "wp-scripts build",
+		"dev": "wp-scripts start",
+		"test": "jest",
+		"lint": "eslint src --ext .ts,.tsx"
+	},
+	"dependencies": {
+		"@wordpress/api-fetch": "^7.20.0",
+		"@wordpress/components": "^25.0.0",
+		"@wordpress/url": "^4.20.0"
+	},
+	"devDependencies": {
+		"jest": "^29.7.0"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
 }
