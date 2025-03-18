@@ -6,9 +6,11 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "webpack --config webpack.config.js",
+    "build:node": "webpack --env target=node",
+    "build:browser": "webpack --env target=browser",
+    "build": "npm run build:node && npm run build:browser",
     "clean": "rimraf packages/*/build-* packages/*/tsconfig.tsbuildinfo",
-    "dev": "npm run dev --workspaces",
+    "dev": "webpack --watch",
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
