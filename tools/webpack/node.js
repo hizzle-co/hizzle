@@ -5,7 +5,7 @@ const path = require( 'path' );
 const webpack = require( 'webpack' );
 const nodeExternals = require( 'webpack-node-externals' );
 const { generateTypes, generateConfigs } = require( './utils.js' );
-const { baseConfig, output } = require( './base.js' );
+const { baseConfig } = require( './base.js' );
 
 /**
  * Function to create package-specific config.
@@ -45,11 +45,15 @@ const createPackageConfigs = ( packages, cwd ) => {
         optimization: {
             minimize: false,
         },
+        plugins: baseConfig.plugins.filter(
+            ( plugin ) => plugin.constructor.name !== 'CleanWebpackPlugin'
+        ),
         entry,
         output: {
-            ...output,
             path: path.resolve( cwd, 'packages' ),
             filename: '[name]/build-module/index.js',
+            chunkFilename: '[name]/build-module/index.js?ver=[chunkhash]',
+            clean: false,
             library: {
                 type: 'commonjs2',
             },
