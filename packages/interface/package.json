@@ -11,7 +11,7 @@
 	"homepage": "https://github.com/hizzle-co/hizzle/tree/trunk/packages/interface/README.md",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/hizzle-co/hizzle.git",
+		"url": "git+https://github.com/hizzle-co/hizzle.git",
 		"directory": "packages/interface"
 	},
 	"bugs": {
