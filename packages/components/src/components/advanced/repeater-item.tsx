@@ -67,7 +67,6 @@ export interface RepeaterKey {
 }
 
 interface RepeaterItemProps {
-
 	/**
 	 * A unique id.
 	 */
@@ -91,7 +90,7 @@ interface RepeaterItemProps {
 	/**
 	 * The on change handler.
 	 */
-	onChange: ( value: any ) => void;
+	onChange: (value: any) => void;
 
 	/**
 	 * The on delete handler.
@@ -122,23 +121,35 @@ interface RepeaterItemProps {
 		/**
 		 * The item data.
 		 */
-		[ key: string ]: unknown;
+		[key: string]: unknown;
 	};
 }
 
 /**
  * Displays a single item in a repeater field.
  */
-export const RepeaterItem: React.FC<RepeaterItemProps> = ( props ) => {
+export const RepeaterItem: React.FC<RepeaterItemProps> = (props) => {
 	// Destructure props to get necessary values
-	const { fields, availableSmartTags, value, onChange, repeaterKey = undefined, onDelete, onMoveUp, onMoveDown, id } = props;
+	const {
+		fields,
+		availableSmartTags,
+		value,
+		onChange,
+		repeaterKey = undefined,
+		onDelete,
+		onMoveUp,
+		onMoveDown,
+		id,
+	} = props;
 
 	// State to track if the repeater item is expanded or collapsed
 	// Default to open if there's no label to display in the header.
-	const [ isOpen, setIsOpen ] = useState( !repeaterKey?.from );
+	const [isOpen, setIsOpen] = useState(!repeaterKey?.from);
 
 	// Toggle function to expand/collapse the repeater item
-	const toggle = useCallback( () => { setIsOpen( !isOpen ), [ isOpen ] }, [ isOpen ] );
+	const toggle = useCallback(() => {
+		setIsOpen(!isOpen), [isOpen];
+	}, [isOpen]);
 
 	// Hide the body if the item is closed and we have a label to display in the header.
 	const hideBody = !isOpen && repeaterKey?.from;
@@ -146,45 +157,58 @@ export const RepeaterItem: React.FC<RepeaterItemProps> = ( props ) => {
 	// Initialize header as null, will be populated if repeaterKey exists
 	let header: React.ReactNode = null;
 
-	if ( repeaterKey ) {
+	if (repeaterKey) {
 		// Create a badge element if we have display text and a value at the 'to' path
-		const badge = ( false !== repeaterKey.display && repeaterKey.to && value?.[ repeaterKey.to ] ) ? (
-			<code>
-				{ sprintf( repeaterKey.display || '%s', value?.[ repeaterKey.to ] ) }
-			</code>
-		) : null;
+		const badge =
+			false !== repeaterKey.display &&
+			repeaterKey.to &&
+			value?.[repeaterKey.to] ? (
+				<code>
+					{sprintf(
+						repeaterKey.display || '%s',
+						value?.[repeaterKey.to]
+					)}
+				</code>
+			) : null;
 
 		// Style for the header button
 		const style = {
 			paddingLeft: 16,
 			paddingRight: 16,
 			height: 48,
-		}
+		};
 
 		// Get the label for the card from the specified path, or fallback if provided
-		const cardLabel = getNestedValue( value, repeaterKey.from ) || getNestedValue( value, repeaterKey.fallback );
+		const cardLabel =
+			getNestedValue(value, repeaterKey.from) ||
+			getNestedValue(value, repeaterKey.fallback);
 
 		// Build the header component with toggle functionality
 		header = (
-			<CardHeader style={ { padding: 0 } }>
+			<CardHeader style={{ padding: 0 }}>
 				<Flex
-					as={ Button }
-					onClick={ toggle }
-					style={ style }
-					aria-controls={ `${ id }__body` }
-					aria-expanded={ !hideBody }
+					as={Button}
+					onClick={toggle}
+					style={style}
+					aria-controls={`${id}__body`}
+					aria-expanded={!hideBody}
 					type="button"
 				>
-					<HStack as={ FlexBlock }>
-						<Text weight={ 600 }>
-							{ cardLabel as string || __( '(new)', 'newsletter-optin-box' ) }
+					<HStack as={FlexBlock}>
+						<Text weight={600}>
+							{(cardLabel as string) ||
+								__('(new)', 'newsletter-optin-box')}
 						</Text>
 					</HStack>
 					<FlexItem>
 						<HStack>
-							{ badge }
-							{/* Show different arrow icon based on open/closed state */ }
-							<Icon icon={ isOpen ? 'arrow-up-alt2' : 'arrow-down-alt2' } />
+							{badge}
+							{/* Show different arrow icon based on open/closed state */}
+							<Icon
+								icon={
+									isOpen ? 'arrow-up-alt2' : 'arrow-down-alt2'
+								}
+							/>
 						</HStack>
 					</FlexItem>
 				</Flex>
@@ -194,53 +218,62 @@ export const RepeaterItem: React.FC<RepeaterItemProps> = ( props ) => {
 
 	return (
 		<>
-			{ header }
-			{ !hideBody && (
-				<CardBody id={ `${ id }__body` }>
+			{header}
+			{!hideBody && (
+				<CardBody id={`${id}__body`}>
 					<VStack>
-						{ Object.keys( fields ).map( ( fieldKey ) => (
+						{Object.keys(fields).map((fieldKey) => (
 							<Setting
-								key={ fieldKey }
-								settingKey={ fieldKey }
-								availableSmartTags={ availableSmartTags }
-								setting={ fields[ fieldKey ] }
-								saved={ value as Record<string, unknown> }
-								setAttributes={ ( attributes ) => {
-									onChange( { ...value, ...attributes } );
-								} }
+								key={fieldKey}
+								settingKey={fieldKey}
+								availableSmartTags={availableSmartTags}
+								setting={fields[fieldKey]}
+								saved={value as Record<string, unknown>}
+								setAttributes={(attributes) => {
+									onChange({ ...value, ...attributes });
+								}}
 							/>
-						) ) }
-						<HStack className="noptin-repeater-item__actions" justify="flex-start">
-							{ ( onDelete && !value?.predefined ) && (
+						))}
+						<HStack
+							className="noptin-repeater-item__actions"
+							justify="flex-start"
+						>
+							{onDelete && !value?.predefined && (
 								<Button
 									variant="link"
-									onClick={ onDelete }
-									text={ __( 'Remove Item', 'newsletter-optin-box' ) }
+									onClick={onDelete}
+									text={__(
+										'Remove Item',
+										'newsletter-optin-box'
+									)}
 									isDestructive
 								/>
-							) }
-							{ onMoveUp && (
+							)}
+							{onMoveUp && (
 								<Button
-									onClick={ onMoveUp }
+									onClick={onMoveUp}
 									icon="arrow-up-alt"
-									text={ __( 'Move Up', 'newsletter-optin-box' ) }
+									text={__('Move Up', 'newsletter-optin-box')}
 									size="small"
-									iconSize={ 16 }
+									iconSize={16}
 								/>
-							) }
-							{ onMoveDown && (
+							)}
+							{onMoveDown && (
 								<Button
-									onClick={ onMoveDown }
+									onClick={onMoveDown}
 									icon="arrow-down-alt"
-									text={ __( 'Move Down', 'newsletter-optin-box' ) }
+									text={__(
+										'Move Down',
+										'newsletter-optin-box'
+									)}
 									size="small"
-									iconSize={ 16 }
+									iconSize={16}
 								/>
-							) }
+							)}
 						</HStack>
 					</VStack>
 				</CardBody>
-			) }
+			)}
 		</>
 	);
-}
+};

@@ -1,0 +1,6 @@
+.cache
+src/build
+packages/*/build-module
+packages/*/build-types
+vendor
+node_modules

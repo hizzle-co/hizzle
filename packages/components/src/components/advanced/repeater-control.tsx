@@ -21,7 +21,6 @@ import type { Props as CardProps } from '@wordpress/components/src/card/types';
 import { __ } from '@wordpress/i18n';
 import { useInstanceId } from '@wordpress/compose';
 
-
 /**
  * Local dependancies.
  */
@@ -44,7 +43,7 @@ interface RepeaterControlProps extends Omit<BaseControlProps, 'children'> {
 	 * Callback function triggered when the repeater value changes.
 	 * @param value - The updated array of repeater items
 	 */
-	onChange: ( value: Record<string, unknown>[] ) => void;
+	onChange: (value: Record<string, unknown>[]) => void;
 
 	/**
 	 * Text to display on the "Add Item" button.
@@ -73,7 +72,7 @@ interface RepeaterControlProps extends Omit<BaseControlProps, 'children'> {
 	/**
 	 * Callback function triggered when the disable state changes.
 	 */
-	onDisable?: ( value: boolean ) => void;
+	onDisable?: (value: boolean) => void;
 
 	/**
 	 * The string to display on the "Open Modal" button.
@@ -111,8 +110,7 @@ interface RepeaterControlProps extends Omit<BaseControlProps, 'children'> {
  * Displays a repeater setting.
  *
  */
-export const RepeaterControl: React.FC<RepeaterControlProps> = ( props ) => {
-
+export const RepeaterControl: React.FC<RepeaterControlProps> = (props) => {
 	const {
 		availableSmartTags,
 		value,
@@ -130,206 +128,263 @@ export const RepeaterControl: React.FC<RepeaterControlProps> = ( props ) => {
 		defaultItem,
 		...attributes
 	} = props;
-	const [ isOpen, setIsOpen ] = useState( false );
+	const [isOpen, setIsOpen] = useState(false);
 
 	// Ensure the value is an array.
-	const theValue = Array.isArray( value ) ? value : [];
+	const theValue = Array.isArray(value) ? value : [];
 
 	// The base props.
-	const theId = id || useInstanceId( RepeaterControl, 'noptin-repeater' );
-	const { baseControlProps, controlProps } = useBaseControlProps( { ...attributes, id: theId } );
+	const theId = id || useInstanceId(RepeaterControl, 'noptin-repeater');
+	const { baseControlProps, controlProps } = useBaseControlProps({
+		...attributes,
+		id: theId,
+	});
 
 	// Prepare the default value.
 	const defaultValue = defaultItem || {};
 
-	if ( repeaterKey?.newOnly ) {
-		defaultValue[ 'new' ] = true;
+	if (repeaterKey?.newOnly) {
+		defaultValue['new'] = true;
 	}
 
-	if ( !fields ) {
-		console.warn( 'No fields provided to repeater control.' );
+	if (!fields) {
+		console.warn('No fields provided to repeater control.');
 		return null;
 	}
 
-	Object.keys( fields ).forEach( ( fieldKey ) => {
-		if ( undefined !== fields[ fieldKey ].default ) {
-			defaultValue[ fieldKey ] = fields[ fieldKey ].default;
+	Object.keys(fields).forEach((fieldKey) => {
+		if (undefined !== fields[fieldKey].default) {
+			defaultValue[fieldKey] = fields[fieldKey].default;
 		}
-	} );
+	});
 
 	const showInModal = !!openModal;
-	const keyOrIndex = ( item, index ) => item.key ? item.key : ( repeaterKey?.to && getNestedValue( item, repeaterKey.to ) ? getNestedValue( item, repeaterKey.to ) : index );
+	const keyOrIndex = (item, index) =>
+		item.key
+			? item.key
+			: repeaterKey?.to && getNestedValue(item, repeaterKey.to)
+				? getNestedValue(item, repeaterKey.to)
+				: index;
 
 	// The actual fields.
 	const el = (
 		<VStack>
-			{ prepend }
-			{ theValue.map( ( item, index ) => {
-
+			{prepend}
+			{theValue.map((item, index) => {
 				// Move the item down.
 				const onMoveDown = () => {
 					// Create a copy of the current array
-					const newItems = [ ...theValue ];
+					const newItems = [...theValue];
 
 					// Get the current item
-					const item = newItems[ index ];
+					const item = newItems[index];
 
 					// Remove the item from its current position
-					newItems.splice( index, 1 );
+					newItems.splice(index, 1);
 
 					// Insert the item at the next position
-					newItems.splice( index + 1, 0, item );
+					newItems.splice(index + 1, 0, item);
 
 					// Update the parent component with the new array
-					onChange( newItems );
-				}
+					onChange(newItems);
+				};
 
 				// Move the item up.
 				const onMoveUp = () => {
 					// Create a copy of the current array
-					const newItems = [ ...theValue ];
+					const newItems = [...theValue];
 
 					// Get the current item
-					const item = newItems[ index ];
+					const item = newItems[index];
 
 					// Remove the item from its current position
-					newItems.splice( index, 1 );
+					newItems.splice(index, 1);
 
 					// Insert the item at the previous position
-					newItems.splice( index - 1, 0, item );
+					newItems.splice(index - 1, 0, item);
 
 					// Update the parent component with the new array
-					onChange( newItems );
-				}
+					onChange(newItems);
+				};
 
 				// Delete the item.
 				const onDelete = () => {
 					// Create a copy of the current array
-					const newItems = [ ...theValue ];
+					const newItems = [...theValue];
 
 					// Remove the item from the array
-					newItems.splice( index, 1 );
+					newItems.splice(index, 1);
 
 					// Update the parent component with the new array
-					onChange( newItems );
-				}
+					onChange(newItems);
+				};
 
 				// Update the item.
-				const localOnChange = ( newItemValue: Record<string, unknown> ) => {
+				const localOnChange = (
+					newItemValue: Record<string, unknown>
+				) => {
 					// Create a copy of the current item.
 					let theNewItemValue = { ...newItemValue };
 
 					// If the repeater key is set, and the item has a value at the 'from' path, and the item is not new only, or the item is new.
-					if ( repeaterKey?.to && repeaterKey.from && getNestedValue( theNewItemValue, repeaterKey.from ) ) {
-						if ( !repeaterKey.newOnly || theNewItemValue[ 'new' ] ) {
-
+					if (
+						repeaterKey?.to &&
+						repeaterKey.from &&
+						getNestedValue(theNewItemValue, repeaterKey.from)
+					) {
+						if (!repeaterKey.newOnly || theNewItemValue['new']) {
 							// Generate a merge tag from the label.
-							const label = getNestedValue( theNewItemValue, repeaterKey.from ) as string;
-							const mergeTag = label.toString().trim().toLowerCase().replace( /[^a-z0-9]+/g, '_' );
+							const label = getNestedValue(
+								theNewItemValue,
+								repeaterKey.from
+							) as string;
+							const mergeTag = label
+								.toString()
+								.trim()
+								.toLowerCase()
+								.replace(/[^a-z0-9]+/g, '_');
 
 							// Limit to 64 characters.
-							theNewItemValue = updateNestedValue( theNewItemValue, repeaterKey.to, mergeTag.substring( 0, repeaterKey.maxLength || 64 ) );
+							theNewItemValue = updateNestedValue(
+								theNewItemValue,
+								repeaterKey.to,
+								mergeTag.substring(
+									0,
+									repeaterKey.maxLength || 64
+								)
+							);
 
 							// Ensure the merge tag is unique.
-							if ( theValue.find( ( value, valueIndex ) => index !== valueIndex && getNestedValue( value, repeaterKey.to ) === getNestedValue( theNewItemValue, repeaterKey.to ) ) ) {
-								theNewItemValue = updateNestedValue( theNewItemValue, repeaterKey.to, `${ getNestedValue( theNewItemValue, repeaterKey.to ) }_${ index }` );
+							if (
+								theValue.find(
+									(value, valueIndex) =>
+										index !== valueIndex &&
+										getNestedValue(
+											value,
+											repeaterKey.to
+										) ===
+											getNestedValue(
+												theNewItemValue,
+												repeaterKey.to
+											)
+								)
+							) {
+								theNewItemValue = updateNestedValue(
+									theNewItemValue,
+									repeaterKey.to,
+									`${getNestedValue(theNewItemValue, repeaterKey.to)}_${index}`
+								);
 							}
 						}
 					}
 
-					const newItems = [ ...theValue ];
-					newItems[ index ] = theNewItemValue;
-					onChange( newItems );
-				}
+					const newItems = [...theValue];
+					newItems[index] = theNewItemValue;
+					onChange(newItems);
+				};
 
 				return (
 					<Card
 						size="small"
 						className="noptin-no-shadow"
-						id={ `${ theId }__item-${ keyOrIndex( item, index ) }` }
-						data-index={ index }
+						id={`${theId}__item-${keyOrIndex(item, index)}`}
+						data-index={index}
 						borderBottom
 						borderLeft
 						borderRight
 						borderTop
-						{ ...( cardProps || {} ) }
-						key={ keyOrIndex( item, index ) }
+						{...(cardProps || {})}
+						key={keyOrIndex(item, index)}
 					>
 						<RepeaterItem
-							id={ `${ theId }__item-${ keyOrIndex( item, index ) }` }
-							fields={ fields }
-							value={ item }
-							availableSmartTags={ availableSmartTags }
-							onChange={ localOnChange }
-							onDelete={ onDelete }
-							onMoveUp={ index > 0 ? onMoveUp : undefined }
-							onMoveDown={ index < theValue.length - 1 ? onMoveDown : undefined }
-							repeaterKey={ repeaterKey }
+							id={`${theId}__item-${keyOrIndex(item, index)}`}
+							fields={fields}
+							value={item}
+							availableSmartTags={availableSmartTags}
+							onChange={localOnChange}
+							onDelete={onDelete}
+							onMoveUp={index > 0 ? onMoveUp : undefined}
+							onMoveDown={
+								index < theValue.length - 1
+									? onMoveDown
+									: undefined
+							}
+							repeaterKey={repeaterKey}
 						/>
 					</Card>
-				)
-			} ) }
+				);
+			})}
 			<HStack>
 				<Button
-					onClick={ () => {
-						const newValue = [ ...theValue ];
-						const timestamp = Date.now().toString( 36 );
-						const randomStr = Math.random().toString( 36 ).substring( 2, 8 );
-						newValue.push( { key: `${ timestamp }_${ randomStr }`, ...defaultValue } );
-						onChange( newValue );
-					} }
+					onClick={() => {
+						const newValue = [...theValue];
+						const timestamp = Date.now().toString(36);
+						const randomStr = Math.random()
+							.toString(36)
+							.substring(2, 8);
+						newValue.push({
+							key: `${timestamp}_${randomStr}`,
+							...defaultValue,
+						});
+						onChange(newValue);
+					}}
 					variant="primary"
 				>
-					{ button || __( 'Add Item', 'newsletter-optin-box' ) }
+					{button || __('Add Item', 'newsletter-optin-box')}
 				</Button>
-				{ showInModal && (
+				{showInModal && (
 					<Button
-						onClick={ () => setIsOpen( false ) }
+						onClick={() => setIsOpen(false)}
 						variant="secondary"
 					>
-						{ __( 'Go Back', 'newsletter-optin-box' ) }
+						{__('Go Back', 'newsletter-optin-box')}
 					</Button>
-				) }
+				)}
 			</HStack>
 		</VStack>
 	);
 
 	// Render the control.
 	return (
-		<BaseControl { ...baseControlProps }>
-			<div { ...controlProps }>
-				{ showInModal ? (
+		<BaseControl {...baseControlProps}>
+			<div {...controlProps}>
+				{showInModal ? (
 					<VStack>
-						{ ( disable && onDisable ) && (
+						{disable && onDisable && (
 							<ToggleControl
-								label={ disable }
-								checked={ disabled }
-								onChange={ onDisable }
+								label={disable}
+								checked={disabled}
+								onChange={onDisable}
 								__nextHasNoMarginBottom
 							/>
-						) }
-						{ ( !disable || !disabled ) && (
+						)}
+						{(!disable || !disabled) && (
 							<>
 								<Button
-									onClick={ () => setIsOpen( true ) }
+									onClick={() => setIsOpen(true)}
 									variant="secondary"
 								>
-									{ openModal }
+									{openModal}
 								</Button>
-								{ isOpen && (
+								{isOpen && (
 									<Modal
-										title={ attributes.label as string || openModal }
-										onRequestClose={ () => setIsOpen( false ) }
+										title={
+											(attributes.label as string) ||
+											openModal
+										}
+										onRequestClose={() => setIsOpen(false)}
 										size="medium"
 									>
-										{ el }
+										{el}
 									</Modal>
-								) }
+								)}
 							</>
-						) }
+						)}
 					</VStack>
-				) : el }
+				) : (
+					el
+				)}
 			</div>
 		</BaseControl>
 	);
-}
+};

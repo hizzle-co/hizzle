@@ -25,32 +25,36 @@ interface ColorSettingProps extends Omit<BaseControlProps, 'children'> {
 	/**
 	 * The onChange handler.
 	 */
-	onChange: ( value: string ) => void;
+	onChange: (value: string) => void;
 }
 
 /**
  * Displays a color setting
  *
  */
-export const ColorSetting: React.FC<ColorSettingProps> = ( { value, onChange, ...attributes } ) => {
-
-	const { baseControlProps, controlProps } = useBaseControlProps( { ...attributes } );
+export const ColorSetting: React.FC<ColorSettingProps> = ({
+	value,
+	onChange,
+	...attributes
+}) => {
+	const { baseControlProps, controlProps } = useBaseControlProps({
+		...attributes,
+	});
 
 	return (
-		<BaseControl { ...baseControlProps }>
+		<BaseControl {...baseControlProps}>
 			<Dropdown
-				popoverProps={ { placement: 'bottom-start' } }
-				renderToggle={ ( { isOpen, onToggle } ) => (
-					<Button
-						onClick={ onToggle }
-						aria-expanded={ isOpen }
-					>
-						<ColorIndicator colorValue={ value } />
+				popoverProps={{ placement: 'bottom-start' }}
+				renderToggle={({ isOpen, onToggle }) => (
+					<Button onClick={onToggle} aria-expanded={isOpen}>
+						<ColorIndicator colorValue={value} />
 					</Button>
-				) }
-				renderContent={ () => <ColorPicker color={ value } onChange={ onChange } /> }
-				{ ...controlProps }
+				)}
+				renderContent={() => (
+					<ColorPicker color={value} onChange={onChange} />
+				)}
+				{...controlProps}
 			/>
 		</BaseControl>
 	);
-}
+};

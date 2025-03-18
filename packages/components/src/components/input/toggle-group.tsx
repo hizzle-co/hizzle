@@ -10,9 +10,13 @@ import {
 	__experimentalToggleGroupControl as ToggleGroupControl,
 	__experimentalToggleGroupControlOption as ToggleGroupControlOption,
 } from '@wordpress/components';
-import type { ToggleGroupControlProps, ToggleGroupControlOptionProps } from '@wordpress/components/src/toggle-group-control/types';
+import type {
+	ToggleGroupControlProps,
+	ToggleGroupControlOptionProps,
+} from '@wordpress/components/src/toggle-group-control/types';
 
-interface ToggleGroupSettingProps extends Omit<ToggleGroupControlProps, 'children' > {
+interface ToggleGroupSettingProps
+	extends Omit<ToggleGroupControlProps, 'children'> {
 	options: ToggleGroupControlOptionProps[];
 }
 
@@ -20,18 +24,20 @@ interface ToggleGroupSettingProps extends Omit<ToggleGroupControlProps, 'childre
  * Displays a toggle group setting
  *
  */
-export const ToggleGroupSetting = ( { options, ...attributes }: ToggleGroupSettingProps ) => {
-
+export const ToggleGroupSetting = ({
+	options,
+	...attributes
+}: ToggleGroupSettingProps) => {
 	return (
 		<ToggleGroupControl
 			__next40pxDefaultSize
 			__nextHasNoMarginBottom
 			isBlock
-			{ ...attributes }
+			{...attributes}
 		>
-			{ options.map( ( option, index ) => (
-				<ToggleGroupControlOption key={ index } { ...option } />
-			) ) }
+			{options.map((option, index) => (
+				<ToggleGroupControlOption key={index} {...option} />
+			))}
 		</ToggleGroupControl>
 	);
-}
+};

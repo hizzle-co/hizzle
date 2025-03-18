@@ -24,7 +24,7 @@ const { readFile } = require('fs').promises;
  *
  * @type {string}
  */
-const ROOT_DIR = resolve(__dirname, '..').replace(/\\/g, '/');
+const ROOT_DIR = resolve(__dirname, '../..').replace(/\\/g, '/');
 
 /**
  * Path to packages directory.
@@ -149,8 +149,16 @@ glob.stream([`${PACKAGES_DIR}/${getPackagePattern(files)}/README.md`])
 		// so the tokens must be replaced in sequence to prevent the processes
 		// from overriding each other.
 		try {
-			for (const [token, path = findDefaultSourcePath(dirname(file))] of tokens) {
-				const docgenPath = join(ROOT_DIR, 'node_modules', '.bin', 'docgen');
+			for (const [
+				token,
+				path = findDefaultSourcePath(dirname(file)),
+			] of tokens) {
+				const docgenPath = join(
+					ROOT_DIR,
+					'node_modules',
+					'.bin',
+					'docgen'
+				);
 
 				await execa(
 					`"${docgenPath}"`,

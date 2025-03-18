@@ -6,11 +6,8 @@ import React from 'react';
 /**
  * Wordpress dependancies.
  */
-import {
-	SelectControl,
-} from '@wordpress/components';
+import { SelectControl } from '@wordpress/components';
 import type { SelectControlSingleSelectionProps } from '@wordpress/components/src/select-control/types';
-
 
 /**
  * Local dependencies.
@@ -22,7 +19,6 @@ import { useCombineOptions, smartTag } from '../hooks';
  * The select setting props.
  */
 interface SelectSettingProps extends SelectControlSingleSelectionProps {
-
 	/**
 	 * The options.
 	 */
@@ -38,14 +34,12 @@ interface SelectSettingProps extends SelectControlSingleSelectionProps {
  * Displays a select setting
  *
  */
-export const SelectSetting: React.FC<SelectSettingProps> = ( { options, availableSmartTags, ...attributes } ) => {
+export const SelectSetting: React.FC<SelectSettingProps> = ({
+	options,
+	availableSmartTags,
+	...attributes
+}) => {
+	const allOptions = useCombineOptions(options, availableSmartTags);
 
-	const allOptions = useCombineOptions( options, availableSmartTags );
-
-	return (
-		<SelectControl
-			{ ...attributes }
-			options={ allOptions }
-		/>
-	);
-}
+	return <SelectControl {...attributes} options={allOptions} />;
+};

@@ -21,30 +21,27 @@ When creating a new package, you need to provide at least the following:-
     	"description": "Package description.",
     	"author": "The WordPress Contributors",
     	"license": "GPL-2.0-or-later",
-    	"keywords": [ "wordpress", "hizzle" ],
+    	"keywords": ["wordpress", "hizzle"],
     	"homepage": "https://github.com/hizzle-co/hizzle/tree/HEAD/packages/package-name/README.md",
     	"repository": {
     		"type": "git",
     		"url": "https://github.com/hizzle-co/hizzle.git",
-    		"directory": "packages/package-name"
+    		"directory": "packages/package-name",
     	},
     	"bugs": {
-    		"url": "https://github.com/hizzle-co/hizzle/issues"
+    		"url": "https://github.com/hizzle-co/hizzle/issues",
     	},
     	"engines": {
     		"node": ">=18.12.0",
-    		"npm": ">=8.19.2"
+    		"npm": ">=8.19.2",
     	},
     	"main": "build-module/index.js",
     	"module": "build-module/index.esm.js",
     	"types": "build-types/index.d.ts",
-    	"files": [
-    		"build-module",
-    		"build-types"
-    	],
+    	"files": ["build-module", "build-types"],
     	"publishConfig": {
-    		"access": "public"
-    	}
+    		"access": "public",
+    	},
     }
     ```
 
@@ -162,15 +159,15 @@ A `tsconfig.json` file should look like the following (comments are not necessar
 	// to each project.
 	"compilerOptions": {
 		"rootDir": "src",
-		"declarationDir": "build-types"
+		"declarationDir": "build-types",
 	},
 
 	// Which source files should be included
-	"include": [ "src/**/*" ],
+	"include": ["src/**/*"],
 
 	// Other HizzleWP package dependencies that have opted-in to TypeScript should be listed
 	// here. In this case, our package depends on `@hizzlewp/components`.
-	"references": [ { "path": "../components" } ]
+	"references": [{ "path": "../components" }],
 }
 ```
 
@@ -182,10 +179,7 @@ For consumers to use the published type declarations, we'll set the `types` fiel
 	"main": "build-module/index.js",
 	"module": "build-module/index.esm.js",
 	"types": "build-types/index.d.ts",
-	"files": [
-		"build-module",
-		"build-types"
-	]
+	"files": ["build-module", "build-types"]
 }
 ```
 

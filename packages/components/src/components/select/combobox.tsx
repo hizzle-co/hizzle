@@ -6,11 +6,8 @@ import React, { useState } from 'react';
 /**
  * Wordpress dependancies.
  */
-import {
-	ComboboxControl,
-} from '@wordpress/components';
+import { ComboboxControl } from '@wordpress/components';
 import type { ComboboxControlProps } from '@wordpress/components/src/combobox-control/types';
-
 
 /**
  * Local dependancies.
@@ -68,52 +65,69 @@ interface ComboboxSettingProps extends ComboboxControlProps {
  * Displays a combobox setting
  *
  */
-export const ComboboxSetting = ( { options, availableSmartTags, ...attributes }: ComboboxSettingProps ) => {
-
-	const allOptions = useCombineOptions( options, availableSmartTags );
-	const [ filteredOptions, setFilteredOptions ] = useState( allOptions );
+export const ComboboxSetting = ({
+	options,
+	availableSmartTags,
+	...attributes
+}: ComboboxSettingProps) => {
+	const allOptions = useCombineOptions(options, availableSmartTags);
+	const [filteredOptions, setFilteredOptions] = useState(allOptions);
 	const hasFilteredOptions = filteredOptions.length !== allOptions.length;
 
 	return (
 		<ComboboxControl
-			{ ...attributes }
-			options={ filteredOptions }
-			onFilterValueChange={ ( inputValue ) => {
-				if ( !inputValue ) {
-					setFilteredOptions( allOptions );
+			{...attributes}
+			options={filteredOptions}
+			onFilterValueChange={(inputValue) => {
+				if (!inputValue) {
+					setFilteredOptions(allOptions);
 					return;
 				}
 
-				const filterOption = ( option ) => {
-
+				const filterOption = (option) => {
 					// Abort for disabled and placeholder options.
-					if ( option.disabled || option.value === '' ) {
+					if (option.disabled || option.value === '') {
 						return false;
 					}
 
-					const search = option.search ? option.search.toLowerCase() : option.label.toLowerCase();
+					const search = option.search
+						? option.search.toLowerCase()
+						: option.label.toLowerCase();
 
-					return search.includes( inputValue.toLowerCase() );
+					return search.includes(inputValue.toLowerCase());
+				};
+
+				setFilteredOptions(allOptions.filter(filterOption));
+			}}
+			__experimentalRenderItem={({ item, ...props }) => {
+				if (item.render_filtered && hasFilteredOptions) {
+					return (
+						<div
+							{...props}
+							dangerouslySetInnerHTML={{
+								__html: item.render_filtered,
+							}}
+						/>
+					);
 				}
 
-				setFilteredOptions( allOptions.filter( filterOption ) )
-			} }
-			__experimentalRenderItem={ ( { item, ...props } ) => {
-				if ( item.render_filtered && hasFilteredOptions ) {
-					return <div { ...props } dangerouslySetInnerHTML={ { __html: item.render_filtered } } />;
-				}
-
-				if ( item.render ) {
-
+				if (item.render) {
 					// Check if we have a string or a component.
-					if ( typeof item.render === 'string' ) {
-						return <div { ...props } dangerouslySetInnerHTML={ { __html: item.render } } />;
+					if (typeof item.render === 'string') {
+						return (
+							<div
+								{...props}
+								dangerouslySetInnerHTML={{
+									__html: item.render,
+								}}
+							/>
+						);
 					}
 
 					return item.render;
 				}
 				return item.label;
-			} }
+			}}
 		/>
 	);
-}
+};

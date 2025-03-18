@@ -1,4 +1,1 @@
-module.exports = [
-    '@hizzlewp/interface',
-    '@hizzlewp/components',
-];
+module.exports = ['@hizzlewp/interface', '@hizzlewp/components'];

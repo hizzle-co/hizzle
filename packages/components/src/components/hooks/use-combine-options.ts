@@ -15,39 +15,41 @@ import { SelectOption } from '../select';
  * @param options The options.
  * @param availableSmartTags The available smart tags.
  */
-export const useCombineOptions = ( options: SelectOption[], availableSmartTags: smartTag[] | undefined = [] ) => {
-    const groups = useMergeTagGroups( availableSmartTags );
+export const useCombineOptions = (
+	options: SelectOption[],
+	availableSmartTags: smartTag[] | undefined = []
+) => {
+	const groups = useMergeTagGroups(availableSmartTags);
 
-    return useMemo( () => {
+	return useMemo(() => {
+		if (!Array.isArray(availableSmartTags)) {
+			return options;
+		}
 
-        if ( !Array.isArray( availableSmartTags ) ) {
-            return options;
-        }
+		let newOptions = [...options];
 
-        let newOptions = [ ...options ];
+		Object.keys(groups).forEach((group) => {
+			if (!Array.isArray(groups[group]) || !groups[group].length) {
+				return;
+			}
 
-        Object.keys( groups ).forEach( ( group ) => {
-            if ( !Array.isArray( groups[ group ] ) || !groups[ group ].length ) {
-                return;
-            }
+			newOptions.push({
+				value: `select_dynamic_value__${group}`,
+				label: `${group} Dynamic Values`,
+				disabled: true,
+			});
 
-            newOptions.push( {
-                value: `select_dynamic_value__${ group }`,
-                label: `${ group } Dynamic Values`,
-                disabled: true,
-            } );
+			groups[group].forEach((item) => {
+				newOptions.push({
+					value: `[[${item.smart_tag}]]`,
+					label: item.label,
+					render: item.label,
+					render_filtered: `${group} &gt;&gt; ${item.label}`,
+					search: `${item.label} ${group} ${item.smart_tag} ${item.description}`,
+				});
+			});
+		});
 
-            groups[ group ].forEach( ( item ) => {
-                newOptions.push( {
-                    value: `[[${ item.smart_tag }]]`,
-                    label: item.label,
-                    render: item.label,
-                    render_filtered: `${ group } &gt;&gt; ${ item.label }`,
-                    search: `${ item.label } ${ group } ${ item.smart_tag } ${ item.description }`,
-                } );
-            } );
-        } );
-
-        return newOptions;
-    }, [ groups, options ] );
-}
+		return newOptions;
+	}, [groups, options]);
+};

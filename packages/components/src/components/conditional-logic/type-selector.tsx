@@ -16,26 +16,26 @@ import { __ } from '@wordpress/i18n';
 // Action.
 const ifOptions = [
 	{
-		label: __( 'Only run if', 'newsletter-optin-box' ),
+		label: __('Only run if', 'newsletter-optin-box'),
 		value: 'allow',
 	},
 	{
-		label: __( 'Do not run if', 'newsletter-optin-box' ),
+		label: __('Do not run if', 'newsletter-optin-box'),
 		value: 'prevent',
 	},
-]
+];
 
 // Matches.
 const typeOptions = [
 	{
-		label: __( 'all', 'newsletter-optin-box' ),
+		label: __('all', 'newsletter-optin-box'),
 		value: 'all',
 	},
 	{
-		label: __( 'any', 'newsletter-optin-box' ),
+		label: __('any', 'newsletter-optin-box'),
 		value: 'any',
 	},
-]
+];
 
 interface ConditionalLogicTypeSelectorProps {
 	/**
@@ -50,11 +50,11 @@ interface ConditionalLogicTypeSelectorProps {
 
 	/**
 	 * Function to update a conditional logic attribute.
-	 * 
+	 *
 	 * @param attribute The attribute to update.
 	 * @param value The new value for the attribute.
 	 */
-	setConditionalLogicAttribute: ( attribute: string, value: any ) => void;
+	setConditionalLogicAttribute: (attribute: string, value: any) => void;
 
 	/**
 	 * The number of rules in the conditional logic.
@@ -66,41 +66,47 @@ interface ConditionalLogicTypeSelectorProps {
  * Displays the conditional logic editor type selector.
  *
  */
-export const ConditionalLogicTypeSelector: React.FC<ConditionalLogicTypeSelectorProps> = ( props ) => {
-
+export const ConditionalLogicTypeSelector: React.FC<
+	ConditionalLogicTypeSelectorProps
+> = (props) => {
 	const { type, action, setConditionalLogicAttribute, ruleCount } = props;
 	const hasMultiple = ruleCount > 1;
 
 	return (
 		<HStack justify="flex-start" wrap>
 			<SelectControl
-				label={ __( 'If', 'newsletter-optin-box' ) }
-				hideLabelFromVision={ true }
-				value={ action ? action : 'allow' }
-				options={ ifOptions }
-				onChange={ ( val ) => setConditionalLogicAttribute( 'action', val ) }
+				label={__('If', 'newsletter-optin-box')}
+				hideLabelFromVision={true}
+				value={action ? action : 'allow'}
+				options={ifOptions}
+				onChange={(val) => setConditionalLogicAttribute('action', val)}
 				size="default"
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
 			/>
 
-			{ hasMultiple && (
+			{hasMultiple && (
 				<>
 					<SelectControl
-						label={ __( 'all', 'newsletter-optin-box' ) }
-						hideLabelFromVision={ true }
-						value={ type ? type : 'all' }
-						options={ typeOptions }
-						onChange={ ( val ) => setConditionalLogicAttribute( 'type', val ) }
+						label={__('all', 'newsletter-optin-box')}
+						hideLabelFromVision={true}
+						value={type ? type : 'all'}
+						options={typeOptions}
+						onChange={(val) =>
+							setConditionalLogicAttribute('type', val)
+						}
 						size="default"
 						__nextHasNoMarginBottom
 						__next40pxDefaultSize
 					/>
 					<Text>
-						{ __( 'of the following rules are true:', 'newsletter-optin-box' ) }
+						{__(
+							'of the following rules are true:',
+							'newsletter-optin-box'
+						)}
 					</Text>
 				</>
-			) }
+			)}
 		</HStack>
 	);
-}
+};

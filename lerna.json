@@ -1,19 +1,17 @@
 {
-    "$schema": "node_modules/lerna/schemas/lerna-schema.json",
-    "version": "independent",
-    "conventionalCommits": true,
-    "ignoreChanges": [
-        "**/benchmark/*.js",
-        "**/CHANGELOG.md",
-        "**/{__mocks__,__tests__,test}/**",
-        "**/{storybook,stories}/**"
-    ],
-    "packages": [
-        "packages/*"
-    ],
-    "command": {
-        "version": {
-            "message": "chore(release): publish"
-        }
-    }
+	"$schema": "node_modules/lerna/schemas/lerna-schema.json",
+	"version": "independent",
+	"conventionalCommits": true,
+	"ignoreChanges": [
+		"**/benchmark/*.js",
+		"**/CHANGELOG.md",
+		"**/{__mocks__,__tests__,test}/**",
+		"**/{storybook,stories}/**"
+	],
+	"packages": ["packages/*"],
+	"command": {
+		"version": {
+			"message": "chore(release): publish"
+		}
+	}
 }

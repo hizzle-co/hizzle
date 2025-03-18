@@ -4,6 +4,7 @@ node_modules/ export-ignore
 packages/ export-ignore
 .eslintrc.js export-ignore
 .gitignore export-ignore
+.gitattributes export-ignore
 .prettierrc export-ignore
 index.php export-ignore
 lerna.json export-ignore
@@ -13,4 +14,8 @@ requirements.md export-ignore
 tsconfig.json export-ignore
 tsconfig.base.json export-ignore
 webpack.config.js export-ignore
-webpack.dev.config.js export-ignore
+index-ir.json export-ignore
+index-exports.json export-ignore
+index-ast.json export-ignore
+.prettierrc.js export-ignore
+.prettierignore export-ignore

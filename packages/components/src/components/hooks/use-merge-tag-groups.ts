@@ -10,97 +10,96 @@ import { __ } from '@wordpress/i18n';
 import type { IconKey as DashiconIconKey } from '@wordpress/components/src/dashicon/types';
 
 export interface smartTag {
+	/**
+	 * The smart tag string.
+	 */
+	smart_tag: string;
 
-    /**
-     * The smart tag string.
-     */
-    smart_tag: string;
+	/**
+	 * The smart tag label.
+	 */
+	label: string;
 
-    /**
-     * The smart tag label.
-     */
-    label: string;
+	/**
+	 * The smart tag description.
+	 */
+	description: string;
 
-    /**
-     * The smart tag description.
-     */
-    description: string;
+	/**
+	 * The smart tag group.
+	 */
+	group: string;
 
-    /**
-     * The smart tag group.
-     */
-    group: string;
+	/**
+	 * The smart tag placeholder.
+	 */
+	placeholder: string;
 
-    /**
-     * The smart tag placeholder.
-     */
-    placeholder: string;
+	/**
+	 * The smart tag example.
+	 */
+	example: string;
 
-    /**
-     * The smart tag example.
-     */
-    example: string;
+	/**
+	 * The data type of the smart tag when used in conditional logic, e.g, number, string, boolean, etc.
+	 */
+	conditional_logic: string;
 
-    /**
-     * The data type of the smart tag when used in conditional logic, e.g, number, string, boolean, etc.
-     */
-    conditional_logic: string;
+	/**
+	 * @deprecated Use conditional_logic instead.
+	 */
+	type: string;
 
-    /**
-     * @deprecated Use conditional_logic instead.
-     */
-    type: string;
+	/**
+	 * The smart tag options.
+	 */
+	options: string[] | Record<string, string>;
 
-    /**
-     * The smart tag options.
-     */
-    options: string[] | Record<string, string>;
+	/**
+	 * An optional icon.
+	 */
+	icon?: DashiconIconKey;
 
-    /**
-     * An optional icon.
-     */
-    icon?: DashiconIconKey;
+	/**
+	 * Whether this is a premium tag.
+	 */
+	isPremium?: boolean;
 
-    /**
-     * Whether this is a premium tag.
-     */
-    isPremium?: boolean;
+	/**
+	 * The default value.
+	 */
+	default?: string;
 
-    /**
-     * The default value.
-     */
-    default?: string;
-
-    /**
-     * The smart tag deprecated versions.
-     */
-    deprecated?: string[] | string;
+	/**
+	 * The smart tag deprecated versions.
+	 */
+	deprecated?: string[] | string;
 }
 
 /**
  * Prepares merge tag groups from the available merge tags.
  *
  */
-export const useMergeTagGroups = ( availableSmartTags: smartTag[] ) => {
+export const useMergeTagGroups = (availableSmartTags: smartTag[]) => {
+	return useMemo(() => {
+		if (!Array.isArray(availableSmartTags)) {
+			return {};
+		}
 
-    return useMemo( () => {
+		const groups: Record<string, smartTag[]> = {};
 
-        if ( !Array.isArray( availableSmartTags ) ) {
-            return {};
-        }
+		availableSmartTags.forEach((smartTag) => {
+			const group = smartTag.group
+				? smartTag.group
+				: __('General', 'newsletter-optin-box');
 
-        const groups: Record<string, smartTag[]> = {};
+			if (!Array.isArray(groups[group])) {
+				groups[group] = [];
+			}
 
-        availableSmartTags.forEach( ( smartTag ) => {
-            const group = smartTag.group ? smartTag.group : __( 'General', 'newsletter-optin-box' );
+			groups[group].push(smartTag);
+		});
 
-            if ( !Array.isArray( groups[ group ] ) ) {
-                groups[ group ] = [];
-            }
-
-            groups[ group ].push( smartTag );
-        } );
-
-        return groups;
-    }, [ availableSmartTags ] );
-}
+		return groups;
+	}, [availableSmartTags]);
+};

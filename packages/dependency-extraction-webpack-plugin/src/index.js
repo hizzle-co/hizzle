@@ -1,5 +1,5 @@
-const WPDependencyExtractionWebpackPlugin = require( '@wordpress/dependency-extraction-webpack-plugin' );
-const packages = require( '../assets/packages' );
+const WPDependencyExtractionWebpackPlugin = require('@wordpress/dependency-extraction-webpack-plugin');
+const packages = require('../assets/packages');
 
 const HIZZLE_NAMESPACE = '@hizzlewp/';
 
@@ -13,82 +13,82 @@ const HIZZLE_NAMESPACE = '@hizzlewp/';
  *
  * @return {string} Camel-cased string.
  */
-function camelCaseDash( string ) {
-    return string.replace( /-([a-z])/g, ( _, letter ) => letter.toUpperCase() );
+function camelCaseDash(string) {
+	return string.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
 }
 
-const hizzleRequestToExternal = ( request, excludedExternals ) => {
-    if ( packages.includes( request ) ) {
-        const handle = request.substring( HIZZLE_NAMESPACE.length );
+const hizzleRequestToExternal = (request, excludedExternals) => {
+	if (packages.includes(request)) {
+		const handle = request.substring(HIZZLE_NAMESPACE.length);
 
-        if ( ( excludedExternals || [] ).includes( request ) ) {
-            return;
-        }
+		if ((excludedExternals || []).includes(request)) {
+			return;
+		}
 
-        return [ 'hizzlewp', camelCaseDash( handle ) ];
-    }
+		return ['hizzlewp', camelCaseDash(handle)];
+	}
 };
 
-const hizzleRequestToHandle = ( request ) => {
-    if ( packages.includes( request ) ) {
-        const handle = request.substring( HIZZLE_NAMESPACE.length );
+const hizzleRequestToHandle = (request) => {
+	if (packages.includes(request)) {
+		const handle = request.substring(HIZZLE_NAMESPACE.length);
 
-        return 'hizzlewp-' + handle;
-    }
+		return 'hizzlewp-' + handle;
+	}
 };
 
 class DependencyExtractionWebpackPlugin extends WPDependencyExtractionWebpackPlugin {
-    externalizeWpDeps( data, callback ) {
-        const request = data.request;
+	externalizeWpDeps(data, callback) {
+		const request = data.request;
 
-        let externalRequest;
+		let externalRequest;
 
-        // Handle via options.requestToExternal first
-        if ( typeof this.options.requestToExternal === 'function' ) {
-            externalRequest = this.options.requestToExternal( request );
-        }
+		// Handle via options.requestToExternal first
+		if (typeof this.options.requestToExternal === 'function') {
+			externalRequest = this.options.requestToExternal(request);
+		}
 
-        // Cascade to default if unhandled and enabled
-        if (
-            typeof externalRequest === 'undefined' &&
-            this.options.useDefaults
-        ) {
-            externalRequest = hizzleRequestToExternal(
-                request,
-                this.options.bundledPackages || []
-            );
-        }
+		// Cascade to default if unhandled and enabled
+		if (
+			typeof externalRequest === 'undefined' &&
+			this.options.useDefaults
+		) {
+			externalRequest = hizzleRequestToExternal(
+				request,
+				this.options.bundledPackages || []
+			);
+		}
 
-        if ( externalRequest ) {
-            this.externalizedDeps.add( request );
+		if (externalRequest) {
+			this.externalizedDeps.add(request);
 
-            return callback( null, externalRequest );
-        }
+			return callback(null, externalRequest);
+		}
 
-        // Fall back to the WP method
-        return super.externalizeWpDeps( data, callback );
-    }
+		// Fall back to the WP method
+		return super.externalizeWpDeps(data, callback);
+	}
 
-    mapRequestToDependency( request ) {
-        // Handle via options.requestToHandle first
-        if ( typeof this.options.requestToHandle === 'function' ) {
-            const scriptDependency = this.options.requestToHandle( request );
-            if ( scriptDependency ) {
-                return scriptDependency;
-            }
-        }
+	mapRequestToDependency(request) {
+		// Handle via options.requestToHandle first
+		if (typeof this.options.requestToHandle === 'function') {
+			const scriptDependency = this.options.requestToHandle(request);
+			if (scriptDependency) {
+				return scriptDependency;
+			}
+		}
 
-        // Cascade to default if enabled
-        if ( this.options.useDefaults ) {
-            const scriptDependency = hizzleRequestToHandle( request );
-            if ( scriptDependency ) {
-                return scriptDependency;
-            }
-        }
+		// Cascade to default if enabled
+		if (this.options.useDefaults) {
+			const scriptDependency = hizzleRequestToHandle(request);
+			if (scriptDependency) {
+				return scriptDependency;
+			}
+		}
 
-        // Fall back to the WP method
-        return super.mapRequestToDependency( request );
-    }
+		// Fall back to the WP method
+		return super.mapRequestToDependency(request);
+	}
 }
 
 module.exports = DependencyExtractionWebpackPlugin;

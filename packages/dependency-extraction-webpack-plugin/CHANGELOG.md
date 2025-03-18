@@ -5,14 +5,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [1.2.0](https://github.com/hizzle-co/hizzle/compare/@hizzlewp/dependency-extraction-webpack-plugin@1.1.0...@hizzlewp/dependency-extraction-webpack-plugin@1.2.0) (2025-03-18)
 
-
 ### Features
 
-* Add composer ([9b2c1a9](https://github.com/hizzle-co/hizzle/commit/9b2c1a94a414d9d49a9460661ab0a5056283c387))
-
-
-
-
+- Add composer ([9b2c1a9](https://github.com/hizzle-co/hizzle/commit/9b2c1a94a414d9d49a9460661ab0a5056283c387))
 
 # 1.1.0 (2025-03-18)
 

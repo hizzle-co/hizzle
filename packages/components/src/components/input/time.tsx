@@ -28,7 +28,7 @@ interface TimeControlProps extends Omit<BaseControlProps, 'children'> {
 	/**
 	 * The onChange handler.
 	 */
-	onChange: ( value: string ) => void;
+	onChange: (value: string) => void;
 }
 
 /**
@@ -38,18 +38,16 @@ interface TimeControlProps extends Omit<BaseControlProps, 'children'> {
  *
  * @param pad How many digits the value should be.
  */
-function buildPadInputStateReducer( pad: number ) {
-	return ( state, action ) => {
+function buildPadInputStateReducer(pad: number) {
+	return (state, action) => {
 		const nextState = { ...state };
 		if (
 			action.type === 'COMMIT' ||
 			action.type === 'PRESS_UP' ||
 			action.type === 'PRESS_DOWN'
 		) {
-			if ( nextState.value !== undefined ) {
-				nextState.value = nextState.value
-					.toString()
-					.padStart( pad, '0' );
+			if (nextState.value !== undefined) {
+				nextState.value = nextState.value.toString().padStart(pad, '0');
 			}
 		}
 		return nextState;
@@ -68,27 +66,27 @@ export const TimeZone = () => {
 	const { timezone } = getDateSettings();
 
 	// Convert timezone offset to hours.
-	const userTimezoneOffset = -1 * ( new Date().getTimezoneOffset() / 60 );
+	const userTimezoneOffset = -1 * (new Date().getTimezoneOffset() / 60);
 
 	// System timezone and user timezone match, nothing needed.
 	// Compare as numbers because it comes over as string.
-	if ( Number( timezone.offset ) === userTimezoneOffset ) {
+	if (Number(timezone.offset) === userTimezoneOffset) {
 		return null;
 	}
 
-	const offsetSymbol = Number( timezone.offset ) >= 0 ? '+' : '';
+	const offsetSymbol = Number(timezone.offset) >= 0 ? '+' : '';
 	const zoneAbbr =
-		'' !== timezone.abbr && isNaN( Number( timezone.abbr ) )
+		'' !== timezone.abbr && isNaN(Number(timezone.abbr))
 			? timezone.abbr
-			: `UTC${ offsetSymbol }${ timezone.offset }`;
+			: `UTC${offsetSymbol}${timezone.offset}`;
 
 	// Replace underscore with space in strings like `America/Costa_Rica`.
-	const prettyTimezoneString = timezone.string.replace( '_', ' ' );
+	const prettyTimezoneString = timezone.string.replace('_', ' ');
 
 	const timezoneDetail =
 		'UTC' === timezone.string
 			? 'Coordinated Universal Time'
-			: `(${ zoneAbbr }) ${ prettyTimezoneString }`;
+			: `(${zoneAbbr}) ${prettyTimezoneString}`;
 
 	// When the prettyTimezoneString is empty, there is no additional timezone
 	// detail information to show in a Tooltip.
@@ -97,12 +95,12 @@ export const TimeZone = () => {
 
 	return hasNoAdditionalTimezoneDetail ? (
 		<StyledTimeZone className="components-datetime__timezone">
-			{ zoneAbbr }
+			{zoneAbbr}
 		</StyledTimeZone>
 	) : (
-		<Tooltip placement="top" text={ timezoneDetail }>
+		<Tooltip placement="top" text={timezoneDetail}>
 			<StyledTimeZone className="components-datetime__timezone">
-				{ zoneAbbr }
+				{zoneAbbr}
 			</StyledTimeZone>
 		</Tooltip>
 	);
@@ -112,10 +110,10 @@ const TimeSeparator = styled.span`
 	border-top: 1px solid #757575;
 	border-bottom: 1px solid #757575;
 	display: inline-flex;
-    align-items: center;
+	align-items: center;
 `;
 
-const HoursInput = styled( NumberControl )`
+const HoursInput = styled(NumberControl)`
 	width: 36px;
 
 	&&& .components-input-control__input {
@@ -131,7 +129,7 @@ const HoursInput = styled( NumberControl )`
 	}
 `;
 
-const MinutesInput = styled( NumberControl )`
+const MinutesInput = styled(NumberControl)`
 	width: 36px;
 
 	&&& .components-input-control__input {
@@ -152,78 +150,78 @@ const TimeWrapper = styled.div`
 	display: flex;
 `;
 
-export const TimeControl = ( { value, onChange, ...attributes }: TimeControlProps ) => {
+export const TimeControl = ({
+	value,
+	onChange,
+	...attributes
+}: TimeControlProps) => {
 	// The base props.
-	const { baseControlProps, controlProps } = useBaseControlProps( attributes );
-	const parts = value ? value.split( ':' ) : [ '07', '00' ];
-	const [ hours, setHours ] = useState<string | undefined>( parts[ 0 ] );
-	const [ minutes, setMinutes ] = useState<string | undefined>( parts[ 1 ] );
-	const pad = ( n: number | string | undefined, fallback = '00' ) => {
-		n = Number( n );
+	const { baseControlProps, controlProps } = useBaseControlProps(attributes);
+	const parts = value ? value.split(':') : ['07', '00'];
+	const [hours, setHours] = useState<string | undefined>(parts[0]);
+	const [minutes, setMinutes] = useState<string | undefined>(parts[1]);
+	const pad = (n: number | string | undefined, fallback = '00') => {
+		n = Number(n);
 
-		if ( isNaN( n ) ) {
+		if (isNaN(n)) {
 			return fallback;
 		}
 
-		if ( n < 10 ) {
-			return `0${ n }`;
+		if (n < 10) {
+			return `0${n}`;
 		}
 
 		return n;
-	}
+	};
 
-	const localValue = `${ pad( hours ) }:${ pad( minutes ) }`;
+	const localValue = `${pad(hours)}:${pad(minutes)}`;
 
-	useEffect( () => {
-		if ( value !== localValue ) {
-			onChange( localValue );
+	useEffect(() => {
+		if (value !== localValue) {
+			onChange(localValue);
 		}
-	}, [ localValue ] );
+	}, [localValue]);
 
 	// Render the control.
 	return (
-		<BaseControl { ...baseControlProps }>
+		<BaseControl {...baseControlProps}>
 			<HStack>
 				<TimeWrapper>
 					<HoursInput
-						value={ pad( hours ) }
-						onChange={ setHours }
-						min={ 0 }
-						max={ 23 }
-						step={ 1 }
-						{ ...controlProps }
-						label={ __( 'Hours' ) }
+						value={pad(hours)}
+						onChange={setHours}
+						min={0}
+						max={23}
+						step={1}
+						{...controlProps}
+						label={__('Hours')}
 						spinControls="none"
-						isDragEnabled={ false }
-						isShiftStepEnabled={ false }
+						isDragEnabled={false}
+						isShiftStepEnabled={false}
 						isPressEnterToChange
 						hideLabelFromVision
 						__next40pxDefaultSize
-						__unstableStateReducer={ buildPadInputStateReducer(
-							2
-						) }
+						__unstableStateReducer={buildPadInputStateReducer(2)}
 					/>
 					<TimeSeparator aria-hidden="true">:</TimeSeparator>
 					<MinutesInput
-						value={ pad( minutes ) }
-						onChange={ setMinutes }
-						min={ 0 }
-						max={ 59 }
-						step={ 1 }
-						label={ __( 'Minutes' ) }
+						value={pad(minutes)}
+						onChange={setMinutes}
+						min={0}
+						max={59}
+						step={1}
+						label={__('Minutes')}
 						spinControls="none"
-						isDragEnabled={ false }
-						isShiftStepEnabled={ false }
+						isDragEnabled={false}
+						isShiftStepEnabled={false}
 						isPressEnterToChange
 						hideLabelFromVision
 						__next40pxDefaultSize
-						__unstableStateReducer={ buildPadInputStateReducer(
-							2
-						) }
+						__unstableStateReducer={buildPadInputStateReducer(2)}
 					/>
 				</TimeWrapper>
 				<TimeZone />
 			</HStack>
 		</BaseControl>
 	);
-}
+};
