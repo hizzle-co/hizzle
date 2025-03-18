@@ -53,6 +53,27 @@ const createPackageConfigs = ( packages, cwd ) => {
                 type: 'commonjs2',
             },
         },
+        optimization: {
+            ...baseConfig.optimization,
+            splitChunks: {
+                cacheGroups: {
+                    style: {
+                        type: 'css/mini-extract',
+                        test: /[\\/]style(\.module)?\.(pc|sc|sa|c)ss$/,
+                        chunks: 'all',
+                        enforce: true,
+                        name( _, chunks, cacheGroupKey ) {
+                            const chunkName = chunks[ 0 ].name;
+
+                            return `${ path.dirname(
+                                chunkName
+                            ) }/${ path.basename( chunkName ) }/build-module/${ cacheGroupKey }-index`;
+                        },
+                    },
+                    default: false,
+                },
+            }
+        },
     };
 
     const esmConfig = {

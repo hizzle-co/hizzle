@@ -58,6 +58,33 @@ const createPackageConfigs = ( packages, cwd ) => {
             filename: '[name]/index.js',
             chunkFilename: '[name]/index.js?ver=[chunkhash]',
         },
+        optimization: {
+            ...baseConfig.optimization,
+            splitChunks: {
+                cacheGroups: {
+                    style: {
+                        type: 'css/mini-extract',
+                        test: /[\\/]style(\.module)?\.(pc|sc|sa|c)ss$/,
+                        chunks: 'all',
+                        enforce: true,
+                        name( _, chunks, cacheGroupKey ) {
+                            const chunkName = chunks[ 0 ].name;
+
+                            return `${ path.dirname(
+                                chunkName
+                            ) }/${ path.basename( chunkName ) }/${ cacheGroupKey }-index`;
+                        },
+                    },
+                    default: false,
+                },
+            }
+        },
+        watchOptions: {
+            ignored: [
+                '**/node_modules',
+                '**/build'
+            ]
+        }
     };
 
     return browserConfig;
