@@ -74,7 +74,7 @@ GPL-2.0-or-later
 ## Release (to npm and composer)
 
 ```bash
-npm run release --type=minor
+npm run release release_type=minor
 ```
 
 type accepts: major, minor, patch, premajor, preminor, prepatch, prerelease

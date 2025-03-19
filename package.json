@@ -18,7 +18,7 @@
 		"check-licenses": "wp-scripts check-licenses",
 		"packages-update": "wp-scripts packages-update",
 		"docs": "node scripts/doc-generator.js",
-		"release": "gh workflow run release.yml -f release_type=${npm_config_type:-patch}"
+		"release": "gh workflow run release.yml -f"
 	},
 	"devDependencies": {
 		"@types/node": "^20.11.24",
