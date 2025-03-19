@@ -3,17 +3,19 @@ name: Release Packages
 on:
   workflow_dispatch:
     inputs:
-      packages:
-        description: 'Comma-separated list of packages to release (leave empty for all)'
-        required: false
-        type: string
       release_type:
-        description: 'Release type (latest or next)'
+        description: 'Release type'
         required: true
         type: choice
+        default: patch
         options:
-          - latest
-          - next
+          - major
+          - minor
+          - patch
+          - premajor
+          - preminor
+          - prepatch
+          - prerelease
 
 jobs:
   release:
@@ -36,12 +38,11 @@ jobs:
       - name: Get changed packages
         id: changed
         run: |
-          if [ -z "${{ github.event.inputs.packages }}" ]; then
-            # Use conventional-commits to determine changed packages
-            npx lerna changed --json | jq -r '.[].name' > changed_packages.txt
-          else
-            echo "${{ github.event.inputs.packages }}" | tr ',' '\n' > changed_packages.txt
-          fi
+          # Use conventional-commits to determine changed packages
+          echo "Detecting changed packages..."
+          CHANGED_PACKAGES=$(npx lerna changed --json | jq -r '.[].name')
+          echo "Changed packages detected:"
+          echo "$CHANGED_PACKAGES"
 
       - name: Build packages
         run: npm run build
@@ -55,14 +56,54 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npx lerna version --no-git-tag-version --conventional-commits --yes --no-private --create-release github
+          npx lerna version ${{ github.event.inputs.release_type }} --no-git-tag-version --conventional-commits --yes --no-private
+
+      - name: Increment package.json version
+        id: npm_bump
+        run: |
+          version=$(npm version patch -m "Increment version [skip ci]")
+          echo "new_version=$version" >> $GITHUB_ENV
+
+      - name: Update composer.json version
+        id: version
+        run: |
+          # Read the version from lerna.json
+          LERNA_VERSION=$(jq -r '.version' lerna.json)
+
+          # Update the version in composer.json
+          jq --arg version "$LERNA_VERSION" '.version = $version' composer.json > composer.json.tmp
+          mv composer.json.tmp composer.json
+
+          echo "Updated composer.json version to $LERNA_VERSION"
+          
+          # Save the version as an output parameter for later steps
+          echo "version=$LERNA_VERSION" >> $GITHUB_OUTPUT
 
       - name: Commit version changes
         run: |
+          # We don't want to commit changes to package-lock.json
           git checkout -- package-lock.json
           git add .
           git commit -m "chore: version bump [skip ci]"
           git push
+
+      - name: Create Git tag
+        run: |
+          # Get the latest version from package.json
+          VERSION=$(jq -r '.version' package.json)
+
+          # If using independent versioning, we'll create a tag with the date
+          if [ "$VERSION" = "independent" ]; then
+            TAG_NAME="release-$(date +'%Y%m%d%H%M%S')"
+          else
+            TAG_NAME="v$VERSION"
+          fi
+          
+          echo "Creating tag $TAG_NAME"
+          git tag $TAG_NAME
+          git push origin $TAG_NAME
+          
+          echo "Tag $TAG_NAME created and pushed successfully"
 
       - name: Publish packages
         env:

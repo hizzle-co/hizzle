@@ -1,0 +1,112 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        type: choice
+        default: patch
+        options:
+          - major
+          - minor
+          - patch
+          - premajor
+          - preminor
+          - prepatch
+          - prerelease
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+      - name: Get changed packages
+        id: changed
+        run: |
+          # Use conventional-commits to determine changed packages
+          echo "Detecting changed packages..."
+          CHANGED_PACKAGES=$(npx lerna changed --json | jq -r '.[].name')
+          echo "Changed packages detected:"
+          echo "$CHANGED_PACKAGES"
+
+      - name: Version bump changed packages based on conventional commits
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx lerna version ${{ github.event.inputs.release_type }} --no-git-tag-version --conventional-commits --yes --no-private
+
+      - name: Increment package.json version
+        id: npm_bump
+        run: |
+          version=$(npm --no-git-tag-version version ${{ inputs.release_type }})
+          echo "new_version=$version" >> $GITHUB_ENV
+
+      - name: Update composer.json version
+        run: |
+          # Remove 'v' prefix if present in the version
+          VERSION_NO_V=$(echo "${{ env.new_version }}" | sed 's/^v//')
+          # Update version in composer.json
+          sed -i "s/\"version\": \"[0-9]\+\.[0-9]\+\.[0-9]\+\"/\"version\": \"$VERSION_NO_V\"/" composer.json
+          echo "Updated version in composer.json"
+          cat composer.json | grep "version"
+
+      - name: Build
+        run: npm run build
+
+      - name: Commit version changes
+        run: |
+          # We don't want to commit changes to package-lock.json
+          git checkout -- package-lock.json
+          git add .
+          git commit -m "chore(release): publish [skip ci]"
+          git push
+
+      - name: Update Packagist
+        if: success()
+        run: |
+          echo "Updating Packagist with new release..."
+          # Trigger Packagist update by sending a POST request to the API
+          curl -XPOST -H "content-type:application/json" \
+            "https://packagist.org/api/update-package?username=${{ secrets.PACKAGIST_USERNAME }}&apiToken=${{ secrets.PACKAGIST_API_TOKEN }}" \
+            -d '{"repository":{"url":"https://github.com/${{ github.repository }}"}}'
+          echo "Packagist update triggered successfully"
+
+      - name: Publish packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          lerna publish from-package --no-private --yes
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        id: release
+        with:
+          tag_name: ${{ env.new_version }}
+          draft: false
+          prerelease: ${{ github.event.inputs.release_type == 'prerelease' }}
+          make_latest: ${{ github.event.inputs.release_type != 'prerelease' }}
+          name: Release ${{ env.new_version }}
+          fail_on_unmatched_files: true
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
