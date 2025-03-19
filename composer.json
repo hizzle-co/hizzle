@@ -44,13 +44,9 @@
 			"tsconfig.json",
 			"tsconfig.base.json",
 			"webpack.config.js",
-			"webpack.dev.config.js"
-		],
-		"include": [
-			"src/**/*",
-			"vendor/**/*",
-			"composer.json",
-			"README.md"
+			"webpack.dev.config.js",
+			"README.md",
+			"babel.config.js"
 		]
 	}
 }

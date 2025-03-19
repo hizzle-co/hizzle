@@ -21,3 +21,5 @@ index-exports.json export-ignore
 index-ast.json export-ignore
 .prettierrc.js export-ignore
 .prettierignore export-ignore
+README.md export-ignore
+babel.config.js export-ignore
