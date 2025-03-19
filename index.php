@@ -21,4 +21,4 @@ if ( ! defined( 'WPINC' ) ) {
 
 define( 'HIZZLE_SCRIPT_MANAGER_FILE', plugin_dir_path( __FILE__ ) . 'src/ScriptManager.php' );
 
-require 'vendor/autoload.php';
+require_once plugin_dir_path( __FILE__ ) . 'src/ScriptManager.php';

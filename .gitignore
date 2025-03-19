@@ -5,3 +5,6 @@ index-ir.json
 index-exports.json
 index-ast.json
 **/tsconfig.tsbuildinfo
+
+# Composer
+vendor/
