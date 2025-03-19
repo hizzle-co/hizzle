@@ -59,6 +59,7 @@ const createPackageConfigs = (packages, cwd) => {
 		},
 		optimization: {
 			...baseConfig.optimization,
+			minimize: false,
 			splitChunks: {
 				cacheGroups: {
 					style: {
