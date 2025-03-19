@@ -42,6 +42,9 @@ jobs:
 
       - name: Get changed packages
         id: changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           # Use conventional-commits to determine changed packages
           echo "Detecting changed packages..."
@@ -52,6 +55,7 @@ jobs:
       - name: Version bump changed packages based on conventional commits
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           npx lerna version ${{ github.event.inputs.release_type }} --no-git-tag-version --conventional-commits --yes --no-private
 

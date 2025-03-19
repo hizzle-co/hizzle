@@ -31,6 +31,8 @@
 			".github/",
 			"node_modules/",
 			"packages/",
+			"scripts/",
+			"tools/",
 			".eslintrc.js",
 			".gitignore",
 			".prettierrc",
