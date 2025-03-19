@@ -70,3 +70,28 @@ The imports will be automatically transformed to use the global `window.hizzlewp
 ## License
 
 GPL-2.0-or-later
+
+## Release (to npm and composer)
+
+```bash
+npm run release --type=minor
+```
+
+type accepts: major, minor, patch, premajor, preminor, prepatch, prerelease
+
+This will:
+
+- Build the packages
+- Update the composer.json file with the new version
+- Update the npm package version
+- Generate the docs
+- Commit and push the changes
+- Create a new release on GitHub
+- Release changed packages to npm
+- Update the changelogs
+- Update the composer package
+
+NOTE:-
+
+- You must have the GitHub CLI installed.
+- You must be authenticated with sufficient permissions.
