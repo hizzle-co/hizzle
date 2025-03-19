@@ -95,7 +95,7 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          lerna publish from-package --no-private --yes
+          lerna publish from-package --no-private --yes || true
 
       - name: Release
         uses: softprops/action-gh-release@v2
