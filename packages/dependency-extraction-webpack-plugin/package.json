@@ -34,13 +34,10 @@
 		"test": "jest",
 		"lint": "eslint src --ext .ts,.tsx"
 	},
-	"dependencies": {
-		"@wordpress/dependency-extraction-webpack-plugin": "^5.0.0"
-	},
-	"devDependencies": {
-		"jest": "^29.7.0"
-	},
 	"publishConfig": {
 		"access": "public"
+	},
+	"dependencies": {
+		"@wordpress/dependency-extraction-webpack-plugin": "^6.20.0"
 	}
 }

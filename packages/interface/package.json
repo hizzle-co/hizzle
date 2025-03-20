@@ -37,10 +37,7 @@
 	},
 	"dependencies": {
 		"@wordpress/base-styles": "^5.20.0",
-		"@wordpress/interface": "^9.0.0"
-	},
-	"devDependencies": {
-		"jest": "^29.7.0"
+		"@wordpress/interface": "^9.5.0"
 	},
 	"publishConfig": {
 		"access": "public"
