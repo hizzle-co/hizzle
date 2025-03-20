@@ -1,26 +1,19 @@
 module.exports = {
-	root: true,
-	extends: [
-		'eslint:recommended',
-		'plugin:@typescript-eslint/recommended',
-		'plugin:react/recommended',
-		'prettier',
-	],
-	parser: '@typescript-eslint/parser',
-	plugins: ['@typescript-eslint', 'react'],
-	parserOptions: {
-		ecmaVersion: 2020,
-		sourceType: 'module',
-		ecmaFeatures: {
-			jsx: true,
-		},
+	extends: [ 'plugin:@wordpress/eslint-plugin/recommended', 'prettier' ],
+	env: {
+		browser: true,
+		jquery: true,
+		node: true,
+		es6: true,
 	},
-	settings: {
-		react: {
-			version: 'detect',
-		},
+	globals: {
+		wp: true,
 	},
 	rules: {
+		camelcase: 'warn',
+		eqeqeq: 'warn',
+		'no-console': 'warn',
+		'@wordpress/no-unused-vars-before-return': 'off',
 		'react/react-in-jsx-scope': 'off',
 		'@typescript-eslint/explicit-module-boundary-types': 'off',
 		'@typescript-eslint/no-explicit-any': 'off',
