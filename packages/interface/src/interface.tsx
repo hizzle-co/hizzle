@@ -24,10 +24,16 @@ import { InterfaceSkeleton } from '@wordpress/interface';
  * @param {string} [props.className]         Additional CSS class names.
  * @return {JSX.Element}              The interface component.
  */
-export const NoptinInterface = ( { className, ...props } ) => {
-	const useClassName = [ 'noptin-app__interface', className ].filter( Boolean ).join( ' ' );
+export const NoptinInterface = ({ className, ...props }) => {
+	const useClassName = ['noptin-app__interface', className]
+		.filter(Boolean)
+		.join(' ');
 
 	return (
-		<InterfaceSkeleton className={ useClassName } isDistractionFree={ false } { ...props } />
+		<InterfaceSkeleton
+			className={useClassName}
+			isDistractionFree={false}
+			{...props}
+		/>
 	);
 };

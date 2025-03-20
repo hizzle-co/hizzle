@@ -46,7 +46,6 @@ interface InputSettingProps extends InputControlProps {
 	 * Array of available smart tags that can be inserted into the input.
 	 */
 	availableSmartTags?: smartTag[];
-
 }
 
 /**
