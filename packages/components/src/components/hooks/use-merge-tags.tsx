@@ -61,7 +61,7 @@ interface UseMergeTagsProps extends Omit<DropdownMenuProps, 'label'> {
  */
 export const useMergeTags = ({
 	availableSmartTags = [],
-	onMergeTagClick = (mergeTag: string, full?: string) => {},
+	onMergeTagClick = () => {},
 	raw = false,
 	icon = 'shortcode',
 	label = __('Insert dynamic field', 'newsletter-optin-box'),

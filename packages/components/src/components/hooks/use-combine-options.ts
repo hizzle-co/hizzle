@@ -26,7 +26,7 @@ export const useCombineOptions = (
 			return options;
 		}
 
-		let newOptions = [...options];
+		const newOptions = [...options];
 
 		Object.keys(groups).forEach((group) => {
 			if (!Array.isArray(groups[group]) || !groups[group].length) {

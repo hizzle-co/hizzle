@@ -7,7 +7,6 @@ import React from 'react';
  * WordPress dependencies
  */
 import { InterfaceSkeleton } from '@wordpress/interface';
-import { __ } from '@wordpress/i18n';
 
 /**
  * The main interface component for the application.

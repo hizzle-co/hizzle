@@ -256,6 +256,9 @@ export function Setting({
 		[saved, settingPath, setAttributes, sanitize]
 	);
 
+	// If we have options, convert from object to array.
+	const options: SelectOption[] = useOptions(setting.options || []);
+
 	// Simple condition.
 	if (setting.if || setting.restrict) {
 		// Check if we're separating with period.
@@ -316,9 +319,6 @@ export function Setting({
 
 	// Do we have a value?
 	const hasValue = value !== undefined && value !== '' && value !== null;
-
-	// If we have options, convert from object to array.
-	let options: SelectOption[] = useOptions(setting.options || []);
 
 	// Classname for the field.
 	const className = `noptin-component__field-${settingKey}`;
@@ -618,12 +618,12 @@ export function Setting({
 		}
 
 		// Image upload.
-		if ('image' === setting.type) {
+		if ('image' === setting.type && window.wp?.media) {
 			defaultAttributes.suffix = (
 				<Button
 					onClick={() => {
 						// Init the media uploader script.
-						var image = window.wp
+						const image = window.wp
 							.media({
 								title: __(
 									'Upload Image',
@@ -639,8 +639,8 @@ export function Setting({
 							.open()
 
 							// Update the associated key with the selected image's url
-							.on('select', (e) => {
-								let uploaded_image = image
+							.on('select', () => {
+								const uploaded_image = image
 									.state()
 									.get('selection')
 									.first();
@@ -718,6 +718,7 @@ export function Setting({
 				{...defaultAttributes}
 				setting={setting}
 				availableSmartTags={theAvailableSmartTags}
+				__nextHasNoMarginBottom
 			/>
 		);
 	}
@@ -727,6 +728,7 @@ export function Setting({
 		return (
 			<RepeaterControl
 				{...defaultAttributes}
+				__nextHasNoMarginBottom
 				availableSmartTags={theAvailableSmartTags}
 			/>
 		);

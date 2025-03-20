@@ -15,8 +15,7 @@ import {
 	DateTimePicker,
 } from '@wordpress/components';
 import type { InputControlProps } from '@wordpress/components/src/input-control/types';
-import { next, calendar, tip } from '@wordpress/icons';
-import { __, sprintf } from '@wordpress/i18n';
+import { calendar } from '@wordpress/icons';
 import { format } from '@wordpress/date';
 
 /**
@@ -70,7 +69,7 @@ export const InputSetting: React.FC<InputSettingProps> = ({
 		(mergeTag) => {
 			// Add the merge tag to the value.
 			if (attributes.onChange) {
-				// @ts-ignore
+				// @ts-expect-error Event handler is not needed.
 				attributes.onChange(
 					attributes.value
 						? `${attributes.value} ${mergeTag}`.trim()
@@ -121,7 +120,7 @@ export const InputSetting: React.FC<InputSettingProps> = ({
 									newDate = format('c', newDate);
 								}
 								if (attributes.onChange) {
-									// @ts-ignore
+									// @ts-expect-error Event handler is not needed.
 									attributes.onChange(newDate || '');
 								}
 							}}

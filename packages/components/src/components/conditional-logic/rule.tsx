@@ -254,7 +254,7 @@ export const ConditionalLogicRule: React.FC<ConditionalLogicRuleProps> = (
 
 			// Filter object of available condition types to include where key === rule.type.
 			Object.keys(comparisons).forEach((key) => {
-				let comparison_type = comparisons[key].type;
+				const comparison_type = comparisons[key].type;
 
 				if (hasOptions) {
 					if (

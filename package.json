@@ -12,7 +12,7 @@
 		"clean": "rimraf packages/*/build-* packages/*/tsconfig.tsbuildinfo",
 		"dev": "webpack --watch",
 		"test": "npm run test --workspaces",
-		"lint": "npm run lint --workspaces",
+		"lint": "npx eslint . --ext .ts,.tsx --ignore-pattern \"**/build-types/**\"",
 		"format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
 		"check-engines": "wp-scripts check-engines",
 		"check-licenses": "wp-scripts check-licenses",
