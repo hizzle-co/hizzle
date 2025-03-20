@@ -22,7 +22,7 @@ import { format } from '@wordpress/date';
 /**
  * Local dependencies.
  */
-import { smartTag } from '../utils';
+import { useMergeTags, smartTag } from '../hooks';
 
 /**
  * Input types.
@@ -37,7 +37,7 @@ const inputTypes = [
 	'date',
 ];
 
-interface InputSettingProps extends Omit<InputControlProps, 'onChange'> {
+interface InputSettingProps extends InputControlProps {
 	/**
 	 * The setting configuration object.
 	 */
@@ -48,12 +48,6 @@ interface InputSettingProps extends Omit<InputControlProps, 'onChange'> {
 	 */
 	availableSmartTags?: smartTag[];
 
-	/**
-	 * Callback function triggered when the input value changes.
-	 *
-	 * @param {string} value The new input value.
-	 */
-	onChange?: (value: string) => void;
 }
 
 /**
@@ -76,6 +70,7 @@ export const InputSetting: React.FC<InputSettingProps> = ({
 		(mergeTag) => {
 			// Add the merge tag to the value.
 			if (attributes.onChange) {
+				// @ts-ignore
 				attributes.onChange(
 					attributes.value
 						? `${attributes.value} ${mergeTag}`.trim()
@@ -126,6 +121,7 @@ export const InputSetting: React.FC<InputSettingProps> = ({
 									newDate = format('c', newDate);
 								}
 								if (attributes.onChange) {
+									// @ts-ignore
 									attributes.onChange(newDate || '');
 								}
 							}}
