@@ -32,6 +32,9 @@
 		"@wordpress/base-styles": "^5.20.0",
 		"@wordpress/interface": "^9.5.0"
 	},
+	"peerDependencies": {
+		"react": "^18.0.0"
+	},
 	"publishConfig": {
 		"access": "public"
 	}
