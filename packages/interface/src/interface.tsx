@@ -21,10 +21,10 @@ import { InterfaceSkeleton } from '@wordpress/interface';
  * @param {React.ReactNode} [props.editorNotices] Editor notices component.
  * @param {boolean} [props.isDistractionFree] Whether the interface is in distraction free mode.
  * @param {Object} [props.labels]            Interface labels.
- * @param {string} [props.className]         Additional CSS class names.
+ * @param {string} [props.?className]         Additional CSS class names.
  * @return {JSX.Element}              The interface component.
  */
-export const NoptinInterface = ({ className, ...props }) => {
+export const NoptinInterface = ({ className = undefined, ...props }) => {
 	const useClassName = ['noptin-app__interface', className]
 		.filter(Boolean)
 		.join(' ');

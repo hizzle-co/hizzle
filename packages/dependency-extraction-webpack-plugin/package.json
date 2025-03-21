@@ -28,12 +28,6 @@
 		"src",
 		"assets"
 	],
-	"scripts": {
-		"build": "wp-scripts build",
-		"dev": "wp-scripts start",
-		"test": "jest",
-		"lint": "eslint src --ext .ts,.tsx"
-	},
 	"publishConfig": {
 		"access": "public"
 	},

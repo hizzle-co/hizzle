@@ -1,18 +1,18 @@
 {
-	"name": "@hizzlewp/components",
-	"version": "1.2.1",
-	"description": "Reusable React UI components for WordPress plugins",
+	"name": "@hizzlewp/records",
+	"version": "1.0.0",
+	"description": "Display records in a table, grid, or list",
 	"author": "picocodes",
 	"license": "GPL-2.0-or-later",
 	"keywords": [
 		"wordpress",
 		"hizzle"
 	],
-	"homepage": "https://github.com/hizzle-co/hizzle/tree/main/packages/components",
+	"homepage": "https://github.com/hizzle-co/hizzle/tree/main/packages/records",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/hizzle-co/hizzle.git",
-		"directory": "packages/components"
+		"directory": "packages/records"
 	},
 	"bugs": {
 		"url": "https://github.com/hizzle-co/hizzle/issues"
@@ -29,9 +29,7 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@wordpress/api-fetch": "^7.20.0",
-		"@wordpress/components": "^29.6.0",
-		"@wordpress/url": "^4.20.0"
+		"@wordpress/dataviews": "^4.16.0"
 	},
 	"publishConfig": {
 		"access": "public"

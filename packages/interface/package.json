@@ -28,13 +28,6 @@
 		"build-module/",
 		"build-types/"
 	],
-	"scripts": {
-		"build": "wp-scripts build",
-		"dev": "wp-scripts start",
-		"test": "jest",
-		"lint": "eslint src --ext .ts,.tsx",
-		"publish": "npm publish --access public"
-	},
 	"dependencies": {
 		"@wordpress/base-styles": "^5.20.0",
 		"@wordpress/interface": "^9.5.0"
