@@ -6,7 +6,31 @@ import React from 'react';
 /**
  * WordPress dependencies
  */
-import { InterfaceSkeleton } from '@wordpress/interface';
+import {
+	InterfaceSkeleton,
+	FullscreenMode,
+	store as interfaceStore,
+} from '@wordpress/interface';
+import { useSelect } from '@wordpress/data';
+import { useViewportMatch } from '@wordpress/compose';
+
+const STORE_NAME = 'hizzlewp/interface';
+
+const WithFullscreenMode = ( { children }: { children: React.ReactNode } ) => {
+	const isFullscreenActive = useSelect(
+		( select ) => !!select( interfaceStore ).isFeatureActive( STORE_NAME, 'fullscreenMode' ),
+		[]
+	);
+
+	const isMobileViewport = useViewportMatch( 'medium', '<' );
+
+	return (
+		<>
+			<FullscreenMode isActive={ isFullscreenActive && !isMobileViewport } />
+			{ children }
+		</>
+	);
+};
 
 /**
  * The main interface component for the application.
@@ -24,16 +48,18 @@ import { InterfaceSkeleton } from '@wordpress/interface';
  * @param {string} [props.?className]         Additional CSS class names.
  * @return {JSX.Element}              The interface component.
  */
-export const NoptinInterface = ({ className = undefined, ...props }) => {
-	const useClassName = ['noptin-app__interface', className]
-		.filter(Boolean)
-		.join(' ');
+export const NoptinInterface = ( { className = undefined, ...props } ) => {
+	const useClassName = [ 'noptin-app__interface', className ]
+		.filter( Boolean )
+		.join( ' ' );
 
 	return (
-		<InterfaceSkeleton
-			className={useClassName}
-			isDistractionFree={false}
-			{...props}
-		/>
+		<WithFullscreenMode>
+			<InterfaceSkeleton
+				className={ useClassName }
+				isDistractionFree={ false }
+				{ ...props }
+			/>
+		</WithFullscreenMode>
 	);
 };

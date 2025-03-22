@@ -31,3 +31,25 @@
         padding-bottom: 41px;
     }
 }
+
+.hizzle-interface__header-menu {
+    .components-button {
+        border-radius: 0;
+        font-weight: 500;
+
+        &.is-pressed {
+            --wp-components-color-foreground: rgba(var(--wp-admin-theme-color--rgb), 0.1);
+            --wp-components-color-foreground-inverted: var(--wp-admin-theme-color-darker-10);
+        }
+
+        &.is-pressed:hover {
+            background-color: var(--wp-components-color-foreground);
+            --wp-components-color-foreground: rgba(var(--wp-admin-theme-color--rgb), 0.2);
+        }
+
+        &:hover {
+            background-color: rgba(var(--wp-admin-theme-color--rgb), 0.1);
+            color: var(--wp-admin-theme-color-darker-10);
+        }
+    }
+}
