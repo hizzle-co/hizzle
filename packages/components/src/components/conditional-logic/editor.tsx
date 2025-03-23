@@ -180,7 +180,7 @@ export const ConditionalLogicEditor: React.FC<ConditionalLogicEditorProps> = (
 							)}
 							<Button
 								variant="secondary"
-								className="noptin-block-button"
+								className="hizzlewp-block-button"
 								onClick={() => setIsOpen(true)}
 							>
 								{__(

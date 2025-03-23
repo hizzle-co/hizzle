@@ -321,7 +321,7 @@ export function Setting({
 	const hasValue = value !== undefined && value !== '' && value !== null;
 
 	// Classname for the field.
-	const className = `noptin-component__field-${settingKey}`;
+	const className = `hizzlewp-component__field-${settingKey}`;
 
 	// Help text.
 	const help =

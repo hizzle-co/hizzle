@@ -134,7 +134,7 @@ export const RepeaterControl: React.FC<RepeaterControlProps> = (props) => {
 	const theValue = Array.isArray(value) ? value : [];
 
 	// The base props.
-	const theId = id || useInstanceId(RepeaterControl, 'noptin-repeater');
+	const theId = id || useInstanceId(RepeaterControl, 'hizzlewp-repeater');
 	const { baseControlProps, controlProps } = useBaseControlProps({
 		...attributes,
 		id: theId,
@@ -286,7 +286,7 @@ export const RepeaterControl: React.FC<RepeaterControlProps> = (props) => {
 				return (
 					<Card
 						size="small"
-						className="noptin-no-shadow"
+						className="hizzlewp-no-shadow"
 						id={`${theId}__item-${keyOrIndex(item, index)}`}
 						data-index={index}
 						borderBottom

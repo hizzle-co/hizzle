@@ -235,7 +235,7 @@ export const RepeaterItem: React.FC<RepeaterItemProps> = (props) => {
 							/>
 						))}
 						<HStack
-							className="noptin-repeater-item__actions"
+							className="hizzlewp-repeater-item__actions"
 							justify="flex-start"
 						>
 							{onDelete && !value?.predefined && (

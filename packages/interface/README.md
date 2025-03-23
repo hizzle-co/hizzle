@@ -12,7 +12,7 @@ Undocumented declaration.
 
 Undocumented declaration.
 
-## NoptinInterface
+## Interface
 
 The main interface component for the application.
 

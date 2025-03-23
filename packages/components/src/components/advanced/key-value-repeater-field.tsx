@@ -21,7 +21,7 @@ interface KeyValueRepeaterFieldProps {
 	/**
 	 * The onChange handler.
 	 */
-	onChange: (value: string | undefined) => void;
+	onChange: ( value: string | undefined ) => void;
 
 	/**
 	 * The current value.
@@ -53,39 +53,35 @@ interface KeyValueRepeaterFieldProps {
  * Displays a key value repeater setting field.
  *
  */
-export const KeyValueRepeaterField: React.FC<KeyValueRepeaterFieldProps> = ({
+export const KeyValueRepeaterField: React.FC<KeyValueRepeaterFieldProps> = ( {
 	field,
 	availableSmartTags,
 	value,
 	onChange,
-}) => {
+} ) => {
 	// On add merge tag...
 	const onMergeTagClick = useCallback(
-		(mergeTag: string) => {
+		( mergeTag: string ) => {
 			// Add the merge tag to the value.
-			if (onChange) {
-				onChange(value ? `${value} ${mergeTag}`.trim() : mergeTag);
+			if ( onChange ) {
+				onChange( value ? `${ value } ${ mergeTag }`.trim() : mergeTag );
 			}
 		},
-		[value, onChange]
+		[ value, onChange ]
 	);
 
 	// Merge tags.
-	const suffix = useMergeTags({ availableSmartTags, onMergeTagClick });
+	const suffix = useMergeTags( { availableSmartTags, onMergeTagClick } );
 
 	return (
 		<FlexBlock>
 			<InputControl
-				label={field.label}
-				type={field.type}
-				value={value}
-				placeholder={sprintf(
-					__('Enter %s', 'noptin-addons-pack'),
-					field.label
-				)}
-				className="noptin-component__field noptin-condition-field"
-				suffix={suffix}
-				onChange={onChange}
+				label={ field.label }
+				type={ field.type }
+				value={ value }
+				className="hizzlewp-component__field hizzlewp-condition-field"
+				suffix={ suffix }
+				onChange={ onChange }
 				isPressEnterToChange
 				__next40pxDefaultSize
 			/>

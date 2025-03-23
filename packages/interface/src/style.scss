@@ -1,7 +1,7 @@
 @use '../../../node_modules/@wordpress/base-styles/build-style/admin-schemes.css';
 @use '../../../node_modules/@wordpress/interface/build-style/style.css';
 
-.noptin-app__interface {
+.hizzlewp-app__interface {
     background-color: #f9fafb;
     z-index: 10;
     box-sizing: border-box;
@@ -10,7 +10,7 @@
         box-sizing: border-box;
     }
 
-    .noptin-no-shadow {
+    .hizzlewp-no-shadow {
         box-shadow: none;
     }
 
@@ -27,7 +27,7 @@
 }
 
 @media (min-width:782px) {
-    .noptin-app__interface.has-footer .interface-interface-skeleton__body {
+    .hizzlewp-app__interface.has-footer .interface-interface-skeleton__body {
         padding-bottom: 41px;
     }
 }

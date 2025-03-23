@@ -92,7 +92,7 @@ export const TextareaSetting: React.FC<TextareaSettingProps> = ({
 			label
 		);
 
-	const maybeId = id ? id : useInstanceId(TextareaSetting, 'noptin-textarea');
+	const maybeId = id ? id : useInstanceId(TextareaSetting, 'hizzlewp-textarea');
 
 	// Maybe auto grow.
 	useEffect(() => {

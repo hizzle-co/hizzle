@@ -48,8 +48,8 @@ const WithFullscreenMode = ( { children }: { children: React.ReactNode } ) => {
  * @param {string} [props.?className]         Additional CSS class names.
  * @return {JSX.Element}              The interface component.
  */
-export const NoptinInterface = ( { className = undefined, ...props } ) => {
-	const useClassName = [ 'noptin-app__interface', className ]
+export const Interface = ( { className = undefined, ...props } ) => {
+	const useClassName = [ 'hizzlewp-app__interface', className ]
 		.filter( Boolean )
 		.join( ' ' );
 
