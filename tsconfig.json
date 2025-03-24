@@ -2,7 +2,8 @@
 	"$schema": "https://json.schemastore.org/tsconfig.json",
 	"references": [
 		{ "path": "packages/components" },
-		{ "path": "packages/interface" }
+		{ "path": "packages/interface" },
+		{ "path": "packages/records" }
 	],
 	"files": []
 }

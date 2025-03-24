@@ -1,14 +1,12 @@
 /**
  * External dependencies
  */
-import React from 'react'
+import React from 'react';
 
 /**
  * WordPress dependencies
  */
-import {
-	__experimentalVStack as VStack,
-} from '@wordpress/components';
+import { __experimentalVStack as VStack } from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -18,11 +16,13 @@ import { Head } from './head';
 import { Body } from './body';
 import { Pagination } from './pagination';
 
-export function Table<TData>( props: Omit<TableProviderProps<TData>, 'children'> ) {
+export function Table<TData>(
+	props: Omit<TableProviderProps<TData>, 'children'>
+) {
 	return (
-		<TableProvider { ...props }>
+		<TableProvider {...props}>
 			<div className="hizzlewp-table-container dataviews-wrapper">
-				<VStack spacing={ 4 }>
+				<VStack spacing={4}>
 					<table className="hizzle-records__table">
 						<Head />
 						<Body />
@@ -31,5 +31,5 @@ export function Table<TData>( props: Omit<TableProviderProps<TData>, 'children'>
 				</VStack>
 			</div>
 		</TableProvider>
-	)
+	);
 }

@@ -21,10 +21,14 @@ _Parameters_
 - _props_ `Object`: Component props.
 - _props.header_ `[React.ReactNode]`: Header component.
 - _props.sidebar_ `[React.ReactNode]`: Sidebar component.
+- _props.secondarySidebar_ `[React.ReactNode]`: Secondary sidebar component.
 - _props.content_ `[React.ReactNode]`: Content component.
 - _props.footer_ `[React.ReactNode]`: Footer component.
 - _props.actions_ `[React.ReactNode]`: Action components.
-- _props.className_ `[string]`: Additional CSS class names.
+- _props.editorNotices_ `[React.ReactNode]`: Editor notices component.
+- _props.isDistractionFree_ `[boolean]`: Whether the interface is in distraction free mode.
+- _props.labels_ `[Object]`: Interface labels.
+- _props.?className_ `[string]`: Additional CSS class names.
 
 _Returns_
 

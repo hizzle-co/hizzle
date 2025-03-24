@@ -1,6 +1,7 @@
-@import '../../../../../node_modules/@wordpress/base-styles/breakpoints';
-@import '../../../../../node_modules/@wordpress/base-styles/variables';
-@import '../../../../../node_modules/@wordpress/base-styles/mixins';
+// https://github.com/WordPress/gutenberg/blob/e9d5e0fcb7b1c41915119f6dc5f3c19b02c1077d/packages/base-styles/README.md
+@import 'mixins';
+@import 'breakpoints';
+@import 'variables';
 
 .hizzle-records__table-wrapper {
 	height: 100%;

@@ -16,18 +16,24 @@ import { useViewportMatch } from '@wordpress/compose';
 
 const STORE_NAME = 'hizzlewp/interface';
 
-const WithFullscreenMode = ( { children }: { children: React.ReactNode } ) => {
+const WithFullscreenMode = ({ children }: { children: React.ReactNode }) => {
 	const isFullscreenActive = useSelect(
-		( select ) => !!select( interfaceStore ).isFeatureActive( STORE_NAME, 'fullscreenMode' ),
+		(select) =>
+			!!select(interfaceStore).isFeatureActive(
+				STORE_NAME,
+				'fullscreenMode'
+			),
 		[]
 	);
 
-	const isMobileViewport = useViewportMatch( 'medium', '<' );
+	const isMobileViewport = useViewportMatch('medium', '<');
 
 	return (
 		<>
-			<FullscreenMode isActive={ isFullscreenActive && !isMobileViewport } />
-			{ children }
+			<FullscreenMode
+				isActive={isFullscreenActive && !isMobileViewport}
+			/>
+			{children}
 		</>
 	);
 };
@@ -48,17 +54,17 @@ const WithFullscreenMode = ( { children }: { children: React.ReactNode } ) => {
  * @param {string} [props.?className]         Additional CSS class names.
  * @return {JSX.Element}              The interface component.
  */
-export const Interface = ( { className = undefined, ...props } ) => {
-	const useClassName = [ 'hizzlewp-app__interface', className ]
-		.filter( Boolean )
-		.join( ' ' );
+export const Interface = ({ className = undefined, ...props }) => {
+	const useClassName = ['hizzlewp-app__interface', className]
+		.filter(Boolean)
+		.join(' ');
 
 	return (
 		<WithFullscreenMode>
 			<InterfaceSkeleton
-				className={ useClassName }
-				isDistractionFree={ false }
-				{ ...props }
+				className={useClassName}
+				isDistractionFree={false}
+				{...props}
 			/>
 		</WithFullscreenMode>
 	);

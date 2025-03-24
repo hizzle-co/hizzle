@@ -24,7 +24,9 @@ const { readFile } = require('fs').promises;
  *
  * @type {string}
  */
-const ROOT_DIR = resolve(__dirname, '../..').replace(/\\/g, '/');
+const ROOT_DIR = resolve(__dirname, '..').replace(/\\/g, '/');
+
+console.log(ROOT_DIR);
 
 /**
  * Path to packages directory.
@@ -32,6 +34,8 @@ const ROOT_DIR = resolve(__dirname, '../..').replace(/\\/g, '/');
  * @type {string}
  */
 const PACKAGES_DIR = resolve(ROOT_DIR, 'packages').replace(/\\/g, '/');
+
+console.log(PACKAGES_DIR);
 
 /**
  * Pattern matching start token of a README file.

@@ -89,9 +89,7 @@ export const useMergeTagGroups = (availableSmartTags: smartTag[]) => {
 		const groups: Record<string, smartTag[]> = {};
 
 		availableSmartTags.forEach((smartTag) => {
-			const group = smartTag.group
-				? smartTag.group
-				: __('General', 'newsletter-optin-box');
+			const group = smartTag.group ? smartTag.group : 'General';
 
 			if (!Array.isArray(groups[group])) {
 				groups[group] = [];

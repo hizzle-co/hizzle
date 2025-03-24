@@ -1,5 +1,5 @@
 module.exports = [
-    '@hizzlewp/interface',
-    '@hizzlewp/components',
-    '@hizzlewp/records',
+	'@hizzlewp/interface',
+	'@hizzlewp/components',
+	'@hizzlewp/records',
 ];

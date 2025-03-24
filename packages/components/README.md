@@ -14,7 +14,17 @@ Displays a combobox setting
 
 ## compare
 
-Undocumented declaration.
+Compares two values using the specified operator.
+
+_Parameters_
+
+- _conditionValue_ `any`: - The value to compare against (left side of the comparison).
+- _operator_ `Operators`: - The operator to use for comparison.
+- _savedValue_ `any`: - The saved value to compare with (right side of the comparison).
+
+_Returns_
+
+- `boolean`: The result of the comparison.
 
 ## ConditionalLogicEditor
 
@@ -51,6 +61,10 @@ _Type_
 ## getMergeTagValue
 
 Returns a merge tag's value.
+
+_Parameters_
+
+- _smartTag_ `smartTag`: - The smart tag to get the value of.
 
 ## getNestedValue
 
@@ -102,7 +116,69 @@ Multi select control.
 
 ## operators
 
-Undocumented declaration.
+A record of comparison operators with their corresponding functions.
+
+_Type_
+
+- `Record<Operators, OperatorFn>`
+
+## prepareAvailableSmartTags
+
+Returns a list of available smart tags.
+
+_Parameters_
+
+- _smartTags_ `Record<string, any>`: - The smart tags to prepare.
+- _savedSettings_ `Record<string, any>`: - The saved settings to use for conditional logic.
+
+_Returns_
+
+- `smartTag[]`: The prepared smart tags.
+
+## randomColor
+
+Generate random color
+
+_Usage_
+
+```js
+// Generate random color
+uniqolor.random();
+// { color: "#644cc8", isLight: false }
+
+// Generate a random color with HSL format
+uniqolor.random({ format: 'hsl' });
+// { color: "hsl(89, 55%, 60%)", isLight: true }
+
+// Generate a random color in specific saturation and lightness
+uniqolor.random({
+	saturation: 80,
+	lightness: [70, 80],
+});
+// { color: "#c7b9da", isLight: true }
+
+// Generate a random color but exclude red color range
+uniqolor.random({
+	excludeHue: [
+		[0, 20],
+		[325, 359],
+	],
+});
+// {color: '#53caab', isLight: true}
+```
+
+_Parameters_
+
+- _options_ `[Object]`:
+- _options.format_ `[string]`: The color format, it can be one of `hex`, `rgb` or `hsl`
+- _options.saturation_ `[number|Array]`: Determines the color saturation, it can be a number or a range between 0 and 100
+- _options.lightness_ `[number|Array]`: Determines the color lightness, it can be a number or a range between 0 and 100
+- _options.differencePoint_ `[number]`: Determines the color brightness difference point. We use it to obtain the `isLight` value in the output, it can be a number between 0 and 255
+- _options.excludeHue_ `[Array]`: Exclude certain hue ranges. For example to exclude red color range: `[[0, 20], [325, 359]]`
+
+_Returns_
+
+- `Object`:
 
 ## RemoteSettings
 
@@ -143,6 +219,46 @@ Displays a single setting.
 _Returns_
 
 - `JSX.Element`:
+
+## stringToColor
+
+Generate unique color from `value`
+
+_Usage_
+
+```js
+stringToColor('Hello world!');
+// { color: "#5cc653", isLight: true }
+
+stringToColor('Hello world!', { format: 'rgb' });
+// { color: "rgb(92, 198, 83)", isLight: true }
+
+stringToColor('Hello world!', {
+	saturation: 30,
+	lightness: [70, 80],
+});
+// { color: "#afd2ac", isLight: true }
+
+stringToColor('Hello world!', {
+	saturation: 30,
+	lightness: [70, 80],
+	differencePoint: 200,
+});
+// { color: "#afd2ac", isLight: false }
+```
+
+_Parameters_
+
+- _value_ `string|number`:
+- _options_ `[Object]`:
+- _options.format_ `[string]`: The color format, it can be one of `hex`, `rgb` or `hsl`
+- _options.saturation_ `[number|Array]`: Determines the color saturation, it can be a number or a range between 0 and 100
+- _options.lightness_ `[number|Array]`: Determines the color lightness, it can be a number or a range between 0 and 100
+- _options.differencePoint_ `[number]`: Determines the color brightness difference point. We use it to obtain the `isLight` value in the output, it can be a number between 0 and 255
+
+_Returns_
+
+- `Object`:
 
 ## TextareaSetting
 
