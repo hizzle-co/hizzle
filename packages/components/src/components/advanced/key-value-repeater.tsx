@@ -21,7 +21,7 @@ import type { BaseControlProps } from '@wordpress/components/src/base-control/ty
  */
 import { smartTag } from '../hooks';
 import { KeyValueRepeaterField } from '.';
-import type { Setting } from '../setting';
+import type { ISetting } from '../setting';
 
 /**
  * Key value repeater fields.
@@ -58,7 +58,7 @@ interface KeyValueRepeaterProps extends Omit<BaseControlProps, 'children'> {
 	/**
 	 * The setting object.
 	 */
-	setting: Setting;
+	setting: ISetting;
 
 	/**
 	 * The available smart tags.

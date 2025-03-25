@@ -24,8 +24,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Local dependancies.
  */
 import { smartTag } from '../hooks';
-import { Setting } from '../setting';
-import type { Setting as SettingType } from '../setting';
+import { Setting, ISetting } from '../setting';
 import { getNestedValue } from '../utils';
 
 export interface RepeaterKey {
@@ -75,7 +74,7 @@ interface RepeaterItemProps {
 	/**
 	 * The fields.
 	 */
-	fields: SettingType[];
+	fields: ISetting[];
 
 	/**
 	 * The available smart tags.

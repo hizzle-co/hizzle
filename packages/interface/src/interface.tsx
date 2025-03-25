@@ -51,10 +51,10 @@ const WithFullscreenMode = ({ children }: { children: React.ReactNode }) => {
  * @param {React.ReactNode} [props.editorNotices] Editor notices component.
  * @param {boolean} [props.isDistractionFree] Whether the interface is in distraction free mode.
  * @param {Object} [props.labels]            Interface labels.
- * @param {string} [props.?className]         Additional CSS class names.
+ * @param {string} [props.className]         Additional CSS class names.
  * @return {JSX.Element}              The interface component.
  */
-export const Interface = ({ className = undefined, ...props }) => {
+export const Interface = ({ className = '', ...rest }: { className?: string } & Record<string, any>) => {
 	const useClassName = ['hizzlewp-app__interface', className]
 		.filter(Boolean)
 		.join(' ');
@@ -64,7 +64,7 @@ export const Interface = ({ className = undefined, ...props }) => {
 			<InterfaceSkeleton
 				className={useClassName}
 				isDistractionFree={false}
-				{...props}
+				{...rest}
 			/>
 		</WithFullscreenMode>
 	);

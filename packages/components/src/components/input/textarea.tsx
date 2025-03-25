@@ -16,7 +16,7 @@ import { useInstanceId } from '@wordpress/compose';
 /**
  * Local dependencies.
  */
-import { Setting } from '../setting';
+import { ISetting } from '../setting';
 import { useMergeTags, smartTag } from '../hooks';
 
 /**
@@ -41,7 +41,7 @@ interface TextareaSettingProps
 	/**
 	 * The setting.S
 	 */
-	setting: Setting;
+	setting: ISetting;
 
 	/**
 	 * The id.
