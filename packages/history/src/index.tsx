@@ -57,7 +57,7 @@ interface History {
      * @param listener - The listener to call when the history changes.
      * @returns A function to remove the listener.
      */
-    listen: ( listener: ( location: CustomEvent<{ state: Record<string, string> }>|PopStateEvent ) => void ) => () => void;
+    listen: ( listener: ( location: CustomEvent<{ state: Record<string, string> }> | PopStateEvent ) => void ) => () => void;
 }
 
 let _history: History;
@@ -69,13 +69,13 @@ let _history: History;
  *
  * @return {History} React-router history object with `get location` modified.
  */
-export function getHistory( defaultRoute = '/' ) : History {
+export function getHistory( defaultRoute = '/' ): History {
     if ( !_history ) {
-        let listeners: ( ( location: CustomEvent<{ state: Record<string, string> }>|PopStateEvent ) => void )[] = [];
+        let listeners: ( ( location: CustomEvent<{ state: Record<string, string> }> | PopStateEvent ) => void )[] = [];
 
         // Prevent duplicate events.
         let lastHistory = window.location.href;
-        const handleEvent = ( event: CustomEvent<{ state: Record<string, string> }>|PopStateEvent ) => {
+        const handleEvent = ( event: CustomEvent<{ state: Record<string, string> }> | PopStateEvent ) => {
             if ( lastHistory !== window.location.href ) {
                 lastHistory = window.location.href;
                 listeners.forEach( fn => fn( event ) );
@@ -90,7 +90,7 @@ export function getHistory( defaultRoute = '/' ) : History {
 
                 return {
                     query,
-                    pathname: pathname.startsWith('/') ? pathname : `/${pathname}`,
+                    pathname: pathname.startsWith( '/' ) ? pathname : `/${ pathname }`,
                 };
             },
             push( url, data = {} ) {
@@ -169,8 +169,8 @@ export function getNewPath(
     const args = { ...currentQuery, ...query };
     if ( path !== '/' ) {
 
-        if ( ! path.startsWith( '/' ) ) {
-            path = `/${path}`;
+        if ( !path.startsWith( '/' ) ) {
+            path = `/${ path }`;
         }
 
         // Remove double forward slashes.
@@ -210,8 +210,28 @@ export function updateQueryString(
 export function updatePath(
     path: string,
 ) {
-    console.log( 'updatePath', path, getNewPath( {}, path, getQuery() ) );
     getHistory().push( getNewPath( {}, path, getQuery() ) );
+}
+
+/**
+ * Navigates to the parent path.
+ */
+export function goToParent() {
+    /**
+     * Gets the current path and navigates to its parent path.
+     */
+    const currentPath = getPath();
+
+    /**
+     * Extracts the parent path by removing the last segment of the current path.
+     * If the current path is the root, it defaults to '/'.
+     */
+    const parentPath = currentPath.substring( 0, currentPath.lastIndexOf( '/' ) ) || '/';
+
+    /**
+     * Updates the path to the parent path.
+     */
+    updatePath( parentPath );
 }
 
 /**

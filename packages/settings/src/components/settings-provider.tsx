@@ -290,7 +290,6 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ( {
 
 	const style: React.CSSProperties = useMemo( () => {
 		return {
-			opacity: isSaving ? 0.5 : 1,
 			pointerEvents: isSaving ? 'none' : 'auto',
 			cursor: isSaving ? 'wait' : 'auto',
 		};

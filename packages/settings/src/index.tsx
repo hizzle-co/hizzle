@@ -8,7 +8,6 @@ import { SlotFillProvider } from '@wordpress/components';
 /**
  * Internal dependencies.
  */
-import './style.scss';
 import Layout from './components/layout';
 import { SettingsProvider } from './components/settings-provider';
 

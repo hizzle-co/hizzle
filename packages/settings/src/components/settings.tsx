@@ -22,19 +22,21 @@ import { getPath } from '@hizzlewp/history';
  */
 import { Section } from './section';
 
+const section = <Section />;
+
 export const Settings = () => {
 
 	return (
 		<ErrorBoundary>
 			<NavigatorProvider initialPath={ getPath() }>
 				<NavigatorScreen path="/">
-					<Section />
+					{ section }
 				</NavigatorScreen>
 				<NavigatorScreen path="/:tab">
-					<Section />
+					{ section }
 				</NavigatorScreen>
 				<NavigatorScreen path="/:tab/:section">
-					<Section />
+					{ section }
 				</NavigatorScreen>
 			</NavigatorProvider>
 		</ErrorBoundary>

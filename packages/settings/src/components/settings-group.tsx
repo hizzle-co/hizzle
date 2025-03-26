@@ -33,7 +33,7 @@ export function SettingsGroup( { id, label, className, settings, conditions, car
 
     const { saved } = useSettings();
 
-    if ( Array.isArray( conditions ) && ! checkConditions( conditions, saved ) ) {
+    if ( Array.isArray( conditions ) && !checkConditions( conditions, saved ) ) {
         return null;
     }
 

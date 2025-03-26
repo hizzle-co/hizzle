@@ -46,7 +46,7 @@ export function IntegrationSection( { id, heading, description, help_url, badges
     badges.forEach( ( badgeInfo ) => {
 
         // Key value conditions.
-        if ( ! Array.isArray( badgeInfo.conditions ) || checkConditions( badgeInfo.conditions, saved ) ) {
+        if ( !Array.isArray( badgeInfo.conditions ) || checkConditions( badgeInfo.conditions, saved ) ) {
             badge = <Text { ...badgeInfo.props }>{ badgeInfo.text }</Text>
         }
     } )
@@ -82,10 +82,6 @@ export function IntegrationSection( { id, heading, description, help_url, badges
             id={ id }
             size="small"
             className={ classnames( className, 'noptin-no-shadow' ) }
-            borderBottom
-            borderLeft
-            borderRight
-            borderTop
             { ...( cardProps || {} ) }
         >
 

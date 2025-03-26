@@ -110,7 +110,6 @@ export const Section = () => {
 				data-current-path={ location.path }
 				key={ path }
 				style={ {
-					maxWidth: 620,
 					padding: 20,
 				} }
 			>
@@ -192,9 +191,15 @@ const SectionsList = ( { name, sections, currentTab, currentSection }: SectionsL
 }
 
 export const SettingsList = ( { settings } ) => {
+	const { isSaving } = useSettings();
 
 	return (
-		<VStack spacing={ 4 }>
+		<VStack spacing={ 4 } style={ {
+			maxWidth: 620,
+			opacity: isSaving ? 0.5 : 1,
+			pointerEvents: isSaving ? 'none' : 'auto',
+			cursor: isSaving ? 'wait' : 'auto',
+		} }>
 			{ Object.keys( settings ).map( ( setting ) => (
 				<ErrorBoundary key={ setting }>
 					<SingleSetting
