@@ -11,7 +11,7 @@ import { usePath } from ".";
 /**
  * Route config type
  */
-interface RouteConfig {
+export interface RouteConfig {
 	/**
 	 * The path to match for this route.
 	 */

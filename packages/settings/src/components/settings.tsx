@@ -4,41 +4,43 @@
 import React from 'react';
 
 /**
- * WordPress dependencies
- */
-import {
-	__experimentalNavigatorProvider as NavigatorProvider,
-	__experimentalNavigatorScreen as NavigatorScreen,
-} from '@wordpress/components';
-
-/**
  * HizzleWP dependencies.
  */
 import { ErrorBoundary } from '@hizzlewp/components';
-import { getPath } from '@hizzlewp/history';
+import { Router, RouteConfig } from '@hizzlewp/history';
 
 /**
  * Local dependencies
  */
 import { Section } from './section';
 
-const section = <Section />;
+const element = <Section />;
 
 export const Settings = () => {
 
+	// Define routes.
+	const routes: RouteConfig[] = [
+		{
+			path: '/',
+			element,
+			children: [
+				{
+					path: '/:tab',
+					element,
+					children: [
+						{
+							path: '/:tab/:section',
+							element,
+						},
+					],
+				},
+			],
+		},
+	];
+
 	return (
 		<ErrorBoundary>
-			<NavigatorProvider initialPath={ getPath() }>
-				<NavigatorScreen path="/">
-					{ section }
-				</NavigatorScreen>
-				<NavigatorScreen path="/:tab">
-					{ section }
-				</NavigatorScreen>
-				<NavigatorScreen path="/:tab/:section">
-					{ section }
-				</NavigatorScreen>
-			</NavigatorProvider>
+			<Router routes={ routes } />
 		</ErrorBoundary>
 	);
 };

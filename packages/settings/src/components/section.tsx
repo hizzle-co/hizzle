@@ -1,13 +1,12 @@
 /**
  * External dependencies.
  */
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 
 /**
  * WordPress dependencies
  */
 import {
-	__experimentalUseNavigator as useNavigator,
 	NavigableMenu,
 	__experimentalSurface as Surface,
 	__experimentalVStack as VStack,
@@ -20,7 +19,7 @@ import { useViewportMatch } from '@wordpress/compose';
  * HizzleWP dependencies.
  */
 import { Setting, ErrorBoundary } from '@hizzlewp/components';
-import { usePath, updatePath } from '@hizzlewp/history';
+import { updatePath, useRoute } from '@hizzlewp/history';
 
 /**
  * Local dependencies
@@ -41,23 +40,13 @@ export const Section = () => {
 	const { settings: tabs } = useSettings();
 
 	// The current settings params.
-	const { params, location, goTo } = useNavigator();
-
-	// Prepare the path.
-	const path = usePath();
-
-	// Listen to hizzlewp_path query parameter changes in the URL
-	useEffect( () => {
-		if ( path !== location.path ) {
-			goTo( path );
-		}
-	}, [ path, location.path ] );
+	const { params, path } = useRoute();
 
 	// Prepare the current tab and section.
 	const { tab, section } = useMemo( () => {
 
 		// If no tab is provided, use the first tab.
-		if ( !params.tab ) {
+		if ( !params.get( 'tab' ) ) {
 			return {
 				tab: tabs[ 0 ].name,
 				section: tabs[ 0 ].sections[ 0 ].name,
@@ -65,7 +54,7 @@ export const Section = () => {
 		}
 
 		// Get the current tab.
-		const tab = tabs.find( ( tab ) => tab.name === params.tab );
+		const tab = tabs.find( ( tab ) => tab.name === params.get( 'tab' ) );
 
 		// If no tab is found, use the first tab.
 		if ( !tab ) {
@@ -76,14 +65,14 @@ export const Section = () => {
 		}
 
 		// If no section is provided, use the first section.
-		if ( !params.section ) {
+		if ( !params.get( 'section' ) ) {
 			return {
 				tab: tab.name,
 				section: tab.sections[ 0 ].name,
 			};
 		}
 
-		const section = tab.sections.find( ( section ) => section.name === params.section );
+		const section = tab.sections.find( ( section ) => section.name === params.get( 'section' ) );
 
 		// If no section is found, use the first section.
 		if ( !section ) {
@@ -97,7 +86,7 @@ export const Section = () => {
 			tab: tab.name,
 			section: section.name,
 		};
-	}, [ params.tab, params.section, tabs ] );
+	}, [ params.get( 'tab' ), params.get( 'section' ), tabs ] );
 
 	const currentTab = useMemo( () => {
 		return tabs.find( ( _tab ) => _tab.name === tab );
@@ -107,7 +96,6 @@ export const Section = () => {
 		<div>
 			<VStack
 				spacing={ 4 }
-				data-current-path={ location.path }
 				key={ path }
 				style={ {
 					padding: 20,
@@ -156,7 +144,7 @@ interface SectionsListProps extends ITab {
 
 const SectionsList = ( { name, sections, currentTab, currentSection }: SectionsListProps ) => {
 
-	const { location } = useNavigator();
+	const { path } = useRoute();
 
 	const section = useMemo( () => {
 		return sections.find( ( section ) => section.name === currentSection );
@@ -175,7 +163,7 @@ const SectionsList = ( { name, sections, currentTab, currentSection }: SectionsL
 							key={ section.path }
 							onClick={ () => updatePath( section.path ) }
 							variant="tertiary"
-							isPressed={ location.path === section.path }
+							isPressed={ path === section.path }
 						>
 							{ section.title }
 						</Button>
