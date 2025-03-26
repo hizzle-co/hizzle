@@ -13,6 +13,11 @@ import {
 import { getQueryArgs, addQueryArgs } from '@wordpress/url';
 import { QueryArgParsed } from '@wordpress/url/build-types/get-query-arg';
 
+/**
+ * Local dependencies
+ */
+export * from './router';
+
 interface History {
     /**
      * The current location.
@@ -86,7 +91,7 @@ export function getHistory( defaultRoute = '/' ): History {
         _history = {
             get location() {
                 const query = getQueryArgs( window.location.search );
-                const pathname = query.hizzlewp_path as string || defaultRoute;
+                const pathname = ( query.hizzlewp_path as string || defaultRoute ).toLowerCase().replace(/\/$/, '');
 
                 return {
                     query,
