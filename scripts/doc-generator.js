@@ -177,9 +177,6 @@ glob.stream([`${PACKAGES_DIR}/${getPackagePattern(files)}/README.md`])
 					{ shell: true }
 				);
 			}
-			await execa('npm', ['run', 'format', output], {
-				shell: true,
-			});
 		} catch (error) {
 			console.error(error);
 			process.exit(1);
