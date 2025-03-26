@@ -108,17 +108,17 @@ const getMatchingRoutes = ( routes: RouteConfig[], path: string ): Map<string, R
 
 	// Iterate over the routes.
 	for ( const route of routes ) {
-		if ( matchPath( route.path, path ) ) {
-			// Add the route to the matched routes.
-			matchedRoutes.set( route.path, route );
+		if ( !matchPath( route.path, path ) ) continue;
 
-			if ( route.children ) {
-				const childMatch = getMatchingRoutes( route.children, path );
-				if ( childMatch ) {
-					// Merge child matches into the current map
-					childMatch.forEach( ( value, key ) => {
-						matchedRoutes.set( key, value );
-					} );
+		// Add the route to the matched routes.
+		matchedRoutes.set( route.path, route );
+
+		if ( route.children?.length ) {
+			const childMatch = getMatchingRoutes( route.children, path );
+			if ( childMatch ) {
+				// Merge child matches into the current map
+				for ( const [ key, value ] of childMatch ) {
+					matchedRoutes.set( key, value );
 				}
 			}
 		}
@@ -137,9 +137,9 @@ const getMatchingRoutes = ( routes: RouteConfig[], path: string ): Map<string, R
  * @param {string} path - The path to match
  * @returns {Boolean} True if the path matches the pattern, false otherwise
  */
-const matchPath = ( pattern: string, path: string ): boolean => {
-	const patternParts = pattern.split( "/" ).filter( Boolean );
-	const pathParts = path.split( "/" ).filter( Boolean );
+const matchPath = (pattern: string, path: string): boolean => {
+	const patternParts = pattern.split( '/' ).filter( Boolean );
+	const pathParts = path.split( '/' ).filter( Boolean );
 
 	// If the path is shorter than the pattern, return null.
 	// /users/123/edit can't match /users/:id.
