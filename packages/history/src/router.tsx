@@ -137,7 +137,7 @@ const getMatchingRoutes = ( routes: RouteConfig[], path: string ): Map<string, R
  * @param {string} path - The path to match
  * @returns {Boolean} True if the path matches the pattern, false otherwise
  */
-const matchPath = (pattern: string, path: string): boolean => {
+const matchPath = ( pattern: string, path: string ): boolean => {
 	const patternParts = pattern.split( '/' ).filter( Boolean );
 	const pathParts = path.split( '/' ).filter( Boolean );
 
@@ -179,10 +179,10 @@ interface RouterProps {
 export const Router: React.FC<RouterProps> = ( { children, routes } ) => {
 	const path = usePath();
 
-	const { params, outlets } = useMemo( () => {
+	const value = useMemo( () => {
 		// If no routes or no path, return empty params
 		if ( !routes.length || !path ) {
-			return {};
+			return { path };
 		}
 
 		// Find the matching routes.
@@ -190,23 +190,24 @@ export const Router: React.FC<RouterProps> = ( { children, routes } ) => {
 
 		// If there are no outlets, return empty params
 		if ( !outlets ) {
-			return {};
+			return { path };
 		}
 
 		// Use the last outlet to get the params
 		const outlet = Array.from( outlets.values() ).pop();
 		if ( !outlet ) {
-			return {};
+			return { path };
 		}
 
 		return {
 			params: getParams( outlet.path as string, path ),
 			outlets,
+			path,
 		};
 	}, [ routes, path ] );
 
 	return (
-		<RouteContext.Provider value={ { params, path, outlets } }>
+		<RouteContext.Provider value={ value }>
 			{ children || <Outlet /> }
 		</RouteContext.Provider>
 	);
@@ -218,37 +219,33 @@ export const Router: React.FC<RouterProps> = ( { children, routes } ) => {
 export const Outlet: React.FC<{ path?: string }> = ( { path } ) => {
 	const { outlets } = useRoute();
 
-	// Get the current route level.
-	const route = useMemo( () => {
+	// Get the current route level and the next outlet.
+	const [ route, nextOutlet ] = useMemo( () => {
 		if ( !outlets ) {
-			return undefined;
+			return [ undefined, undefined ];
 		}
 
-		// If no path, render the first outlet.
-		if ( !path ) {
-			return Array.from( outlets.values() ).shift();
-		}
-
-		// Otherwise, render the specified outlet.
-		return outlets.get( path );
-	}, [ path, outlets ] );
-
-	// Get the next outlet.
-	const nextOutlet = useMemo( () => {
-		if ( !route || !path || !outlets ) {
-			return null;
-		}
+		// Get current route
+		const currentRoute = path
+			// Render the specified outlet.
+			? outlets.get( path )
+			// If no path, render the first outlet.
+			: Array.from( outlets.values() )[ 0 ];
 
 		// Get the outlet that renders just after the current outlet's path.
-		// We need to find the outlet whose path starts with the current path
-		// but is one level deeper.
-		for ( const [ outletPath, outlet ] of outlets.entries() ) {
-			if ( outletPath.startsWith( path ) ) {
-				return outlet;
+		let next: RouteConfig | null = null;
+		if ( currentRoute && path ) {
+			const entries = Array.from( outlets.entries() );
+			const currentIndex = entries.findIndex( ( [ p ] ) => p === path );
+			if ( currentIndex !== -1 && currentIndex + 1 < entries.length ) {
+				const [ nextPath, nextRoute ] = entries[ currentIndex + 1 ];
+				if ( nextPath.startsWith( path ) ) {
+					next = nextRoute;
+				}
 			}
 		}
 
-		return null;
+		return [ currentRoute, next ];
 	}, [ path, outlets ] );
 
 	// If no outlet, return null.
