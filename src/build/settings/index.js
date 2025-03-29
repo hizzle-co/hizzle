@@ -1,1 +1,1206 @@
-(()=>{"use strict";var e={n:t=>{var n=t&&t.__esModule?()=>t.default:()=>t;return e.d(n,{a:n}),n},d:(t,n)=>{for(var s in n)e.o(n,s)&&!e.o(t,s)&&Object.defineProperty(t,s,{enumerable:!0,get:n[s]})},o:(e,t)=>Object.prototype.hasOwnProperty.call(e,t)};const t=window.wp.domReady;var n=e.n(t);const s=window.wp.element,i=window.wp.components,a=window.React,o=window.hizzlewp.interface,r=window.wp.data,c=window.wp.notices,l=window.ReactJSXRuntime;function d(){const{notices:e}=(0,r.useSelect)((e=>({notices:e(c.store).getNotices()})),[]),{removeNotice:t}=(0,r.useDispatch)(c.store),n=e.filter((({isDismissible:e,type:t})=>e&&"default"===t)),s=e.filter((({isDismissible:e,type:t})=>!e&&"default"===t));return(0,l.jsxs)(l.Fragment,{children:[(0,l.jsx)(i.NoticeList,{notices:s,className:"components-editor-notices__pinned"}),(0,l.jsx)(i.NoticeList,{notices:n,className:"components-editor-notices__dismissible",onRemove:t})]})}function u(){const e=(0,r.useSelect)((e=>e(c.store).getNotices()),[]),{removeNotice:t}=(0,r.useDispatch)(c.store),n=e.filter((({type:e})=>"snackbar"===e)).slice(-3);return(0,l.jsx)(i.SnackbarList,{notices:n,className:"components-editor-notices__snackbar",onRemove:t})}const p=window.hizzlewp.components,h=window.hizzlewp.history,m=window.wp.compose,x=window.wp.apiFetch;var g=e.n(x);const j=window.wp.i18n,_=(0,a.createContext)({option_name:"",saved:{},settings:[],isSaving:!1,setAttributes:()=>{},save:()=>{}}),w=()=>(0,a.useContext)(_),b=({settings:e,option_name:t,saved:n,children:s})=>{const[i,o]=(0,a.useState)(n),[d,u]=(0,a.useState)(!1),p=(0,a.useRef)(!1),{createSuccessNotice:h,createErrorNotice:m}=(0,r.useDispatch)(c.store),x=(0,a.useMemo)((()=>Object.keys(e).map((t=>{const n=e[t],s=Object.keys(n.sub_sections)[0],i=[];return Object.keys(n.sub_sections).map((e=>{const s=n.sub_sections[e];i.push({name:e,title:s.label,settings:s.settings,path:`/${t}/${e}`})})),{name:t,title:n.label,path:`/${t}/${s}`,sections:i}}))),[e]);(0,a.useEffect)((()=>{const e=e=>{if(p.current)return e.returnValue=(0,j.__)("You have unsaved changes. If you proceed, they will be lost."),e.returnValue};return window.addEventListener("beforeunload",e),()=>{window.removeEventListener("beforeunload",e)}}),[p.current]);const w=(0,a.useCallback)((()=>{u(!0),p.current=!1,g()({path:"/wp/v2/settings",method:"POST",data:{[t]:{...i}}}).then((e=>(h((0,j.__)("Settings saved."),{type:"snackbar"}),"object"==typeof e&&null!==e&&t in e&&o(e[t]),e))).catch((e=>{e.message?m(e.message):m((0,j.__)("An error occurred while saving."))})).finally((()=>{u(!1)}))}),[i,o,u,h,m,t]),b=(0,a.useCallback)((e=>{p.current=!0,o({...i,...e})}),[i,o]),f=(0,a.useMemo)((()=>({option_name:t,saved:i,settings:x,isSaving:d,save:w,setAttributes:b})),[t,i,x,d,w,b]),v=(0,a.useMemo)((()=>({pointerEvents:d?"none":"auto",cursor:d?"wait":"auto"})),[d]);return(0,l.jsx)(_.Provider,{value:f,children:(0,l.jsx)("div",{style:v,children:s})})};function f(e){var t,n,s="";if("string"==typeof e||"number"==typeof e)s+=e;else if("object"==typeof e)if(Array.isArray(e)){var i=e.length;for(t=0;t<i;t++)e[t]&&(n=f(e[t]))&&(s&&(s+=" "),s+=n)}else for(n in e)e[n]&&(s&&(s+=" "),s+=n);return s}const v=function(){for(var e,t,n=0,s="",i=arguments.length;n<i;n++)(e=arguments[n])&&(t=f(e))&&(s&&(s+=" "),s+=t);return s};function y({id:e,heading:t,description:n,help_url:s,badges:o,className:r,settings:c,cardProps:d}){const[u,h]=(0,a.useState)(!1),{saved:m}=w();let x=null;o.forEach((e=>{Array.isArray(e.conditions)&&!(0,p.checkConditions)(e.conditions,m)||(x=(0,l.jsx)(i.__experimentalText,{...e.props,children:e.text}))}));const g=()=>s?(0,l.jsx)(i.Button,{href:s,target:"_blank",icon:"info",label:"Learn more",showTooltip:!0}):n?(0,l.jsx)(i.Icon,{icon:"info",style:{color:"#454545"}}):null;return(0,l.jsxs)(i.Card,{id:e,size:"small",className:v(r,"noptin-no-shadow"),...d||{},children:[(0,l.jsx)(i.CardHeader,{style:{padding:0},children:(0,l.jsxs)(i.Flex,{as:i.Button,onClick:()=>h(!u),style:{paddingLeft:16,paddingRight:16,height:48},label:n,showTooltip:!0,children:[(0,l.jsxs)(i.__experimentalHStack,{as:i.FlexBlock,children:[(0,l.jsx)(i.__experimentalText,{as:"h3",weight:600,children:t}),(0,l.jsx)(g,{})]}),(0,l.jsx)(i.FlexItem,{children:(0,l.jsxs)(i.__experimentalHStack,{children:[x,(0,l.jsx)(i.Icon,{icon:u?"arrow-up-alt2":"arrow-down-alt2"})]})})]})}),u&&(0,l.jsx)(i.CardBody,{children:(0,l.jsxs)(i.__experimentalVStack,{spacing:6,children:[(0,l.jsx)(N,{settings:c}),s&&(0,l.jsx)(i.__experimentalHStack,{alignment:"flex-end",justify:"flex-end",children:(0,l.jsxs)(i.Button,{href:s,target:"_blank",label:"Need help?",variant:"secondary",showTooltip:!0,children:[(0,l.jsx)(i.__experimentalText,{children:"View integration guide"}),(0,l.jsx)(i.Icon,{icon:"external"})]})})]})})]})}function S({id:e,label:t,className:n,settings:s,conditions:a,cardProps:o}){const{saved:r}=w();return Array.isArray(a)&&!(0,p.checkConditions)(a,r)?null:(0,l.jsxs)(i.Card,{id:e,isRounded:!1,className:v("hizzlewp-settings__group",n),...o||{},children:[(0,l.jsx)(i.CardHeader,{children:(0,l.jsx)(i.__experimentalHeading,{level:4,size:16,children:t})}),(0,l.jsx)(i.CardBody,{children:(0,l.jsx)(N,{settings:s})})]})}const k=()=>{const e=(0,m.useViewportMatch)("small","<"),{settings:t}=w(),{params:n,path:s}=(0,h.useRoute)(),{tab:o,section:r}=(0,a.useMemo)((()=>{if(!n.get("tab"))return{tab:t[0].name,section:t[0].sections[0].name};const e=t.find((e=>e.name===n.get("tab")));if(!e)return{tab:t[0].name,section:t[0].sections[0].name};if(!n.get("section"))return{tab:e.name,section:e.sections[0].name};const s=e.sections.find((e=>e.name===n.get("section")));return s?{tab:e.name,section:s.name}:{tab:e.name,section:e.sections[0].name}}),[n.get("tab"),n.get("section"),t]),c=(0,a.useMemo)((()=>t.find((e=>e.name===o))),[o,t]);return(0,l.jsx)("div",{children:(0,l.jsxs)(i.__experimentalVStack,{spacing:4,style:{padding:20},children:[1<t.length&&(0,l.jsx)(i.__experimentalSurface,{className:"hizzlewp-settings__tabs",orientation:e?"vertical":"horizontal",onNavigate:e=>(0,h.updatePath)(t[e].path),as:i.NavigableMenu,borderBottom:!0,borderTop:!0,borderLeft:!0,borderRight:!0,children:t.map((e=>(0,l.jsx)(i.Button,{onClick:()=>(0,h.updatePath)(e.path),className:"components-tab-panel__tabs-item "+(o===e.name?"is-active":""),"aria-selected":o===e.name,children:e.title},e.path)))}),c&&(0,l.jsx)(z,{...c,currentTab:o,currentSection:r})]},s)})},z=({name:e,sections:t,currentTab:n,currentSection:s})=>{const{path:o}=(0,h.useRoute)(),r=(0,a.useMemo)((()=>t.find((e=>e.name===s))),[n,s]);return(0,l.jsxs)(p.ErrorBoundary,{children:[1<t.length&&(0,l.jsx)(i.NavigableMenu,{className:`hizzlewp-settings__sections-menu hizzlewp-settings__sections-menu--${e}`,orientation:"horizontal",onNavigate:e=>(0,h.updatePath)(t[e].path),children:t.map((e=>(0,l.jsx)(i.Button,{onClick:()=>(0,h.updatePath)(e.path),variant:"tertiary",isPressed:o===e.path,children:e.title},e.path)))}),r&&(0,l.jsx)(N,{settings:r.settings})]})},N=({settings:e})=>{const{isSaving:t}=w();return(0,l.jsx)(i.__experimentalVStack,{spacing:4,style:{maxWidth:620,opacity:t?.5:1,pointerEvents:t?"none":"auto",cursor:t?"wait":"auto"},children:Object.keys(e).map((t=>(0,l.jsx)(p.ErrorBoundary,{children:(0,l.jsx)(C,{settingKey:t,setting:e[t]})},t)))})},C=({setting:e,settingKey:t})=>{const{saved:n,setAttributes:s}=w();return"integration_panel"===e.el?(0,l.jsx)(y,{...e}):"settings_group"===e.el?(0,l.jsx)(S,{...e}):(0,l.jsx)(p.Setting,{settingKey:t,setting:e,saved:n,setAttributes:s})},B=(0,l.jsx)(k,{}),R=()=>{const e=[{path:"/",element:B,children:[{path:"/:tab",element:B,children:[{path:"/:tab/:section",element:B}]}]}];return(0,l.jsx)(p.ErrorBoundary,{children:(0,l.jsx)(h.Router,{routes:e})})},P=()=>{const{save:e,isSaving:t}=w();return{variant:"primary",text:t?(0,j.__)("Saving...","newsletter-optin-box"):(0,j.__)("Save Settings","newsletter-optin-box"),onClick:e,isBusy:t,disabled:t}},A=e=>(0,l.jsx)(o.Header,{...e,actions:[P()]}),E=(0,l.jsxs)(i.__experimentalVStack,{children:[(0,l.jsx)(R,{}),(0,l.jsx)(u,{}),(0,l.jsx)(d,{})]}),M=()=>(0,l.jsx)(o.Footer,{children:(0,l.jsx)(i.Button,{...P()})});function T(e){return(0,l.jsx)(o.Interface,{className:"hizzlewp-settings__interface",header:(0,l.jsx)(A,{...e}),content:E,footer:(0,l.jsx)(M,{})})}const{option_name:L,saved:O,settings:V,...F}=window.hizzleWPSettings?.data||{};n()((()=>{const e=document.getElementById("hizzlewp-settings__app");if(!e||!V)return;const t=()=>(0,l.jsx)(i.SlotFillProvider,{children:(0,l.jsx)(b,{option_name:L||"hizzlewp_settings",settings:V||{},saved:O||{},children:(0,l.jsx)(T,{...F})})});(0,s.createRoot)(e).render((0,l.jsx)(t,{}))}))})();
+/******/ (() => { // webpackBootstrap
+/******/ 	"use strict";
+/******/ 	var __webpack_modules__ = ({
+
+/***/ "./node_modules/clsx/dist/clsx.mjs":
+/*!*****************************************!*\
+  !*** ./node_modules/clsx/dist/clsx.mjs ***!
+  \*****************************************/
+/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   clsx: () => (/* binding */ clsx),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+function r(e){var t,f,n="";if("string"==typeof e||"number"==typeof e)n+=e;else if("object"==typeof e)if(Array.isArray(e)){var o=e.length;for(t=0;t<o;t++)e[t]&&(f=r(e[t]))&&(n&&(n+=" "),n+=f)}else for(f in e)e[f]&&(n&&(n+=" "),n+=f);return n}function clsx(){for(var e,t,f=0,n="",o=arguments.length;f<o;f++)(e=arguments[f])&&(t=r(e))&&(n&&(n+=" "),n+=t);return n}/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (clsx);
+
+/***/ }),
+
+/***/ "./packages/settings/src/components/integration-section.tsx":
+/*!******************************************************************!*\
+  !*** ./packages/settings/src/components/integration-section.tsx ***!
+  \******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   IntegrationSection: () => (/* binding */ IntegrationSection)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var clsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! clsx */ "./node_modules/clsx/dist/clsx.mjs");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _hizzlewp_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @hizzlewp/components */ "@hizzlewp/components");
+/* harmony import */ var _hizzlewp_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_hizzlewp_components__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _settings_provider__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./settings-provider */ "./packages/settings/src/components/settings-provider.tsx");
+/* harmony import */ var _section__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./section */ "./packages/settings/src/components/section.tsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__);
+/**
+ * External dependencies
+ */
+
+
+
+/**
+ * WordPress dependencies
+ */
+
+
+/**
+ * HizzleWP dependencies.
+ */
+
+
+/**
+ * Local dependancies.
+ */
+
+
+
+/**
+ * Displays an integration section.
+ *
+ */
+
+function IntegrationSection({
+  id,
+  heading,
+  description,
+  help_url,
+  badges,
+  className,
+  settings,
+  cardProps
+}) {
+  const [isOpen, setIsOpen] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const {
+    saved
+  } = (0,_settings_provider__WEBPACK_IMPORTED_MODULE_4__.useSettings)();
+  let badge = null;
+  badges.forEach(badgeInfo => {
+    // Key value conditions.
+    if (!Array.isArray(badgeInfo.conditions) || (0,_hizzlewp_components__WEBPACK_IMPORTED_MODULE_3__.checkConditions)(badgeInfo.conditions, saved)) {
+      badge = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.__experimentalText, {
+        ...badgeInfo.props,
+        children: badgeInfo.text
+      });
+    }
+  });
+  const style = {
+    paddingLeft: 16,
+    paddingRight: 16,
+    height: 48
+  };
+  const HelpLinkOrDescription = () => {
+    if (help_url) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
+        href: help_url,
+        target: "_blank",
+        icon: "info",
+        label: "Learn more",
+        showTooltip: true
+      });
+    }
+    if (description) {
+      return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Icon, {
+        icon: "info",
+        style: {
+          color: '#454545'
+        }
+      });
+    }
+    return null;
+  };
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Card, {
+    id: id,
+    size: "small",
+    className: (0,clsx__WEBPACK_IMPORTED_MODULE_1__["default"])(className, 'noptin-no-shadow'),
+    ...(cardProps || {}),
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.CardHeader, {
+      style: {
+        padding: 0
+      },
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Flex, {
+        as: _wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button,
+        onClick: () => setIsOpen(!isOpen),
+        style: style,
+        label: description,
+        showTooltip: true,
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.__experimentalHStack, {
+          as: _wordpress_components__WEBPACK_IMPORTED_MODULE_2__.FlexBlock,
+          children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.__experimentalText, {
+            as: "h3",
+            weight: 600,
+            children: heading
+          }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(HelpLinkOrDescription, {})]
+        }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.FlexItem, {
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.__experimentalHStack, {
+            children: [badge, /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Icon, {
+              icon: isOpen ? 'arrow-up-alt2' : 'arrow-down-alt2'
+            })]
+          })
+        })]
+      })
+    }), isOpen && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.CardBody, {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.__experimentalVStack, {
+        spacing: 6,
+        children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_section__WEBPACK_IMPORTED_MODULE_5__.SettingsList, {
+          settings: settings
+        }), help_url && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.__experimentalHStack, {
+          alignment: "flex-end",
+          justify: "flex-end",
+          children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Button, {
+            href: help_url,
+            target: "_blank",
+            label: "Need help?",
+            variant: "secondary",
+            showTooltip: true,
+            children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.__experimentalText, {
+              children: "View integration guide"
+            }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Icon, {
+              icon: "external"
+            })]
+          })
+        })]
+      })
+    })]
+  });
+}
+
+/***/ }),
+
+/***/ "./packages/settings/src/components/layout.tsx":
+/*!*****************************************************!*\
+  !*** ./packages/settings/src/components/layout.tsx ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* binding */ Layout)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _hizzlewp_interface__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @hizzlewp/interface */ "@hizzlewp/interface");
+/* harmony import */ var _hizzlewp_interface__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_hizzlewp_interface__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _notices__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./notices */ "./packages/settings/src/components/notices.tsx");
+/* harmony import */ var _settings__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./settings */ "./packages/settings/src/components/settings.tsx");
+/* harmony import */ var _use_save_button_props__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./use-save-button-props */ "./packages/settings/src/components/use-save-button-props.ts");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__);
+/**
+ * External dependencies
+ */
+
+
+/**
+ * WordPress dependencies
+ */
+
+
+
+/**
+ * HizzleWP dependencies.
+ */
+
+
+/**
+ * Local dependancies.
+ */
+
+
+
+
+const TheHeader = props => {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_hizzlewp_interface__WEBPACK_IMPORTED_MODULE_2__.Header, {
+    ...props,
+    actions: [(0,_use_save_button_props__WEBPACK_IMPORTED_MODULE_5__.useSaveButtonProps)()]
+  });
+};
+const theContent = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalVStack, {
+  children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_settings__WEBPACK_IMPORTED_MODULE_4__.Settings, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_notices__WEBPACK_IMPORTED_MODULE_3__.EditorSnackbars, {}), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_notices__WEBPACK_IMPORTED_MODULE_3__.EditorNotices, {})]
+});
+const TheFooter = () => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_hizzlewp_interface__WEBPACK_IMPORTED_MODULE_2__.Footer, {
+  children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+    ...(0,_use_save_button_props__WEBPACK_IMPORTED_MODULE_5__.useSaveButtonProps)()
+  })
+});
+function Layout(props) {
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_hizzlewp_interface__WEBPACK_IMPORTED_MODULE_2__.Interface, {
+    className: "hizzlewp-settings__interface",
+    header: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(TheHeader, {
+      ...props
+    }),
+    content: theContent,
+    footer: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(TheFooter, {})
+  });
+}
+
+/***/ }),
+
+/***/ "./packages/settings/src/components/notices.tsx":
+/*!******************************************************!*\
+  !*** ./packages/settings/src/components/notices.tsx ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   EditorNotices: () => (/* binding */ EditorNotices),
+/* harmony export */   EditorSnackbars: () => (/* binding */ EditorSnackbars)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_notices__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/notices */ "@wordpress/notices");
+/* harmony import */ var _wordpress_notices__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_notices__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__);
+/**
+ * External dependencies
+ */
+
+
+/**
+ * WordPress dependencies
+ */
+
+
+
+
+function EditorNotices() {
+  const {
+    notices
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => ({
+    notices: select(_wordpress_notices__WEBPACK_IMPORTED_MODULE_3__.store).getNotices()
+  }), []);
+  const {
+    removeNotice
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useDispatch)(_wordpress_notices__WEBPACK_IMPORTED_MODULE_3__.store);
+  const dismissibleNotices = notices.filter(({
+    isDismissible,
+    type
+  }) => isDismissible && type === 'default');
+  const nonDismissibleNotices = notices.filter(({
+    isDismissible,
+    type
+  }) => !isDismissible && type === 'default');
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.Fragment, {
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.NoticeList, {
+      notices: nonDismissibleNotices,
+      className: "components-editor-notices__pinned"
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.NoticeList, {
+      notices: dismissibleNotices,
+      className: "components-editor-notices__dismissible",
+      onRemove: removeNotice
+    })]
+  });
+}
+
+// Last three notices. Slices from the tail end of the list.
+const MAX_VISIBLE_NOTICES = -3;
+function EditorSnackbars() {
+  const notices = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useSelect)(select => select(_wordpress_notices__WEBPACK_IMPORTED_MODULE_3__.store).getNotices(), []);
+  const {
+    removeNotice
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_2__.useDispatch)(_wordpress_notices__WEBPACK_IMPORTED_MODULE_3__.store);
+  const snackbarNotices = notices.filter(({
+    type
+  }) => type === 'snackbar').slice(MAX_VISIBLE_NOTICES);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.SnackbarList, {
+    notices: snackbarNotices,
+    className: "components-editor-notices__snackbar",
+    onRemove: removeNotice
+  });
+}
+
+/***/ }),
+
+/***/ "./packages/settings/src/components/section.tsx":
+/*!******************************************************!*\
+  !*** ./packages/settings/src/components/section.tsx ***!
+  \******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Section: () => (/* binding */ Section),
+/* harmony export */   SettingsList: () => (/* binding */ SettingsList)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_compose__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/compose */ "@wordpress/compose");
+/* harmony import */ var _wordpress_compose__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_compose__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _hizzlewp_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @hizzlewp/components */ "@hizzlewp/components");
+/* harmony import */ var _hizzlewp_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_hizzlewp_components__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _hizzlewp_history__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @hizzlewp/history */ "@hizzlewp/history");
+/* harmony import */ var _hizzlewp_history__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_hizzlewp_history__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var _settings_provider__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./settings-provider */ "./packages/settings/src/components/settings-provider.tsx");
+/* harmony import */ var _integration_section__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./integration-section */ "./packages/settings/src/components/integration-section.tsx");
+/* harmony import */ var _settings_group__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./settings-group */ "./packages/settings/src/components/settings-group.tsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__);
+/**
+ * External dependencies.
+ */
+
+
+/**
+ * WordPress dependencies
+ */
+
+
+
+/**
+ * HizzleWP dependencies.
+ */
+
+
+
+/**
+ * Local dependencies
+ */
+
+
+
+
+/**
+ * Displays the current settings section.
+ */
+
+const Section = () => {
+  // Whether we are on a small screen.
+  const isSmallScreen = (0,_wordpress_compose__WEBPACK_IMPORTED_MODULE_2__.useViewportMatch)('small', '<');
+
+  // The available setting tabs.
+  const {
+    settings: tabs
+  } = (0,_settings_provider__WEBPACK_IMPORTED_MODULE_5__.useSettings)();
+
+  // The current settings params.
+  const {
+    params,
+    path
+  } = (0,_hizzlewp_history__WEBPACK_IMPORTED_MODULE_4__.useRoute)();
+
+  // Prepare the current tab and section.
+  const {
+    tab,
+    section
+  } = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => {
+    // If no tab is provided, use the first tab.
+    if (!params.get('tab')) {
+      return {
+        tab: tabs[0].name,
+        section: tabs[0].sections[0].name
+      };
+    }
+
+    // Get the current tab.
+    const tab = tabs.find(tab => tab.name === params.get('tab'));
+
+    // If no tab is found, use the first tab.
+    if (!tab) {
+      return {
+        tab: tabs[0].name,
+        section: tabs[0].sections[0].name
+      };
+    }
+
+    // If no section is provided, use the first section.
+    if (!params.get('section')) {
+      return {
+        tab: tab.name,
+        section: tab.sections[0].name
+      };
+    }
+    const section = tab.sections.find(section => section.name === params.get('section'));
+
+    // If no section is found, use the first section.
+    if (!section) {
+      return {
+        tab: tab.name,
+        section: tab.sections[0].name
+      };
+    }
+    return {
+      tab: tab.name,
+      section: section.name
+    };
+  }, [params.get('tab'), params.get('section'), tabs]);
+  const currentTab = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => {
+    return tabs.find(_tab => _tab.name === tab);
+  }, [tab, tabs]);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)("div", {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalVStack, {
+      spacing: 4,
+      style: {
+        padding: 20
+      },
+      children: [1 < tabs.length && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalSurface, {
+        className: "hizzlewp-settings__tabs",
+        orientation: isSmallScreen ? 'vertical' : 'horizontal',
+        onNavigate: index => (0,_hizzlewp_history__WEBPACK_IMPORTED_MODULE_4__.updatePath)(tabs[index].path),
+        as: _wordpress_components__WEBPACK_IMPORTED_MODULE_1__.NavigableMenu,
+        borderBottom: true,
+        borderTop: true,
+        borderLeft: true,
+        borderRight: true,
+        children: tabs.map(_tab => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+          onClick: () => (0,_hizzlewp_history__WEBPACK_IMPORTED_MODULE_4__.updatePath)(_tab.path),
+          className: `components-tab-panel__tabs-item ${tab === _tab.name ? 'is-active' : ''}`,
+          "aria-selected": tab === _tab.name,
+          children: _tab.title
+        }, _tab.path))
+      }), currentTab && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(SectionsList, {
+        ...currentTab,
+        currentTab: tab,
+        currentSection: section
+      })]
+    }, path)
+  });
+};
+const SectionsList = ({
+  name,
+  sections,
+  currentTab,
+  currentSection
+}) => {
+  const {
+    path
+  } = (0,_hizzlewp_history__WEBPACK_IMPORTED_MODULE_4__.useRoute)();
+  const section = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => {
+    return sections.find(section => section.name === currentSection);
+  }, [currentTab, currentSection]);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsxs)(_hizzlewp_components__WEBPACK_IMPORTED_MODULE_3__.ErrorBoundary, {
+    children: [1 < sections.length && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.NavigableMenu, {
+      className: `hizzlewp-settings__sections-menu hizzlewp-settings__sections-menu--${name}`,
+      orientation: "horizontal",
+      onNavigate: index => (0,_hizzlewp_history__WEBPACK_IMPORTED_MODULE_4__.updatePath)(sections[index].path),
+      children: sections.map(section => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.Button, {
+        onClick: () => (0,_hizzlewp_history__WEBPACK_IMPORTED_MODULE_4__.updatePath)(section.path),
+        variant: "tertiary",
+        isPressed: path === section.path,
+        children: section.title
+      }, section.path))
+    }), section && /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(SettingsList, {
+      settings: section.settings
+    })]
+  });
+};
+const SettingsList = ({
+  settings
+}) => {
+  const {
+    isSaving
+  } = (0,_settings_provider__WEBPACK_IMPORTED_MODULE_5__.useSettings)();
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_1__.__experimentalVStack, {
+    spacing: 4,
+    style: {
+      maxWidth: 620,
+      opacity: isSaving ? 0.5 : 1,
+      pointerEvents: isSaving ? 'none' : 'auto',
+      cursor: isSaving ? 'wait' : 'auto'
+    },
+    children: Object.keys(settings).map(setting => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_hizzlewp_components__WEBPACK_IMPORTED_MODULE_3__.ErrorBoundary, {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(SingleSetting, {
+        settingKey: setting,
+        setting: settings[setting]
+      })
+    }, setting))
+  });
+};
+const SingleSetting = ({
+  setting,
+  settingKey
+}) => {
+  const {
+    saved,
+    setAttributes
+  } = (0,_settings_provider__WEBPACK_IMPORTED_MODULE_5__.useSettings)();
+  if ('integration_panel' === setting.el) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_integration_section__WEBPACK_IMPORTED_MODULE_6__.IntegrationSection, {
+      ...setting
+    });
+  }
+  if ('settings_group' === setting.el) {
+    return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_settings_group__WEBPACK_IMPORTED_MODULE_7__.SettingsGroup, {
+      ...setting
+    });
+  }
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_8__.jsx)(_hizzlewp_components__WEBPACK_IMPORTED_MODULE_3__.Setting, {
+    settingKey: settingKey,
+    setting: setting,
+    saved: saved,
+    setAttributes: setAttributes
+  });
+};
+
+/***/ }),
+
+/***/ "./packages/settings/src/components/settings-group.tsx":
+/*!*************************************************************!*\
+  !*** ./packages/settings/src/components/settings-group.tsx ***!
+  \*************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SettingsGroup: () => (/* binding */ SettingsGroup)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var clsx__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! clsx */ "./node_modules/clsx/dist/clsx.mjs");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _hizzlewp_components__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @hizzlewp/components */ "@hizzlewp/components");
+/* harmony import */ var _hizzlewp_components__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_hizzlewp_components__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _section__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./section */ "./packages/settings/src/components/section.tsx");
+/* harmony import */ var _settings_provider__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./settings-provider */ "./packages/settings/src/components/settings-provider.tsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__);
+/**
+ * External dependencies
+ */
+
+
+
+/**
+ * WordPress dependencies
+ */
+
+
+/**
+ * HizzleWP dependencies.
+ */
+
+
+/**
+ * Local dependancies.
+ */
+
+
+
+/**
+ * Displays a settings group.
+ *
+ */
+
+function SettingsGroup({
+  id,
+  label,
+  className,
+  settings,
+  conditions,
+  cardProps
+}) {
+  const {
+    saved
+  } = (0,_settings_provider__WEBPACK_IMPORTED_MODULE_5__.useSettings)();
+  if (Array.isArray(conditions) && !(0,_hizzlewp_components__WEBPACK_IMPORTED_MODULE_3__.checkConditions)(conditions, saved)) {
+    return null;
+  }
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsxs)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.Card, {
+    id: id,
+    isRounded: false,
+    className: (0,clsx__WEBPACK_IMPORTED_MODULE_1__["default"])('hizzlewp-settings__group', className),
+    ...(cardProps || {}),
+    children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.CardHeader, {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.__experimentalHeading, {
+        level: 4,
+        size: 16,
+        children: label
+      })
+    }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.CardBody, {
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_6__.jsx)(_section__WEBPACK_IMPORTED_MODULE_4__.SettingsList, {
+        settings: settings
+      })
+    })]
+  });
+}
+
+/***/ }),
+
+/***/ "./packages/settings/src/components/settings-provider.tsx":
+/*!****************************************************************!*\
+  !*** ./packages/settings/src/components/settings-provider.tsx ***!
+  \****************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   SettingsProvider: () => (/* binding */ SettingsProvider),
+/* harmony export */   useSettings: () => (/* binding */ useSettings)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/api-fetch */ "@wordpress/api-fetch");
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_notices__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/notices */ "@wordpress/notices");
+/* harmony import */ var _wordpress_notices__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_notices__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_3___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_3__);
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__);
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__);
+/**
+ * External dependencies.
+ */
+
+
+/**
+ * WordPress dependencies.
+ */
+
+
+
+
+
+/**
+ * HizzleWP dependencies.
+ */
+
+/**
+ * Interface for a settings section, e.g, PayPal.
+ */
+
+/**
+ * Interface for a settings tab, e.g, Payment Methods.
+ */
+
+/**
+ * Interface for the settings context.
+ */
+
+/**
+ * Context for settings.
+ */
+const SettingsContext = (0,react__WEBPACK_IMPORTED_MODULE_0__.createContext)({
+  option_name: '',
+  saved: {},
+  settings: [],
+  isSaving: false,
+  setAttributes: () => {},
+  save: () => {}
+});
+
+/**
+ * Custom hook to access the context.
+ */
+const useSettings = () => (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(SettingsContext);
+
+/**
+ * Provider component for settings.
+ */
+
+/**
+ * Provider component for settings.
+ */
+const SettingsProvider = ({
+  settings,
+  option_name,
+  saved,
+  children
+}) => {
+  const [options, setOptions] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(saved);
+  const [isSaving, setIsSaving] = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false);
+  const hasPendingChanges = (0,react__WEBPACK_IMPORTED_MODULE_0__.useRef)(false);
+  const {
+    createSuccessNotice,
+    createErrorNotice
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_3__.useDispatch)(_wordpress_notices__WEBPACK_IMPORTED_MODULE_2__.store);
+
+  // Prepare the tabs.
+  const tabs = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => {
+    return Object.keys(settings).map(tabKey => {
+      const tab = settings[tabKey];
+      const defaultSection = Object.keys(tab.sub_sections)[0];
+      const sections = [];
+      Object.keys(tab.sub_sections).map(sectionKey => {
+        const section = tab.sub_sections[sectionKey];
+        sections.push({
+          name: sectionKey,
+          title: section.label,
+          settings: section.settings,
+          path: `/${tabKey}/${sectionKey}`
+        });
+      });
+      return {
+        name: tabKey,
+        title: tab.label,
+        path: `/${tabKey}/${defaultSection}`,
+        sections
+      };
+    });
+  }, [settings]);
+
+  // Show unsaved changes warning.
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(() => {
+    /**
+     * Warns the user if there are unsaved changes before leaving the editor.
+     *
+     * @param {Event} event `beforeunload` event.
+     *
+     * @return {string | undefined} Warning prompt message, if unsaved changes exist.
+     */
+    const warnIfUnsavedChanges = event => {
+      if (hasPendingChanges.current) {
+        event.returnValue = (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('You have unsaved changes. If you proceed, they will be lost.');
+        return event.returnValue;
+      }
+    };
+    window.addEventListener('beforeunload', warnIfUnsavedChanges);
+    return () => {
+      window.removeEventListener('beforeunload', warnIfUnsavedChanges);
+    };
+  }, [hasPendingChanges.current]);
+
+  /**
+   * Save the settings.
+   */
+  const save = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(() => {
+    setIsSaving(true);
+    hasPendingChanges.current = false;
+
+    // Save the options.
+    _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_1___default()({
+      path: '/wp/v2/settings',
+      method: 'POST',
+      data: {
+        [option_name]: {
+          ...options
+        }
+      }
+    })
+
+    // Update the state on success.
+    .then(res => {
+      // Display a success message.
+      createSuccessNotice((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('Settings saved.'), {
+        type: 'snackbar'
+      });
+
+      // Update the options.
+      if (typeof res === 'object' && res !== null && option_name in res) {
+        setOptions(res[option_name]);
+      }
+      return res;
+    })
+
+    // Display an error on failure.
+    .catch(err => {
+      if (err.message) {
+        createErrorNotice(err.message);
+      } else {
+        createErrorNotice((0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_4__.__)('An error occurred while saving.'));
+      }
+    })
+
+    // Reset the state.
+    .finally(() => {
+      setIsSaving(false);
+    });
+  }, [options, setOptions, setIsSaving, createSuccessNotice, createErrorNotice, option_name]);
+
+  /**
+   * Sets options attributes.
+   */
+  const setAttributes = (0,react__WEBPACK_IMPORTED_MODULE_0__.useCallback)(attributes => {
+    hasPendingChanges.current = true;
+    setOptions({
+      ...options,
+      ...attributes
+    });
+  }, [options, setOptions]);
+  const prepared = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => {
+    return {
+      option_name,
+      saved: options,
+      settings: tabs,
+      isSaving,
+      save,
+      setAttributes
+    };
+  }, [option_name, options, tabs, isSaving, save, setAttributes]);
+  const style = (0,react__WEBPACK_IMPORTED_MODULE_0__.useMemo)(() => {
+    return {
+      pointerEvents: isSaving ? 'none' : 'auto',
+      cursor: isSaving ? 'wait' : 'auto'
+    };
+  }, [isSaving]);
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(SettingsContext.Provider, {
+    value: prepared,
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)("div", {
+      style: style,
+      children: children
+    })
+  });
+};
+
+/***/ }),
+
+/***/ "./packages/settings/src/components/settings.tsx":
+/*!*******************************************************!*\
+  !*** ./packages/settings/src/components/settings.tsx ***!
+  \*******************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   Settings: () => (/* binding */ Settings)
+/* harmony export */ });
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ "react");
+/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(react__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _hizzlewp_components__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @hizzlewp/components */ "@hizzlewp/components");
+/* harmony import */ var _hizzlewp_components__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_hizzlewp_components__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _hizzlewp_history__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @hizzlewp/history */ "@hizzlewp/history");
+/* harmony import */ var _hizzlewp_history__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_hizzlewp_history__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _section__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./section */ "./packages/settings/src/components/section.tsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__);
+/**
+ * External dependencies
+ */
+
+
+/**
+ * HizzleWP dependencies.
+ */
+
+
+
+/**
+ * Local dependencies
+ */
+
+
+const element = /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_section__WEBPACK_IMPORTED_MODULE_3__.Section, {});
+const Settings = () => {
+  // Define routes.
+  const routes = [{
+    path: '/',
+    element,
+    children: [{
+      path: '/:tab',
+      element,
+      children: [{
+        path: '/:tab/:section',
+        element
+      }]
+    }]
+  }];
+  return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_hizzlewp_components__WEBPACK_IMPORTED_MODULE_1__.ErrorBoundary, {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)(_hizzlewp_history__WEBPACK_IMPORTED_MODULE_2__.Router, {
+      routes: routes
+    })
+  });
+};
+
+/***/ }),
+
+/***/ "./packages/settings/src/components/use-save-button-props.ts":
+/*!*******************************************************************!*\
+  !*** ./packages/settings/src/components/use-save-button-props.ts ***!
+  \*******************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   useSaveButtonProps: () => (/* binding */ useSaveButtonProps)
+/* harmony export */ });
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/i18n */ "@wordpress/i18n");
+/* harmony import */ var _wordpress_i18n__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _settings_provider__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./settings-provider */ "./packages/settings/src/components/settings-provider.tsx");
+/**
+ * WordPress dependencies
+ */
+
+/**
+ * Local dependancies.
+ */
+
+const useSaveButtonProps = () => {
+  const {
+    save,
+    isSaving
+  } = (0,_settings_provider__WEBPACK_IMPORTED_MODULE_1__.useSettings)();
+  return {
+    variant: 'primary',
+    text: isSaving ? (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Saving...', 'newsletter-optin-box') : (0,_wordpress_i18n__WEBPACK_IMPORTED_MODULE_0__.__)('Save Settings', 'newsletter-optin-box'),
+    onClick: save,
+    isBusy: isSaving,
+    disabled: isSaving
+  };
+};
+
+/***/ }),
+
+/***/ "@hizzlewp/components":
+/*!******************************************!*\
+  !*** external ["hizzlewp","components"] ***!
+  \******************************************/
+/***/ ((module) => {
+
+module.exports = window["hizzlewp"]["components"];
+
+/***/ }),
+
+/***/ "@hizzlewp/history":
+/*!***************************************!*\
+  !*** external ["hizzlewp","history"] ***!
+  \***************************************/
+/***/ ((module) => {
+
+module.exports = window["hizzlewp"]["history"];
+
+/***/ }),
+
+/***/ "@hizzlewp/interface":
+/*!*****************************************!*\
+  !*** external ["hizzlewp","interface"] ***!
+  \*****************************************/
+/***/ ((module) => {
+
+module.exports = window["hizzlewp"]["interface"];
+
+/***/ }),
+
+/***/ "@wordpress/api-fetch":
+/*!**********************************!*\
+  !*** external ["wp","apiFetch"] ***!
+  \**********************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["apiFetch"];
+
+/***/ }),
+
+/***/ "@wordpress/components":
+/*!************************************!*\
+  !*** external ["wp","components"] ***!
+  \************************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["components"];
+
+/***/ }),
+
+/***/ "@wordpress/compose":
+/*!*********************************!*\
+  !*** external ["wp","compose"] ***!
+  \*********************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["compose"];
+
+/***/ }),
+
+/***/ "@wordpress/data":
+/*!******************************!*\
+  !*** external ["wp","data"] ***!
+  \******************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["data"];
+
+/***/ }),
+
+/***/ "@wordpress/dom-ready":
+/*!**********************************!*\
+  !*** external ["wp","domReady"] ***!
+  \**********************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["domReady"];
+
+/***/ }),
+
+/***/ "@wordpress/element":
+/*!*********************************!*\
+  !*** external ["wp","element"] ***!
+  \*********************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["element"];
+
+/***/ }),
+
+/***/ "@wordpress/i18n":
+/*!******************************!*\
+  !*** external ["wp","i18n"] ***!
+  \******************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["i18n"];
+
+/***/ }),
+
+/***/ "@wordpress/notices":
+/*!*********************************!*\
+  !*** external ["wp","notices"] ***!
+  \*********************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["notices"];
+
+/***/ }),
+
+/***/ "react":
+/*!************************!*\
+  !*** external "React" ***!
+  \************************/
+/***/ ((module) => {
+
+module.exports = window["React"];
+
+/***/ }),
+
+/***/ "react/jsx-runtime":
+/*!**********************************!*\
+  !*** external "ReactJSXRuntime" ***!
+  \**********************************/
+/***/ ((module) => {
+
+module.exports = window["ReactJSXRuntime"];
+
+/***/ })
+
+/******/ 	});
+/************************************************************************/
+/******/ 	// The module cache
+/******/ 	var __webpack_module_cache__ = {};
+/******/ 	
+/******/ 	// The require function
+/******/ 	function __webpack_require__(moduleId) {
+/******/ 		// Check if module is in cache
+/******/ 		var cachedModule = __webpack_module_cache__[moduleId];
+/******/ 		if (cachedModule !== undefined) {
+/******/ 			return cachedModule.exports;
+/******/ 		}
+/******/ 		// Create a new module (and put it into the cache)
+/******/ 		var module = __webpack_module_cache__[moduleId] = {
+/******/ 			// no module.id needed
+/******/ 			// no module.loaded needed
+/******/ 			exports: {}
+/******/ 		};
+/******/ 	
+/******/ 		// Execute the module function
+/******/ 		__webpack_modules__[moduleId](module, module.exports, __webpack_require__);
+/******/ 	
+/******/ 		// Return the exports of the module
+/******/ 		return module.exports;
+/******/ 	}
+/******/ 	
+/************************************************************************/
+/******/ 	/* webpack/runtime/compat get default export */
+/******/ 	(() => {
+/******/ 		// getDefaultExport function for compatibility with non-harmony modules
+/******/ 		__webpack_require__.n = (module) => {
+/******/ 			var getter = module && module.__esModule ?
+/******/ 				() => (module['default']) :
+/******/ 				() => (module);
+/******/ 			__webpack_require__.d(getter, { a: getter });
+/******/ 			return getter;
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/define property getters */
+/******/ 	(() => {
+/******/ 		// define getter functions for harmony exports
+/******/ 		__webpack_require__.d = (exports, definition) => {
+/******/ 			for(var key in definition) {
+/******/ 				if(__webpack_require__.o(definition, key) && !__webpack_require__.o(exports, key)) {
+/******/ 					Object.defineProperty(exports, key, { enumerable: true, get: definition[key] });
+/******/ 				}
+/******/ 			}
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/hasOwnProperty shorthand */
+/******/ 	(() => {
+/******/ 		__webpack_require__.o = (obj, prop) => (Object.prototype.hasOwnProperty.call(obj, prop))
+/******/ 	})();
+/******/ 	
+/******/ 	/* webpack/runtime/make namespace object */
+/******/ 	(() => {
+/******/ 		// define __esModule on exports
+/******/ 		__webpack_require__.r = (exports) => {
+/******/ 			if(typeof Symbol !== 'undefined' && Symbol.toStringTag) {
+/******/ 				Object.defineProperty(exports, Symbol.toStringTag, { value: 'Module' });
+/******/ 			}
+/******/ 			Object.defineProperty(exports, '__esModule', { value: true });
+/******/ 		};
+/******/ 	})();
+/******/ 	
+/************************************************************************/
+var __webpack_exports__ = {};
+// This entry needs to be wrapped in an IIFE because it needs to be isolated against other modules in the chunk.
+(() => {
+/*!*****************************************!*\
+  !*** ./packages/settings/src/index.tsx ***!
+  \*****************************************/
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/dom-ready */ "@wordpress/dom-ready");
+/* harmony import */ var _wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/element */ "@wordpress/element");
+/* harmony import */ var _wordpress_element__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_element__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! @wordpress/components */ "@wordpress/components");
+/* harmony import */ var _wordpress_components__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _components_layout__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./components/layout */ "./packages/settings/src/components/layout.tsx");
+/* harmony import */ var _components_settings_provider__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./components/settings-provider */ "./packages/settings/src/components/settings-provider.tsx");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! react/jsx-runtime */ "react/jsx-runtime");
+/* harmony import */ var react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5___default = /*#__PURE__*/__webpack_require__.n(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__);
+/**
+ * External dependencies.
+ */
+
+
+
+
+/**
+ * Internal dependencies.
+ */
+
+
+
+const {
+  option_name,
+  saved,
+  settings,
+  ...rest
+} = window.hizzleWPSettings?.data || {};
+_wordpress_dom_ready__WEBPACK_IMPORTED_MODULE_0___default()(() => {
+  const target = document.getElementById('hizzlewp-settings__app');
+
+  // Abort if the target element is not found.
+  if (!target || !settings) {
+    return;
+  }
+  const App = () => /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_wordpress_components__WEBPACK_IMPORTED_MODULE_2__.SlotFillProvider, {
+    children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_components_settings_provider__WEBPACK_IMPORTED_MODULE_4__.SettingsProvider, {
+      option_name: option_name || 'hizzlewp_settings',
+      settings: settings || {},
+      saved: saved || {},
+      children: /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(_components_layout__WEBPACK_IMPORTED_MODULE_3__["default"], {
+        ...rest
+      })
+    })
+  });
+  (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.createRoot)(target).render(/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_5__.jsx)(App, {}));
+});
+})();
+
+/******/ })()
+;
+//# sourceMappingURL=index.js.map
