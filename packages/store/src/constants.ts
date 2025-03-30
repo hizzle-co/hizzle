@@ -4,3 +4,8 @@
  *
  */
 export const STORE_NAME = 'hizzle/store';
+
+/**
+ * The default entity key.
+ */
+export const DEFAULT_ENTITY_KEY = 'id';

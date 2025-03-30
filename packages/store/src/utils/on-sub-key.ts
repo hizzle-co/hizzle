@@ -1,4 +1,4 @@
-/** @typedef {import('../types').AnyFunction} AnyFunction */
+import type { Reducer } from 'redux';
 
 /**
  * Higher-order reducer creator which creates a combined reducer object, keyed
@@ -6,15 +6,15 @@
  *
  * @param {string} actionProperty Action property by which to key object.
  *
- * @return {AnyFunction} Higher-order reducer.
+ * @return Higher-order reducer.
  */
 export const onSubKey =
-	( actionProperty ) =>
-	( reducer ) =>
-	( state = {}, action ) => {
+	( actionProperty: string ) =>
+	( reducer: Reducer ) : Reducer =>
+	( state = {}, action: any ) => {
 		// Retrieve subkey from action. Do not track if undefined; useful for cases
 		// where reducer is scoped by action shape.
-		const key = action[ actionProperty ];
+		const key: string = action[ actionProperty ];
 		if ( key === undefined ) {
 			return state;
 		}

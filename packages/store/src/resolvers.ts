@@ -8,7 +8,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { STORE_NAME } from './constants';
-import { DEFAULT_ENTITY_KEY } from './collections';
+import { DEFAULT_ENTITY_KEY } from './constants';
 import {
 	forwardResolver,
 	getNormalizedCommaSeparable,

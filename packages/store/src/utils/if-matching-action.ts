@@ -1,15 +1,15 @@
-import type { AnyFunction } from '../types';
+import type { Reducer } from 'redux';
 
 /**
  * A higher-order reducer creator which invokes the original reducer only if
  * the dispatching action matches the given predicate, **OR** if state is
  * initializing (undefined).
  *
- * @param {AnyFunction} isMatch Function predicate for allowing reducer call.
+ * @param isMatch Function predicate for allowing reducer call.
  *
- * @return {AnyFunction} Higher-order reducer.
+ * @return Higher-order reducer.
  */
-const ifMatchingAction = ( isMatch: AnyFunction ): AnyFunction => ( reducer ) => ( state, action ) => {
+const ifMatchingAction = ( isMatch: ( action: any ) => boolean ) : Reducer => ( reducer: Reducer ) => ( state, action ) => {
 	if ( state === undefined || isMatch( action ) ) {
 		return reducer( state, action );
 	}

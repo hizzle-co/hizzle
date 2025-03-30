@@ -2,7 +2,6 @@
  * WordPress dependencies
  */
 import { createSelector } from '@wordpress/data';
-import type { UndoManager } from '@wordpress/undo-manager';
 
 /**
  * Internal dependencies
@@ -11,137 +10,19 @@ import {
 	getQueriedItems,
 	getQueriedTotalItems,
 	getQueriedTotalPages,
-} from './queried-data';
-import { DEFAULT_ENTITY_KEY } from './collections';
+} from './collection';
+import { DEFAULT_ENTITY_KEY } from './constants';
 import {
 	getNormalizedCommaSeparable,
 	setNestedValue,
 	getUserPermissionCacheKey,
 } from './utils';
-import { CollectionConfig } from './types';
-
-/**
- * The key for collection records. Usually a number if the key field is 'id'.
- */
-export type CollectionRecordKey = string | number;
-
-type CollectionRecord = Record<string, any>;
+import { CollectionConfig, State, CollectionRecordKey, API_CONTEXT, CollectionRecord } from './types';
 
 /**
  * HTTP Query parameters sent with the API request to fetch the entity records.
  */
 export type GetRecordsHttpQuery = Record<string, any>;
-
-/**
- * Interface for the state of an API request.
- */
-export type API_STATE = {
-	/**
-	 * Whether the request is pending.
-	 */
-	pending: boolean;
-
-	/**
-	 * The error that occurred during the request.
-	 */
-	error: Error;
-};
-
-/**
- * The REST API context parameter.
- */
-export type API_CONTEXT = 'view' | 'edit' | 'embed';
-
-/**
- * This is an incomplete, high-level approximation of the State type.
- */
-export interface State {
-	/**
-	 * The different collections.
-	 */
-	collections: {
-		/**
-		 * The collection configs, grouped by namespace and collection name.
-		 */
-		config: {
-			[ namespace: string ]: {
-				[ collection: string ]: CollectionConfig;
-			};
-		};
-
-		/**
-		 * Collection records grouped by the namespace and collection name.
-		 *
-		 * @example
-		 *
-		 * ```ts
-		 * // returns state.collections.records.noptin.subscribers
-		 * const records = getCollectionRecords( state, 'noptin', 'subscribers' );
-		 * ```
-		 */
-		records: {
-			[ namespace: string ]: {
-				/**
-				 * Each record is grouped by collection name.
-				 */
-				[ collection: string ]: {
-					/**
-					 * Record of edits for the entity, keyed by entity ID.
-					 */
-					edits: Record<CollectionRecordKey, Partial<CollectionRecord>>;
-
-					/**
-					 * Record of saving states for the entity, keyed by entity ID.
-					 */
-					saving: Record<
-						CollectionRecordKey,
-						Partial<API_STATE>
-					>;
-
-					/**
-					 * Record of deleting states for the entity, keyed by entity ID.
-					 */
-					deleting: Record<CollectionRecordKey, Partial<API_STATE>>;
-
-					/**
-					 * Data for entity queries.
-					 */
-					queriedData: {
-						/**
-						 * Items returned by queries, grouped by context and item ID.
-						 */
-						items: Record<API_CONTEXT, Record<CollectionRecordKey, CollectionRecord>>;
-
-						/**
-						 * Tracks whether an item has all its fields or is incomplete, grouped by context and item ID.
-						 */
-						itemIsComplete: Record<API_CONTEXT, Record<CollectionRecordKey, boolean>>;
-
-						/**
-						 * Query results as arrays of item IDs, grouped by context and query string.
-						 */
-						queries: Record<API_CONTEXT, Record<string, Array<CollectionRecordKey>>>;
-					};
-				};
-			}
-		};
-	};
-
-	/**
-	 * The undo manager.
-	 */
-	undoManager: UndoManager;
-
-	/**
-	 * The user permissions.
-	 */
-	userPermissions: Record<string, boolean>;
-
-	/**
-	 * A reference to the edits.
-	 */
-	editsReference: Record<string, any>;
-}
 
 type Optional<T> = T | undefined;
 

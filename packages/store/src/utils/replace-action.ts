@@ -1,4 +1,4 @@
-/** @typedef {import('../types').AnyFunction} AnyFunction */
+import type { Reducer } from 'redux';
 
 /**
  * Higher-order reducer creator which substitutes the action object before
@@ -8,7 +8,7 @@
  *
  * @return {AnyFunction} Higher-order reducer.
  */
-const replaceAction = ( replacer ) => ( reducer ) => ( state, action ) => {
+const replaceAction = ( replacer: ( action: any ) => any ) : Reducer => ( reducer: Reducer ) => ( state, action ) => {
 	return reducer( state, replacer( action ) );
 };
 

@@ -1,3 +1,5 @@
+import type { Reducer } from 'redux';
+
 /**
  * WordPress dependencies
  */
@@ -12,14 +14,18 @@ import {
 	ifMatchingAction,
 	replaceAction,
 	onSubKey,
-} from '../utils';
-import { DEFAULT_ENTITY_KEY } from '../collections';
-import getQueryParts from './get-query-parts';
+} from '../../../utils';
+import { DEFAULT_ENTITY_KEY } from '../../../constants';
+import getQueryParts from '../../get-query-parts';
+import type { CollectionRecord, CollectionRecordKey } from '../../../types';
+import type { collectionState } from '.';
+
+type QueriedDataState = collectionState[ 'queriedData' ]
 
 function getContextFromAction( action ) {
 	const { query } = action;
-	if ( ! query ) {
-		return 'default';
+	if ( !query ) {
+		return 'edit';
 	}
 
 	const queryParts = getQueryParts( query );
@@ -37,7 +43,7 @@ function getContextFromAction( action ) {
  *
  * @return {number[]} Merged array of item IDs.
  */
-export function getMergedItemIds( itemIds, nextItemIds, page, perPage ) {
+function getMergedItemIds( itemIds: CollectionRecordKey[], nextItemIds: number[], page: number, perPage: number ): CollectionRecordKey[] {
 	const receivedAllIds = page === 1 && perPage === -1;
 	if ( receivedAllIds ) {
 		return nextItemIds;
@@ -69,19 +75,21 @@ export function getMergedItemIds( itemIds, nextItemIds, page, perPage ) {
 }
 
 /**
- * Helper function to filter out entities with certain IDs.
- * Entities are keyed by their ID.
+ * Helper function to filter out records with certain IDs.
+ * Records are keyed by their ID.
  *
- * @param {Object} entities Entity objects, keyed by entity ID.
- * @param {Array}  ids      Entity IDs to filter out.
+ * @param {Object} records Record objects, keyed by record ID.
+ * @param {Array}  ids     Record IDs to filter out.
  *
- * @return {Object} Filtered entities.
+ * @return {Object} Filtered records.
  */
-function removeEntitiesById( entities, ids ) {
+const removeRecordsById = (
+	records: Record<CollectionRecordKey, CollectionRecord>,
+	ids: CollectionRecordKey[] ): Record<CollectionRecordKey, CollectionRecord> => {
 	return Object.fromEntries(
-		Object.entries( entities ).filter(
+		Object.entries( records ).filter(
 			( [ id ] ) =>
-				! ids.some( ( itemId ) => {
+				!ids.some( ( itemId ) => {
 					if ( Number.isInteger( itemId ) ) {
 						return itemId === +id;
 					}
@@ -100,7 +108,7 @@ function removeEntitiesById( entities, ids ) {
  *
  * @return {Object} Next state.
  */
-export function items( state = {}, action ) {
+const items = ( state: QueriedDataState[ 'items' ] = { view: {}, edit: {} }, action ): QueriedDataState[ 'items' ] => {
 	switch ( action.type ) {
 		case 'RECEIVE_ITEMS': {
 			const context = getContextFromAction( action );
@@ -121,13 +129,15 @@ export function items( state = {}, action ) {
 				},
 			};
 		}
-		case 'REMOVE_ITEMS':
-			return Object.fromEntries(
-				Object.entries( state ).map( ( [ itemId, contextState ] ) => [
-					itemId,
-					removeEntitiesById( contextState, action.itemIds ),
-				] )
-			);
+		case 'REMOVE_ITEMS': {
+			const result = { ...state };
+
+			Object.keys( result ).forEach( ( context ) => {
+				result[ context ] = removeRecordsById( result[ context ], action.itemIds );
+			} );
+
+			return result;
+		}
 	}
 	return state;
 }
@@ -144,7 +154,7 @@ export function items( state = {}, action ) {
  *
  * @return {Object<string,Object<string,boolean>>} Next state.
  */
-export function itemIsComplete( state = {}, action ) {
+const itemIsComplete = ( state: QueriedDataState[ 'itemIsComplete' ] = { view: {}, edit: {} }, action ): QueriedDataState[ 'itemIsComplete' ] => {
 	switch ( action.type ) {
 		case 'RECEIVE_ITEMS': {
 			const context = getContextFromAction( action );
@@ -158,7 +168,7 @@ export function itemIsComplete( state = {}, action ) {
 			// compose a complete item for that entity.
 			const queryParts = query ? getQueryParts( query ) : {};
 			const isCompleteQuery =
-				! query || ! Array.isArray( queryParts.fields );
+				!query || !Array.isArray( queryParts.fields );
 
 			return {
 				...state,
@@ -178,12 +188,13 @@ export function itemIsComplete( state = {}, action ) {
 			};
 		}
 		case 'REMOVE_ITEMS':
-			return Object.fromEntries(
-				Object.entries( state ).map( ( [ itemId, contextState ] ) => [
-					itemId,
-					removeEntitiesById( contextState, action.itemIds ),
-				] )
-			);
+			const result = { ...state };
+
+			Object.keys( result ).forEach( ( context ) => {
+				result[ context ] = removeRecordsById( result[ context ], action.itemIds );
+			} );
+
+			return result;
 	}
 
 	return state;
@@ -198,7 +209,7 @@ export function itemIsComplete( state = {}, action ) {
  *
  * @return {Object} Next state.
  */
-const receiveQueries = compose( [
+const receiveQueries: Reducer<QueriedDataState[ 'queries' ] > = compose(
 	// Limit to matching action type so we don't attempt to replace action on
 	// an unhandled action.
 	ifMatchingAction( ( action ) => 'query' in action ),
@@ -218,17 +229,14 @@ const receiveQueries = compose( [
 		return action;
 	} ),
 
+	// Items are keyed by context.
 	onSubKey( 'context' ),
 
 	// Queries shape is shared, but keyed by query `stableKey` part. Original
 	// reducer tracks only a single query object.
 	onSubKey( 'stableKey' ),
-] )( ( state = {}, action ) => {
-	const { type, page, perPage, key = DEFAULT_ENTITY_KEY } = action;
-
-	if ( type !== 'RECEIVE_ITEMS' ) {
-		return state;
-	}
+)( ( state: QueriedDataState[ 'queries' ][ 'stableKey' ][ 'context' ], action ) => {
+	const { page, perPage, key = DEFAULT_ENTITY_KEY } = action;
 
 	return {
 		itemIds: getMergedItemIds(
@@ -239,7 +247,7 @@ const receiveQueries = compose( [
 		),
 		meta: action.meta,
 	};
-} );
+} ) as Reducer<QueriedDataState[ 'queries' ]>;
 
 /**
  * Reducer tracking queries state.
@@ -249,7 +257,7 @@ const receiveQueries = compose( [
  *
  * @return {Object} Next state.
  */
-const queries = ( state = {}, action ) => {
+const queries = ( state: QueriedDataState[ 'queries' ] = {}, action ): QueriedDataState[ 'queries' ] => {
 	switch ( action.type ) {
 		case 'RECEIVE_ITEMS':
 			return receiveQueries( state, action );
@@ -257,22 +265,22 @@ const queries = ( state = {}, action ) => {
 			const removedItems = action.itemIds.reduce( ( result, itemId ) => {
 				result[ itemId ] = true;
 				return result;
-			}, {} );
+			}, {} as Record<CollectionRecordKey, boolean> );
 
 			return Object.fromEntries(
 				Object.entries( state ).map(
-					( [ queryGroup, contextQueries ] ) => [
-						queryGroup,
+					( [ context, contextQueries ] ) => [
+						context,
 						Object.fromEntries(
 							Object.entries( contextQueries ).map(
 								( [ query, queryItems ] ) => [
 									query,
 									{
-										...queryItems,
-										itemIds: queryItems.itemIds.filter(
+										itemIds: ( queryItems ).itemIds.filter(
 											( queryId ) =>
-												! removedItems[ queryId ]
+												!removedItems[ queryId ]
 										),
+										meta: ( queryItems ).meta
 									},
 								]
 							)
@@ -285,7 +293,7 @@ const queries = ( state = {}, action ) => {
 	}
 };
 
-export default combineReducers( {
+export const queriedData = combineReducers( {
 	items,
 	itemIsComplete,
 	queries,

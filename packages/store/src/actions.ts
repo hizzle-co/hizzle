@@ -14,13 +14,13 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { getNestedValue, setNestedValue } from './utils';
-import { receiveItems, removeItems, receiveQueriedItems } from './queried-data';
-import { DEFAULT_ENTITY_KEY } from './collections';
+import { removeItems } from './collection';
+import { DEFAULT_ENTITY_KEY } from './constants';
 import { createBatch } from './batch';
 import { STORE_NAME } from './constants';
 import { store as hizzleStore } from '.';
-import { CollectionRecordKey, State } from './selectors';
-import { CollectionConfig } from './types';
+import { CollectionRecordKey } from './selectors';
+import { CollectionConfig, State } from './types';
 
 /**
  * Returns an action object used in adding new collection config.
@@ -39,125 +39,109 @@ export function addCollectionConfig( config: CollectionConfig ) {
 /**
  * Returns an action object used in signalling that entity records have been received.
  *
- * @param {string}       kind            Kind of the received entity record.
- * @param {string}       name            Name of the received entity record.
- * @param {Array|Object} records         Records received.
+ * @param {string}       namespace       Namespace of the received entity records.
+ * @param {string}       collection      Collection of the received entity records.
+ * @param {Array}        records         Records received.
  * @param {?Object}      query           Query Object.
  * @param {?boolean}     invalidateCache Should invalidate query caches.
- * @param {?Object}      edits           Edits to reset.
+ * @param {?Object}      persistedEdits  Edits to reset.
  * @param {?Object}      meta            Meta information about pagination.
  * @return {Object} Action object.
  */
-export function receiveEntityRecords(
-	kind,
-	name,
-	records,
-	query,
-	invalidateCache = false,
-	edits,
-	meta
-) {
-	// Auto drafts should not have titles, but some plugins rely on them so we can't filter this
-	// on the server.
-	if ( kind === 'postType' ) {
-		records = ( Array.isArray( records ) ? records : [ records ] ).map(
-			( record ) =>
-				record.status === 'auto-draft'
-					? { ...record, title: '' }
-					: record
-		);
-	}
-	let action;
-	if ( query ) {
-		action = receiveQueriedItems( records, query, edits, meta );
-	} else {
-		action = receiveItems( records, edits, meta );
+export function receiveCollectionRecords(
+	namespace: string,
+	collection: string,
+	records: Array<any>,
+	query: object | null,
+	invalidateCache: boolean | null = false,
+	persistedEdits: object | null,
+	meta: object | null
+): object {
+
+	const action: Record<string, any> = {
+		type: 'RECEIVE_ITEMS',
+		namespace,
+		collection,
+		invalidateCache,
+		items: Array.isArray( records ) ? records : [ records ],
+		persistedEdits,
+		meta,
 	}
 
-	return {
-		...action,
-		kind,
-		name,
-		invalidateCache,
-	};
+	if ( query ) {
+		action.query = query;
+	}
+
+	return action;
 }
 
 /**
- * Action triggered to delete an entity record.
+ * Action triggered to delete a collection record.
  *
- * @param {string}        kind                         Kind of the deleted entity.
- * @param {string}        name                         Name of the deleted entity.
- * @param {number|string} recordId                     Record ID of the deleted entity.
+ * @param {string}        namespace                    Namespace of the deleted collection.
+ * @param {string}        collection                   Collection of the deleted collection.
+ * @param {number|string} recordId                     Record ID of the deleted record.
  * @param {?Object}       query                        Special query parameters for the
  *                                                     DELETE API call.
- * @param {Object}        [options]                    Delete options.
- * @param {Function}      [options.__unstableFetch]    Internal use only. Function to
- *                                                     call instead of `apiFetch()`.
- *                                                     Must return a promise.
- * @param {boolean}       [options.throwOnError=false] If false, this action suppresses all
- *                                                     the exceptions. Defaults to false.
  */
-export const deleteEntityRecord =
+export const deleteCollectionRecord =
 	(
-		kind,
-		name,
-		recordId,
-		query,
-		{ __unstableFetch = apiFetch, throwOnError = false } = {}
+		namespace: string,
+		collection: string,
+		recordId: CollectionRecordKey,
+		query: object | null
 	) =>
 		async ( { dispatch, resolveSelect } ) => {
-			const configs = await resolveSelect.getEntitiesConfig( kind );
-			const entityConfig = configs.find(
-				( config ) => config.kind === kind && config.name === name
-			);
+			const collectionConfig = await resolveSelect.getCollectionConfig( namespace, collection );
+
 			let error;
 			let deletedRecord = false;
-			if ( !entityConfig ) {
+			if ( !collectionConfig ) {
 				return;
 			}
 
 			const lock = await dispatch.__unstableAcquireStoreLock(
 				STORE_NAME,
-				[ 'entities', 'records', kind, name, recordId ],
+				[ 'entities', 'records', namespace, collection, recordId ],
 				{ exclusive: true }
 			);
 
 			try {
 				dispatch( {
-					type: 'DELETE_ENTITY_RECORD_START',
-					kind,
-					name,
+					type: 'DELETE_COLLECTION_RECORD_START',
+					namespace,
+					collection,
 					recordId,
 				} );
 
 				let hasError = false;
 				try {
-					let path = `${ entityConfig.baseURL }/${ recordId }`;
+					let path = `${ collectionConfig.baseURL }/${ recordId }`;
 
 					if ( query ) {
 						path = addQueryArgs( path, query );
 					}
 
-					deletedRecord = await __unstableFetch( {
+					deletedRecord = await apiFetch( {
 						path,
 						method: 'DELETE',
 					} );
 
-					await dispatch( removeItems( kind, name, recordId, true ) );
+					await dispatch( removeItems( namespace, collection, recordId, true ) );
 				} catch ( _error ) {
 					hasError = true;
 					error = _error;
 				}
 
 				dispatch( {
-					type: 'DELETE_ENTITY_RECORD_FINISH',
-					kind,
-					name,
+					type: 'DELETE_COLLECTION_RECORD_FINISH',
+					namespace,
+					collection,
 					recordId,
 					error,
 				} );
 
-				if ( hasError && throwOnError ) {
+				if ( hasError ) {
 					throw error;
 				}
 
@@ -169,37 +153,37 @@ export const deleteEntityRecord =
 
 /**
  * Returns an action object that triggers an
- * edit to an entity record.
+ * edit to a collection record.
  *
- * @param {string}        kind                 Kind of the edited entity record.
- * @param {string}        name                 Name of the edited entity record.
- * @param {number|string} recordId             Record ID of the edited entity record.
+ * @param {string}        namespace            Namespace of the edited collection.
+ * @param {string}        collection           Collection of the edited collection.
+ * @param {number|string} recordId             Record ID of the edited collection record.
  * @param {Object}        edits                The edits.
  * @param {Object}        options              Options for the edit.
  * @param {boolean}       [options.undoIgnore] Whether to ignore the edit in undo history or not.
  *
  * @return {Object} Action object.
  */
-export const editEntityRecord =
-	( kind, name, recordId, edits, options = {} ) =>
+export const editCollectionRecord =
+	( namespace: string, collection: string, recordId: CollectionRecordKey, edits: object, options: Record<string, any> = {} ) =>
 		( { select, dispatch } ) => {
-			const entityConfig = select.getEntityConfig( kind, name );
-			if ( !entityConfig ) {
+			const collectionConfig = select.getCollectionConfig( namespace, collection );
+			if ( !collectionConfig ) {
 				throw new Error(
-					`The entity being edited (${ kind }, ${ name }) does not have a loaded config.`
+					`The collection being edited (${ namespace }, ${ collection }) does not have a loaded config.`
 				);
 			}
-			const { mergedEdits = {} } = entityConfig;
-			const record = select.getRawEntityRecord( kind, name, recordId );
-			const editedRecord = select.getEditedEntityRecord(
-				kind,
-				name,
+			const { mergedEdits = {} } = collectionConfig;
+			const record = select.getRawCollectionRecord( namespace, collection, recordId );
+			const editedRecord = select.getEditedCollectionRecord(
+				namespace,
+				collection,
 				recordId
 			);
 
 			const edit = {
-				kind,
-				name,
+				namespace,
+				collection,
 				recordId,
 				// Clear edits when they are equal to their persisted counterparts
 				// so that the property is not considered dirty.
@@ -215,41 +199,30 @@ export const editEntityRecord =
 					return acc;
 				}, {} ),
 			};
-			if ( window.__experimentalEnableSync && entityConfig.syncConfig ) {
-				if ( globalThis.IS_GUTENBERG_PLUGIN ) {
-					const objectId = entityConfig.getSyncObjectId( recordId );
-					getSyncProvider().update(
-						entityConfig.syncObjectType + '--edit',
-						objectId,
-						edit.edits
-					);
-				}
-			} else {
-				if ( !options.undoIgnore ) {
-					select.getUndoManager().addRecord(
-						[
-							{
-								id: { kind, name, recordId },
-								changes: Object.keys( edits ).reduce(
-									( acc, key ) => {
-										acc[ key ] = {
-											from: editedRecord[ key ],
-											to: edits[ key ],
-										};
-										return acc;
-									},
-									{}
-								),
-							},
-						],
-						options.isCached
-					);
-				}
-				dispatch( {
-					type: 'EDIT_ENTITY_RECORD',
-					...edit,
-				} );
+			if ( !options.undoIgnore ) {
+				select.getUndoManager().addRecord(
+					[
+						{
+							id: { namespace, collection, recordId },
+							changes: Object.keys( edits ).reduce(
+								( acc, key ) => {
+									acc[ key ] = {
+										from: editedRecord[ key ],
+										to: edits[ key ],
+									};
+									return acc;
+								},
+								{}
+							),
+						},
+					],
+					options.isCached
+				);
 			}
+			dispatch( {
+				type: 'EDIT_COLLECTION_RECORD',
+				...edit,
+			} );
 		};
 
 /**
@@ -300,8 +273,8 @@ export const __unstableCreateUndoLevel =
 /**
  * Action triggered to save an entity record.
  *
- * @param {string}   kind                         Kind of the received entity.
- * @param {string}   name                         Name of the received entity.
+ * @param {string}   namespace                    Namespace of the collection.
+ * @param {string}   collection                   Collection name.
  * @param {Object}   record                       Record to be saved.
  * @param {Object}   options                      Saving options.
  * @param {boolean}  [options.isAutosave=false]   Whether this is an autosave.
@@ -311,10 +284,10 @@ export const __unstableCreateUndoLevel =
  * @param {boolean}  [options.throwOnError=false] If false, this action suppresses all
  *                                                the exceptions. Defaults to false.
  */
-export const saveEntityRecord =
+export const saveCollectionRecord =
 	(
-		kind,
-		name,
+		namespace,
+		collection,
 		record,
 		{
 			isAutosave = false,
@@ -361,11 +334,10 @@ export const saveEntityRecord =
 				}
 
 				dispatch( {
-					type: 'SAVE_ENTITY_RECORD_START',
-					kind,
-					name,
+					type: 'SAVE_COLLECTION_RECORD_START',
+					namespace,
+					collection,
 					recordId,
-					isAutosave,
 				} );
 				let updatedRecord;
 				let error;
@@ -511,12 +483,11 @@ export const saveEntityRecord =
 					error = _error;
 				}
 				dispatch( {
-					type: 'SAVE_ENTITY_RECORD_FINISH',
-					kind,
-					name,
+					type: 'SAVE_COLLECTION_RECORD_FINISH',
+					namespace,
+					collection,
 					recordId,
 					error,
-					isAutosave,
 				} );
 
 				if ( hasError && throwOnError ) {
