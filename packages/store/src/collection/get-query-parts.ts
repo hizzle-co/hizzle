@@ -7,22 +7,42 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { withWeakMapCache, getNormalizedCommaSeparable } from '../utils';
+import { DEFAULT_PAGE, DEFAULT_PER_PAGE, DEFAULT_CONTEXT } from '../constants';
 
 /**
  * An object of properties describing a specific query.
- *
- * @typedef {Object} WPQueriedDataQueryParts
- *
- * @property {number}      page      The query page (1-based index, default 1).
- * @property {number}      perPage   Items per page for query (default 10).
- * @property {string}      stableKey An encoded stable string of all non-
- *                                   pagination, non-fields query parameters.
- * @property {?(string[])} fields    Target subset of fields to derive from
- *                                   item objects.
- * @property {?(number[])} include   Specific item IDs to include.
- * @property {string}      context   Scope under which the request is made;
- *                                   determines returned fields in response.
  */
+type WPQueriedDataQueryParts = {
+	/**
+	 * The query page (1-based index, default 1).
+	 */
+	page: number;
+
+	/**
+	 * Items per page for query (default 10).
+	 */
+	perPage: number;
+
+	/**
+	 * An encoded stable string of all non-pagination, non-fields query parameters.
+	 */
+	stableKey: string;
+
+	/**
+	 * Target subset of fields to derive from item objects.
+	 */
+	fields?: string[];
+
+	/**
+	 * Specific item IDs to include.
+	 */
+	include?: number[];
+
+	/**
+	 * Scope under which the request is made; determines returned fields in response.
+	 */
+	context: string;
+}
 
 /**
  * Given a query object, returns an object of parts, including pagination
@@ -33,17 +53,14 @@ import { withWeakMapCache, getNormalizedCommaSeparable } from '../utils';
  *
  * @return {WPQueriedDataQueryParts} Query parts.
  */
-export function getQueryParts( query ) {
-	/**
-	 * @type {WPQueriedDataQueryParts}
-	 */
-	const parts = {
+export function getQueryParts( query: Record<string, any> ): WPQueriedDataQueryParts {
+	const parts: WPQueriedDataQueryParts = {
 		stableKey: '',
-		page: 1,
-		perPage: 10,
-		fields: null,
-		include: null,
-		context: 'default',
+		page: DEFAULT_PAGE,
+		perPage: DEFAULT_PER_PAGE,
+		fields: undefined,
+		include: undefined,
+		context: DEFAULT_CONTEXT,
 	};
 
 	// Ensure stable key by sorting keys. Also more efficient for iterating.
@@ -56,27 +73,33 @@ export function getQueryParts( query ) {
 		switch ( key ) {
 			case 'page':
 				parts[ key ] = Number( value );
+
+				if ( parts.page !== DEFAULT_PAGE ) {
+					parts.stableKey +=
+						( parts.stableKey ? '&' : '' ) +
+						'page=' + value;
+				}
 				break;
 
 			case 'per_page':
 				parts.perPage = Number( value );
+
+				if ( parts.perPage !== DEFAULT_PER_PAGE ) {
+					parts.stableKey +=
+						( parts.stableKey ? '&' : '' ) +
+						'per_page=' + value;
+				}
 				break;
 
 			case 'context':
 				parts.context = value;
 				break;
 
+			case '_fields':
+				parts.fields = getNormalizedCommaSeparable( value ) ?? [];
+				break;
+
 			default:
-				// While in theory, we could exclude "_fields" from the stableKey
-				// because two request with different fields have the same results
-				// We're not able to ensure that because the server can decide to omit
-				// fields from the response even if we explicitly asked for it.
-				// Example: Asking for titles in posts without title support.
-				if ( key === '_fields' ) {
-					parts.fields = getNormalizedCommaSeparable( value ) ?? [];
-					// Make sure to normalize value for `stableKey`
-					value = parts.fields.join();
-				}
 
 				// Two requests with different include values cannot have same results.
 				if ( key === 'include' ) {

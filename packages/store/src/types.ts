@@ -352,7 +352,10 @@ export interface State {
 							[ context: string ]: {
 								[ query: string ]: {
 									itemIds: CollectionRecordKey[];
-									meta: Record<string, any>;
+									meta: {
+										totalItems?: number;
+										totalPages?: number;
+									};
 								};
 							};
 						};

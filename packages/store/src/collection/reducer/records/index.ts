@@ -18,6 +18,13 @@ import { queriedData } from './queriedData';
 
 export type collectionState = State[ 'collections' ][ 'records' ][ 'namespace' ][ 'collection' ]
 
+/**
+ * Reducer that handles multi-collection record edits.
+ *
+ * @param {Object} reducer - The reducer to use.
+ * @param {Object} state - The current state.
+ * @param {Object} action - The action to dispatch.
+ */
 const withMultiCollectionRecordEdits = ( reducer ) => ( state, action ) => {
     if ( action.type === 'UNDO' || action.type === 'REDO' ) {
         const { record } = action;

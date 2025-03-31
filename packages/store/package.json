@@ -32,11 +32,13 @@
 		"@wordpress/core-data": "^7.20.0",
 		"@wordpress/data": "^10.20.0",
 		"@wordpress/data-controls": "^4.20.0",
-		"@wordpress/url": "^4.20.0"
+		"@wordpress/url": "^4.20.0",
+		"uuid": "^11.1.0"
 	},
 	"peerDependencies": {
 		"react": "^18.0.0"
 	},
+	"sideEffects": false,
 	"publishConfig": {
 		"access": "public"
 	}

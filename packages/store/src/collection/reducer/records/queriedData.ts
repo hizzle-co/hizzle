@@ -19,6 +19,7 @@ import { DEFAULT_ENTITY_KEY } from '../../../constants';
 import getQueryParts from '../../get-query-parts';
 import type { CollectionRecord, CollectionRecordKey } from '../../../types';
 import type { collectionState } from '.';
+import type { RemoveItemsAction } from '../../actions';
 
 type QueriedDataState = collectionState[ 'queriedData' ]
 
@@ -108,9 +109,9 @@ const removeRecordsById = (
  *
  * @return {Object} Next state.
  */
-const items = ( state: QueriedDataState[ 'items' ] = { view: {}, edit: {} }, action ): QueriedDataState[ 'items' ] => {
+const items = ( state: QueriedDataState[ 'items' ] = { view: {}, edit: {} }, action: RemoveItemsAction ): QueriedDataState[ 'items' ] => {
 	switch ( action.type ) {
-		case 'RECEIVE_ITEMS': {
+		case 'RECEIVE_COLLECTION_RECORDS': {
 			const context = getContextFromAction( action );
 			const key = action.key || DEFAULT_ENTITY_KEY;
 			return {
@@ -154,9 +155,9 @@ const items = ( state: QueriedDataState[ 'items' ] = { view: {}, edit: {} }, act
  *
  * @return {Object<string,Object<string,boolean>>} Next state.
  */
-const itemIsComplete = ( state: QueriedDataState[ 'itemIsComplete' ] = { view: {}, edit: {} }, action ): QueriedDataState[ 'itemIsComplete' ] => {
+const itemIsComplete = ( state: QueriedDataState[ 'itemIsComplete' ] = { view: {}, edit: {} }, action: RemoveItemsAction ): QueriedDataState[ 'itemIsComplete' ] => {
 	switch ( action.type ) {
-		case 'RECEIVE_ITEMS': {
+		case 'RECEIVE_COLLECTION_RECORDS': {
 			const context = getContextFromAction( action );
 			const { query, key = DEFAULT_ENTITY_KEY } = action;
 
@@ -235,7 +236,7 @@ const receiveQueries: Reducer<QueriedDataState[ 'queries' ] > = compose(
 	// Queries shape is shared, but keyed by query `stableKey` part. Original
 	// reducer tracks only a single query object.
 	onSubKey( 'stableKey' ),
-)( ( state: QueriedDataState[ 'queries' ][ 'stableKey' ][ 'context' ], action ) => {
+)( ( state: QueriedDataState[ 'queries' ][ 'context' ][ 'stableKey' ], action ) => {
 	const { page, perPage, key = DEFAULT_ENTITY_KEY } = action;
 
 	return {
@@ -257,9 +258,9 @@ const receiveQueries: Reducer<QueriedDataState[ 'queries' ] > = compose(
  *
  * @return {Object} Next state.
  */
-const queries = ( state: QueriedDataState[ 'queries' ] = {}, action ): QueriedDataState[ 'queries' ] => {
+const queries = ( state: QueriedDataState[ 'queries' ] = {}, action: RemoveItemsAction ): QueriedDataState[ 'queries' ] => {
 	switch ( action.type ) {
-		case 'RECEIVE_ITEMS':
+		case 'RECEIVE_COLLECTION_RECORDS':
 			return receiveQueries( state, action );
 		case 'REMOVE_ITEMS':
 			const removedItems = action.itemIds.reduce( ( result, itemId ) => {

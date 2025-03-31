@@ -2,14 +2,9 @@
  * Internal dependencies
  */
 import type { CollectionRecordKey, API_STATE } from '../../../types';
+import type { DeleteCollectionRecordAction, UnknownAction } from '../../actions';
 
-type Action = {
-    type: 'DELETE_COLLECTION_RECORD_START' | 'DELETE_COLLECTION_RECORD_FINISH' | string;
-    recordId: CollectionRecordKey;
-    error?: Error;
-};
-
-export const deleting = ( state: Record<CollectionRecordKey, Partial<API_STATE>> = {}, action: Action ) => {
+export const deleting = ( state: Record<CollectionRecordKey, Partial<API_STATE>> = {}, action: DeleteCollectionRecordAction | UnknownAction ) => {
     switch ( action.type ) {
         case 'DELETE_COLLECTION_RECORD_START':
         case 'DELETE_COLLECTION_RECORD_FINISH':

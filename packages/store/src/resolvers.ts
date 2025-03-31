@@ -17,8 +17,8 @@ import {
 	ALLOWED_RESOURCE_ACTIONS,
 	RECEIVE_INTERMEDIATE_RESULTS,
 } from './utils';
-import { CollectionRecordKey, GetRecordsHttpQuery } from './selectors';
-import { CollectionConfig } from './types';
+import { GetRecordsHttpQuery } from './selectors';
+import { CollectionRecordKey, CollectionConfig } from './types';
 
 /**
  * Requests a collection's record from the REST API.
@@ -339,7 +339,7 @@ export const getCollectionRecords =
 
 getCollectionRecords.shouldInvalidate = ( action, namespace: string, collection: string ) => {
 	return (
-		( action.type === 'RECEIVE_ITEMS' || action.type === 'REMOVE_ITEMS' ) &&
+		( action.type === 'RECEIVE_COLLECTION_RECORDS' || action.type === 'REMOVE_ITEMS' ) &&
 		action.invalidateCache &&
 		namespace === action.namespace &&
 		collection === action.collection

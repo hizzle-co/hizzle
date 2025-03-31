@@ -34,3 +34,4 @@ register( store );
 
 export * from './collection-provider';
 export * from './hooks';
+export * from './constants';

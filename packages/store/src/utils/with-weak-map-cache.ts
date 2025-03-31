@@ -7,10 +7,10 @@
  *
  * @return {Function} Enhanced caching function.
  */
-function withWeakMapCache( fn ) {
+function withWeakMapCache<T extends ( key: any ) => any>( fn: T ): ( key: any ) => ReturnType<T> {
 	const cache = new WeakMap();
 
-	return ( key ) => {
+	return ( key: any ): ReturnType<T> => {
 		let value;
 		if ( cache.has( key ) ) {
 			value = cache.get( key );

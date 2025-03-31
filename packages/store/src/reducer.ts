@@ -7,7 +7,7 @@ import { createUndoManager } from '@wordpress/undo-manager';
 /**
  * Internal dependencies
  */
-import { collectionsReducer } from './collection';
+import { collectionsReducer } from './collection/reducer';
 import type { State } from './types';
 
 export function undoManager( state: State['undoManager'] = createUndoManager() ): State['undoManager'] {

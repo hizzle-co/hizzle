@@ -8,6 +8,7 @@ import fastDeepEqual from 'fast-deep-equal/es6';
  */
 import type { CollectionRecordKey, CollectionRecord } from '../../../types';
 import { DEFAULT_ENTITY_KEY } from '../../../constants';
+import type { ReceiveCollectionRecordsAction } from '../../actions';
 
 /**
  * Define action types for better type safety
@@ -20,15 +21,7 @@ type EditCollectionRecordAction = {
     edits: Partial<CollectionRecord>;
 };
 
-type ReceiveItemsAction = {
-    type: 'RECEIVE_ITEMS';
-    query?: Record<string, any>;
-    items: CollectionRecord[];
-    key?: string;
-    persistedEdits?: Record<string, any>;
-};
-
-type Action = EditCollectionRecordAction | ReceiveItemsAction | { type: 'other' };
+type Action = EditCollectionRecordAction | ReceiveCollectionRecordsAction | { type: 'other' };
 
 export const edits = (
     state: Record<CollectionRecordKey, Partial<CollectionRecord>> = {},
@@ -38,7 +31,7 @@ export const edits = (
         // If the action is a receive items action,
         // we need to update the edits for the records.
         // Removes saved edits that are no longer in the items.
-        case 'RECEIVE_ITEMS':
+        case 'RECEIVE_COLLECTION_RECORDS':
             const context = action.query?.context ?? 'edit';
             if ( context !== 'edit' ) {
                 return state;
@@ -46,7 +39,7 @@ export const edits = (
 
             const nextState = { ...state };
 
-            for ( const record of action.items ?? [] ) {
+            for ( const record of action.records ?? [] ) {
                 const recordId = record?.[ action.key || DEFAULT_ENTITY_KEY ];
                 const edits = nextState[ recordId ];
                 if ( !edits ) {

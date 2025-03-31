@@ -10,7 +10,7 @@ import {
 	getQueriedItems,
 	getQueriedTotalItems,
 	getQueriedTotalPages,
-} from './collection';
+} from './collection/selectors';
 import { DEFAULT_ENTITY_KEY } from './constants';
 import {
 	getNormalizedCommaSeparable,
