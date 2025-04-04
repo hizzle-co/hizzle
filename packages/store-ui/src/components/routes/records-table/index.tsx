@@ -23,13 +23,18 @@ import type { TableProviderProps } from '@hizzlewp/records/build-types/component
 import { usePreferences } from '@hizzlewp/interface';
 
 /**
+ * Local dependencies.
+ */
+import { DisplayCell } from './display-cell';
+
+/**
  * Renders a records overview table for the matching path.
  *
  * @returns The records table.
  */
 export const RecordsTable = () => {
 	// If we're here, the config is already resolved and won't return undefined.
-	const { config: { namespace, collection, props, ignore } } = useProvidedCollectionConfig() || {};
+	const { config: { namespace, collection, props, ignore, hidden, badges } } = useProvidedCollectionConfig() || {};
 
 	// Current query.
 	const query = useQuery();
@@ -39,6 +44,9 @@ export const RecordsTable = () => {
 
 	// Prepare the state saved in preferences.
 	const { preferences, setPreferences } = usePreferences( 'recordsTablePreferences', `${ namespace }/${ collection }` );
+
+	// Backwards compatibility.
+	const { preferences: viewPreferences } = usePreferences( 'view', `${ namespace }/${ collection }` );
 
 	// Available columns.
 	const columns = useMemo( () => {
@@ -55,6 +63,14 @@ export const RecordsTable = () => {
 				header: prop.label,
 				enableSorting: !prop.is_dynamic && !prop.is_meta,
 				enableHiding: !prop.is_primary,
+				cell: ( { row } ) => (
+					<DisplayCell
+						row={ row.original }
+						header={ prop }
+						isBadge={ Array.isArray( badges ) && badges.includes( prop.name ) }
+						path={ `${ namespace }/${ collection }/${ row.original.id }` }
+					/>
+				),
 				//elements: prop.enum ? useOptions( prop.enum ) : undefined,
 				//...prop
 			} );
@@ -63,12 +79,22 @@ export const RecordsTable = () => {
 		return columns;
 	}, [ props, ignore ] );
 
+	const columnVisibility = useMemo( () => {
+		const hiddenColumns = Array.isArray( viewPreferences?.hiddenFields ) ? viewPreferences?.hiddenFields : hidden;
+
+		return hiddenColumns.reduce( ( acc, column ) => {
+			acc[ column ] = false;
+			return acc;
+		}, {} );
+	}, [ hidden, viewPreferences ] );
+
 	// State.
 	const state = useMemo( () => {
 		const querySort = query.orderby;
 		const queryOrder = query.order || 'desc';
 
 		const state = {
+			columnVisibility,
 			...preferences,
 			sorting: querySort ? [ { id: querySort, desc: queryOrder === 'desc' } ] : ( preferences?.sorting || [] ),
 			pagination: {

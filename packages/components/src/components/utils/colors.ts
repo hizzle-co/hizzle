@@ -231,7 +231,7 @@ export const stringToColor = (
 		lightness?: number | [number, number];
 		differencePoint?: number;
 	} = {}
-): object => {
+) => {
 	const hash = Math.abs(hashCode(String(value)));
 	const h = boundHashCode(hash, [0, 360]);
 	const s = boundHashCode(hash, sanitizeRange(saturation, SATURATION_BOUND));

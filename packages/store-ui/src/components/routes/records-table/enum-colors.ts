@@ -12,21 +12,21 @@ import { stringToColor } from '@hizzlewp/components';
 export default function getEnumBadge( str ) {
 
 	// Try to guess the color from the string.
-	if ( ['subscribed', 'subscribe', 'active', 'yes', 'true', '1'].includes( str ) ) {
+	if ( [ 'subscribed', 'subscribe', 'active', 'yes', 'true', '1', 'complete' ].includes( str ) ) {
 		return {
 			backgroundColor: '#78c67a',
 			color: '#111111',
 		}
 	}
 
-	if ( ['unsubscribed', 'unsubscribe', 'inactive', 'no', 'false', '0'].includes( str ) ) {
+	if ( [ 'unsubscribed', 'unsubscribe', 'inactive', 'no', 'false', '0', 'canceled' ].includes( str ) ) {
 		return {
 			backgroundColor: '#fbcfbd',
 			color: '#241c15',
 		}
 	}
 
-	if ( ['pending', 'waiting', 'maybe', '2'].includes( str ) ) {
+	if ( [ 'pending', 'waiting', 'maybe', '2' ].includes( str ) ) {
 		return {
 			backgroundColor: '#fbeeca',
 			color: '#241c15',
@@ -35,8 +35,8 @@ export default function getEnumBadge( str ) {
 
 	// Generate unique color for the string.
 	const color = stringToColor( str, {
-		saturation: [60, 100],
-   		lightness: [30, 45],
+		saturation: [ 60, 100 ],
+		lightness: [ 30, 45 ],
 	} );
 
 	return {

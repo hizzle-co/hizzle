@@ -155,27 +155,23 @@ const items = ( state: QueriedDataState[ 'items' ] = { view: {}, edit: {} }, act
  *
  * @return {Object<string,Object<string,boolean>>} Next state.
  */
-const itemIsComplete = ( state: QueriedDataState[ 'itemIsComplete' ] = { view: {}, edit: {} }, action: RemoveItemsAction ): QueriedDataState[ 'itemIsComplete' ] => {
+const itemIsComplete = ( state: QueriedDataState[ 'itemIsComplete' ] = { view: {}, edit: {} }, action: RemoveItemsAction | ReceiveCollectionRecordsAction ): QueriedDataState[ 'itemIsComplete' ] => {
 	switch ( action.type ) {
 		case 'RECEIVE_COLLECTION_RECORDS': {
 			const context = getContextFromAction( action );
 			const { query, key = DEFAULT_ENTITY_KEY } = action;
 
 			// An item is considered complete if it is received without an associated
-			// fields query. Ideally, this would be implemented in such a way where the
-			// complete aggregate of all fields would satisfy completeness. Since the
-			// fields are not consistent across all entities, this would require
-			// introspection on the REST schema for each entity to know which fields
-			// compose a complete item for that entity.
-			const queryParts = query ? getQueryParts( query ) : {};
+			// fields query.
+			const queryParts = query ? getQueryParts( query ) : { fields: [] };
 			const isCompleteQuery =
-				!query || !Array.isArray( queryParts.fields );
+				!query || !Array.isArray( queryParts.fields ) || queryParts.fields.length === 0;
 
 			return {
 				...state,
 				[ context ]: {
 					...state[ context ],
-					...action.items.reduce( ( result, item ) => {
+					...action.records.reduce( ( result, item ) => {
 						const itemId = item?.[ key ];
 
 						// Defer to completeness if already assigned. Technically the
@@ -237,12 +233,12 @@ const receiveQueries: Reducer<QueriedDataState[ 'queries' ]> = compose(
 	// reducer tracks only a single query object.
 	onSubKey( 'stableKey' ),
 )( ( state: QueriedDataState[ 'queries' ][ 'context' ][ 'stableKey' ], action ) => {
-	const { page, perPage, key = DEFAULT_ENTITY_KEY } = action;
+	const { page = 1, perPage = -1, key = DEFAULT_ENTITY_KEY } = action;
 
 	return {
 		itemIds: getMergedItemIds(
 			state?.itemIds || [],
-			action.items.map( ( item ) => item?.[ key ] ).filter( Boolean ),
+			action.records.map( ( item ) => item?.[ key ] ).filter( Boolean ),
 			page,
 			perPage
 		),
@@ -258,7 +254,7 @@ const receiveQueries: Reducer<QueriedDataState[ 'queries' ]> = compose(
  *
  * @return {Object} Next state.
  */
-const queries = ( state: QueriedDataState[ 'queries' ] = {}, action: RemoveItemsAction ): QueriedDataState[ 'queries' ] => {
+const queries = ( state: QueriedDataState[ 'queries' ] = { view: {}, edit: {} }, action: RemoveItemsAction | ReceiveCollectionRecordsAction ): QueriedDataState[ 'queries' ] => {
 	switch ( action.type ) {
 		case 'RECEIVE_COLLECTION_RECORDS':
 			return receiveQueries( state, action );

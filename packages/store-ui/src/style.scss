@@ -26,3 +26,23 @@
     font-size: 14px;
     min-height: 50px;
 }
+
+.hizzlewp-avatar {
+    height: 32px;
+    width: 32px;
+    max-width: 32px;
+    max-height: 32px;
+    overflow: hidden;
+    border-radius: 50%;
+    box-shadow: 2px 2px 2px rgb(0 0 0 / 5%);
+}
+
+.hizzlewp-badge {
+    white-space: nowrap;
+	border-radius: 200px;
+	height: 24px;
+	line-height: 24px;
+	padding: 3px 9px;
+	display: inline-block;
+	box-sizing: content-box;
+}

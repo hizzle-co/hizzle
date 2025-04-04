@@ -203,6 +203,8 @@ export const getCollectionRecords = ( (
 	if ( !queriedState ) {
 		return null;
 	}
+
+	// Get the items for the given query.
 	return getQueriedItems( queriedState, query );
 } );
 
@@ -214,78 +216,6 @@ export const getCollectionRecords = ( (
  * @type {WeakMap<Object,EquivalentKeyMap>}
  */
 const queriedItemsCacheByState = new WeakMap<any, EquivalentKeyMap>();
-
-/**
- * Returns items for a given query, or null if the items are not known.
- *
- * @param {Object}  state State object.
- * @param {?Object} query Optional query.
- *
- * @return {?Array} Query items.
- */
-function getQueriedItemsUncached( state: State['collections']['records']['namespace']['collection']['queriedData'], query?: Record<string, any> ) {
-	const { stableKey, page, perPage, include, fields, context } =
-		getQueryParts( query );
-	let itemIds: CollectionRecordKey[] | undefined;
-
-	if ( state.queries?.[ context ]?.[ stableKey ] ) {
-		itemIds = state.queries[ context ][ stableKey ].itemIds;
-	}
-
-	if ( ! itemIds ) {
-		return null;
-	}
-
-	const startOffset = perPage === -1 ? 0 : ( page - 1 ) * perPage;
-	const endOffset =
-		perPage === -1
-			? itemIds.length
-			: Math.min( startOffset + perPage, itemIds.length );
-
-	const items: CollectionRecord[] = [];
-	for ( let i = startOffset; i < endOffset; i++ ) {
-		const itemId = itemIds[ i ];
-		if ( Array.isArray( include ) && ! include.includes( itemId ) ) {
-			continue;
-		}
-		if ( itemId === undefined ) {
-			continue;
-		}
-		// Having a target item ID doesn't guarantee that this object has been queried.
-		if ( ! state.items[ context ]?.hasOwnProperty( itemId ) ) {
-			return null;
-		}
-
-		const item = state.items[ context ][ itemId ];
-
-		let filteredItem: any;
-		if ( Array.isArray( fields ) ) {
-			filteredItem = {};
-
-			for ( let f = 0; f < fields.length; f++ ) {
-				const field = fields[ f ].split( '.' );
-				let value = item;
-				field.forEach( ( fieldName ) => {
-					value = value?.[ fieldName ];
-				} );
-
-				setNestedValue( filteredItem, field, value );
-			}
-		} else {
-			// If expecting a complete item, validate that completeness, or
-			// otherwise abort.
-			if ( ! state.itemIsComplete[ context ]?.[ itemId ] ) {
-				return null;
-			}
-
-			filteredItem = item;
-		}
-
-		items.push( filteredItem );
-	}
-
-	return items;
-}
 
 /**
  * Returns items for a given query, or null if the items are not known. Caches
@@ -300,7 +230,7 @@ function getQueriedItemsUncached( state: State['collections']['records']['namesp
  *
  * @return {?Array} Query items.
  */
-export const getQueriedItems = createSelector( ( state, query = {} ) => {
+export const getQueriedItems = createSelector( ( state: State['collections']['records']['namespace']['collection']['queriedData'], query = {} ) => {
 	let queriedItemsCache = queriedItemsCacheByState.get( state );
 	if ( queriedItemsCache ) {
 		const queriedItems = queriedItemsCache.get( query );
@@ -317,16 +247,86 @@ export const getQueriedItems = createSelector( ( state, query = {} ) => {
 	return items;
 } );
 
-export function getQueriedTotalItems( state, query = {} ) {
-	const { stableKey, context } = getQueryParts( query );
+/**
+ * Returns items for a given query, or null if the items are not known.
+ *
+ * @param {Object}  state State object.
+ * @param {?Object} query Optional query.
+ *
+ * @return {?Array} Query items.
+ */
+function getQueriedItemsUncached( state: State['collections']['records']['namespace']['collection']['queriedData'], query?: Record<string, any> ) {
+	const { stableKey, page, perPage, include, fields, context } =
+		getQueryParts( query );
 
-	return state.queries?.[ context ]?.[ stableKey ]?.meta?.totalItems ?? null;
-}
+	// Fetch all item IDs for the given query.
+	let itemIds: CollectionRecordKey[] | undefined;
 
-export function getQueriedTotalPages( state, query = {} ) {
-	const { stableKey, context } = getQueryParts( query );
+	if ( state.queries?.[ context ]?.[ stableKey ] ) {
+		itemIds = state.queries[ context ][ stableKey ].itemIds;
+	}
 
-	return state.queries?.[ context ]?.[ stableKey ]?.meta?.totalPages ?? null;
+	if ( ! Array.isArray( itemIds ) ) {
+		return null;
+	}
+
+	// If we're requesting paged results, calculate the start and end offsets.
+	const startOffset = perPage === -1 ? 0 : ( page - 1 ) * perPage;
+	const endOffset =
+		perPage === -1
+			? itemIds.length
+			: Math.min( startOffset + perPage, itemIds.length );
+
+	// Initialize an empty array to store the filtered items.
+	const items: CollectionRecord[] = [];
+
+	// Iterate through the item IDs in the specified range.
+	for ( let i = startOffset; i < endOffset; i++ ) {
+		const itemId = itemIds[ i ];
+		if ( Array.isArray( include ) && ! include.includes( itemId ) ) {
+			continue;
+		}
+		if ( itemId === undefined ) {
+			continue;
+		}
+		// Having a target item ID doesn't guarantee that this object has been queried.
+		if ( ! state.items[ context ]?.hasOwnProperty( itemId ) ) {
+			return null;
+		}
+
+		// Get the item from the state.
+		const item = state.items[ context ][ itemId ];
+
+		// Initialize an empty object to store the filtered item.
+		let filteredItem: any;
+		if ( Array.isArray( fields ) && fields.length > 0 ) {
+			filteredItem = {};
+
+			// Iterate through the fields in the specified array.
+			for ( let f = 0; f < fields.length; f++ ) {
+				const field = fields[ f ].split( '.' );
+				let value = item;
+				field.forEach( ( fieldName ) => {
+					value = value?.[ fieldName ];
+				} );
+
+				setNestedValue( filteredItem, field, value );
+			}
+		} else {
+			// If expecting a complete item, validate that completeness, or
+			// otherwise abort.
+			if ( ! state.itemIsComplete[ context ]?.[ itemId ] ) {
+				return null;
+			}
+
+			// Add the complete item to the items array.
+			filteredItem = item;
+		}
+
+		items.push( filteredItem );
+	}
+
+	return items;
 }
 
 /**
@@ -353,7 +353,9 @@ export const getCollectionRecordsTotalItems = (
 	if ( !queriedState ) {
 		return null;
 	}
-	return getQueriedTotalItems( queriedState, query );
+
+	const { stableKey, context } = getQueryParts( query );
+	return queriedState.queries?.[ context ]?.[ stableKey ]?.meta?.totalItems ?? null;
 };
 
 /**
@@ -380,17 +382,29 @@ export const getCollectionRecordsTotalPages = (
 	if ( !queriedState ) {
 		return null;
 	}
+
+	// If we're requesting all items, return 1 page.
 	if ( query.per_page === -1 ) {
 		return 1;
 	}
-	const totalItems = getQueriedTotalItems( queriedState, query );
-	if ( !totalItems ) {
-		return totalItems;
-	}
-	// If `per_page` is not set and the query relies on the defaults of the
-	// REST endpoint, get the info from query's meta.
+
+	const { stableKey, context, perPage } = getQueryParts( query );
+
+	// If `per_page` is not set, get the info from query's meta.
 	if ( !query.per_page ) {
-		return getQueriedTotalPages( queriedState, query );
+		const totalPages = queriedState.queries?.[ context ]?.[ stableKey ]?.meta?.totalPages;
+
+		if ( totalPages ) {
+			return totalPages;
+		}
 	}
-	return Math.ceil( totalItems / query.per_page );
+
+	// Get the total number of items.
+	const totalItems = queriedState.queries?.[ context ]?.[ stableKey ]?.meta?.totalItems ?? null;
+	if ( !totalItems ) {
+		return null;
+	}
+
+	// Return the total number of pages.
+	return Math.ceil( totalItems / perPage );
 };

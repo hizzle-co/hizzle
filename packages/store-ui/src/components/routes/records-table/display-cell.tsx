@@ -1,12 +1,38 @@
+/**
+ * External dependencies.
+ */
+import React from "react";
+
+/**
+ * WordPress dependencies.
+ */
 import { Flex, FlexBlock, FlexItem, Button, Icon } from "@wordpress/components";
-import { dateI18n, getSettings, __experimentalGetSettings } from "@wordpress/date";
+import { dateI18n, getSettings } from "@wordpress/date";
 import { getQueryArg, addQueryArgs } from "@wordpress/url";
-import getEnumBadge from "./enum-colors";
-import { Avatar, Badge } from "../styled-components";
-import { useNavigateCollection } from "../hooks";
 import { useState, useCallback } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 
+/**
+ * HizzleWP dependencies.
+ */
+import type { RecordProp } from "@hizzlewp/store/build-types/types";
+import { updatePath } from '@hizzlewp/history';
+
+/**
+ * Local dependencies.
+ */
+import getEnumBadge from "./enum-colors";
+
+const Badge = ( props ) => {
+
+	const { className, ...rest } = props;
+
+	return <span className={ `hizzlewp-badge ${ className || '' }` } { ...rest } />;
+}
+
+/**
+ * Checks if a value is an object.
+ */
 const isObject = ( obj ) => obj && typeof obj === 'object' && obj.constructor === Object;
 
 /**
@@ -26,7 +52,7 @@ export const normalizeAvatarColors = ( avatarUrl, fallbackText, isGrid = false )
 		avatarUrl = addQueryArgs( avatarUrl, { s: 360 } );
 	}
 
-	const fallback = getQueryArg( avatarUrl, 'd' );
+	const fallback = getQueryArg( avatarUrl, 'd' ) as string | undefined;
 
 	// Abort if we're not falling back to ui-avatar.
 	if ( !fallback || !fallback.includes( 'ui-avatars.com' ) ) {
@@ -56,6 +82,14 @@ export const normalizeAvatarColors = ( avatarUrl, fallbackText, isGrid = false )
 	return avatarUrl;
 }
 
+type PrimaryColumnProps = {
+	record: Record<string, any>;
+	name: string;
+	basePath?: string;
+	viewType?: 'table' | 'grid';
+	path?: string;
+}
+
 /**
  * Displays the primary column.
  * @param {Object} props
@@ -63,26 +97,26 @@ export const normalizeAvatarColors = ( avatarUrl, fallbackText, isGrid = false )
  * @param {string} props.name  The name of the column.
  * @param {string} props.label The label of the column.
  * @param {string} props.description The description of the column.
- * @returns
  */
-const PrimaryColumn = ( { record, name, basePath = '', viewType } ) => {
+const PrimaryColumn: React.FC<PrimaryColumnProps> = ( { record, name, viewType, path } ) => {
 
-	const navigateTo = useNavigateCollection();
 	const value = record[ name ];
 	const avatar_url = viewType !== 'table' ? '' : normalizeAvatarColors( record.avatar_url, value );
-	const avatar = avatar_url ? <Avatar src={ avatar_url } alt={ value } /> : null;
-	const open = useCallback( () => navigateTo( `${ basePath }${ record.id }` ), [ basePath, record.id ] );
+	const avatar = avatar_url ? <img className="hizzlewp-avatar" src={ avatar_url } alt={ value } /> : null;
+	const open = useCallback( () => path ? updatePath( path ) : null, [ path ] );
 
-	const ColValue = avatar ? (
-		<Flex>
-			<FlexItem>
-				{ avatar }
-			</FlexItem>
+	const ColValue = (
+		<Flex className="hizzlewp-table__cell--primary">
+			{ avatar && (
+				<FlexItem>
+					{ avatar }
+				</FlexItem>
+			) }
 			<FlexBlock>
 				{ value }
 			</FlexBlock>
 		</Flex>
-	) : value;
+	);
 
 	const btnStyle = {
 		width: '100%',
@@ -90,11 +124,15 @@ const PrimaryColumn = ( { record, name, basePath = '', viewType } ) => {
 		textDecoration: 'none',
 	}
 
+	if ( !path ) {
+		return ColValue;
+	}
+
 	return (
 		<Button variant="link" style={ btnStyle } onClick={ open }>
 			{ ColValue }
 		</Button>
-	)
+	);
 }
 
 /**
@@ -116,7 +154,7 @@ const BadgeList = ( { value, enums = {} } ) => {
 		<Flex gap={ 2 } justify="flex-start" wrap>
 			{ toShow.map( ( val ) => (
 				<FlexItem key={ val }>
-					<Badge { ...getEnumBadge( val ) }>{ enums[ val ] || val }</Badge>
+					<Badge style={ getEnumBadge( val ) }>{ enums[ val ] || val }</Badge>
 				</FlexItem>
 			) ) }
 
@@ -131,21 +169,26 @@ const BadgeList = ( { value, enums = {} } ) => {
 	);
 }
 
+type CellProps = {
+	row: Record<string, any>;
+	header: RecordProp;
+	viewType?: 'table' | 'grid';
+	isBadge?: boolean;
+	path?: string;
+}
+
 /**
  * Displays a single cell in the records table.
  * @param {Object} props
  * @param {Object} props.row The record object.
- * @param {Object} props.header The header
- * @param {string} props.headerKey  The name of the column.
- * @returns
  */
-export default function DisplayCell( { row, header, headerKey, viewType = 'table', isBadge = false } ) {
+export const DisplayCell: React.FC<CellProps> = ( { row, header, viewType = 'table', isBadge = false, path } ) => {
 
-	const value = row[ headerKey ];
+	const value = row[ header.name ];
 
 	// Nulls and undefined values are displayed as a dash.
 	if ( value === null || value === undefined || value === '' ) {
-		return isBadge ? '' : <span className="noptin-table__cell--null">&ndash;</span>;
+		return isBadge ? '' : <span className="hizzlewp-table__cell--null">&ndash;</span>;
 	}
 
 	// Empty arrays are displayed as a dash.
@@ -154,11 +197,11 @@ export default function DisplayCell( { row, header, headerKey, viewType = 'table
 	}
 
 	if ( header.is_primary && typeof value === 'string' ) {
-		return <PrimaryColumn record={ row } name={ headerKey } viewType={ viewType } basePath={ header.basePath || '' } />;
+		return <PrimaryColumn record={ row } name={ header.name } viewType={ viewType } path={ path } />;
 	}
 
 	// Avatar URLs are displayed as an avatar.
-	if ( 'avatar_url' === headerKey ) {
+	if ( 'avatar_url' === header.name ) {
 		const avatar_url = normalizeAvatarColors( row.avatar_url, value, viewType !== 'table' );
 
 		if ( !avatar_url ) {
@@ -169,7 +212,7 @@ export default function DisplayCell( { row, header, headerKey, viewType = 'table
 			return <img src={ avatar_url } alt={ value } />
 		}
 
-		return avatar_url ? <Avatar src={ avatar_url } alt={ value } /> : null;
+		return avatar_url ? <img className="hizzlewp-avatar" src={ avatar_url } alt={ value } /> : null;
 	}
 
 	// Boolean values are displayed as a toggle.
@@ -182,7 +225,7 @@ export default function DisplayCell( { row, header, headerKey, viewType = 'table
 
 	// Dates are formatted as a date.
 	if ( header.is_date && value ) {
-		const settings = getSettings ? getSettings() : __experimentalGetSettings();
+		const settings = getSettings();
 		// If value contains 10 chars, format as date, otherwise format as datetime.
 		if ( value.length === 10 ) {
 			return dateI18n( settings.formats.date, value );
@@ -205,8 +248,8 @@ export default function DisplayCell( { row, header, headerKey, viewType = 'table
 	if ( header.is_numeric || header.is_float || typeof value === 'string' ) {
 
 		// If we have an enum, display the label.
-		if ( isObject( header.enum ) ) {
-			return <Badge { ...getEnumBadge( value ) }>{ header.enum[ value ] || value }</Badge>;
+		if ( header.enum && isObject( header.enum ) ) {
+			return <Badge style={ getEnumBadge( value ) }>{ header.enum?.[ value ] || value }</Badge>;
 		}
 
 		return value;

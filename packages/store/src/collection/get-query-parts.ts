@@ -73,23 +73,11 @@ export function getQueryParts( query: Record<string, any> ): WPQueriedDataQueryP
 
 		switch ( key ) {
 			case 'paged':
-				parts[ key ] = Number( value );
-
-				if ( parts.page !== DEFAULT_PAGE ) {
-					parts.stableKey +=
-						( parts.stableKey ? '&' : '' ) +
-						'page=' + value;
-				}
+				parts.page = Number( value );
 				break;
 
 			case 'per_page':
 				parts.perPage = Number( value );
-
-				if ( parts.perPage !== DEFAULT_PER_PAGE ) {
-					parts.stableKey +=
-						( parts.stableKey ? '&' : '' ) +
-						'per_page=' + value;
-				}
 				break;
 
 			case 'context':

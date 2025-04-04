@@ -7,7 +7,7 @@
  *
  * @return {?(string[])} Normalized field value.
  */
-function getNormalizedCommaSeparable( value ) {
+function getNormalizedCommaSeparable( value: string | string[] | any ): string[] | null {
 	if ( typeof value === 'string' ) {
 		return value.split( ',' );
 	} else if ( Array.isArray( value ) ) {

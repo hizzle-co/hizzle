@@ -211,7 +211,7 @@ export const getCollectionRecords =
 					};
 				} else if (
 					query.per_page === -1 &&
-					query[ RECEIVE_INTERMEDIATE_RESULTS ] === true
+					query[ RECEIVE_INTERMEDIATE_RESULTS ] !== false
 				) {
 					let page = 1;
 					let totalPages: number;

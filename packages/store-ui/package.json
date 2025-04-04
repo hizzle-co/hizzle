@@ -40,7 +40,9 @@
 	"peerDependencies": {
 		"react": "^18.0.0"
 	},
-	"sideEffects": false,
+	"sideEffects": [
+		"src/style.scss"
+	],
 	"publishConfig": {
 		"access": "public"
 	}

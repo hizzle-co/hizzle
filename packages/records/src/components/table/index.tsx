@@ -23,7 +23,7 @@ export function Table<TData = Record<string, unknown>>(
 ) {
 	return (
 		<TableProvider {...props}>
-			<div className="hizzlewp-table-container dataviews-wrapper">
+			<div className="hizzle-records__table-wrapper dataviews-wrapper">
 				<VStack spacing={4}>
 					<table className="hizzle-records__table">
 						<Head />
