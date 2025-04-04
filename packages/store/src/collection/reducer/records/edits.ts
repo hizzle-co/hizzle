@@ -7,7 +7,7 @@ import fastDeepEqual from 'fast-deep-equal/es6';
  * Internal dependencies
  */
 import type { CollectionRecordKey, CollectionRecord } from '../../../types';
-import { DEFAULT_ENTITY_KEY } from '../../../constants';
+import { DEFAULT_ENTITY_KEY, DEFAULT_CONTEXT } from '../../../constants';
 import type { ReceiveCollectionRecordsAction } from '../../actions';
 
 /**
@@ -32,8 +32,8 @@ export const edits = (
         // we need to update the edits for the records.
         // Removes saved edits that are no longer in the items.
         case 'RECEIVE_COLLECTION_RECORDS':
-            const context = action.query?.context ?? 'edit';
-            if ( context !== 'edit' ) {
+            const context = action.query?.context ?? DEFAULT_CONTEXT;
+            if ( context !== DEFAULT_CONTEXT ) {
                 return state;
             }
 

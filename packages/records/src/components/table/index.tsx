@@ -16,8 +16,10 @@ import { Head } from './head';
 import { Body } from './body';
 import { Pagination } from './pagination';
 
-export function Table<TData>(
-	props: Omit<TableProviderProps<TData>, 'children'>
+export type TableProps<TData = Record<string, unknown>> = Omit<TableProviderProps<TData>, 'children'>;
+
+export function Table<TData = Record<string, unknown>>(
+	props: TableProps<TData>
 ) {
 	return (
 		<TableProvider {...props}>

@@ -1,4 +1,4 @@
-export * from './use-record';
-export * from './use-records';
-export * from './use-record-id';
-export * from './use-record-prop';
+export * from './use-collection-record';
+export * from './use-collection-records';
+export * from './use-collection-record-prop';
+export { useProvidedCollection, useProvidedRecordId, useProvidedCollectionConfig } from '../collection-provider';

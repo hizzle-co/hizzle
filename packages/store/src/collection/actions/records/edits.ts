@@ -67,7 +67,7 @@ export const createUndoLevel =
  * @return {Object} Action object.
  */
 export const editCollectionRecord =
-	( namespace: string, collection: string, recordId: CollectionRecordKey, edits: object, options: Record<string, any> = {} ) =>
+	( namespace: string, collection: string, recordId: CollectionRecordKey, edits: object, options: { undoIgnore?: boolean } = {} ) =>
 		( { select, dispatch } ) => {
 			const collectionConfig = select.getCollectionConfig( namespace, collection );
 			if ( !collectionConfig ) {

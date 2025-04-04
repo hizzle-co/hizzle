@@ -45,32 +45,31 @@ interface QuerySelectResponse<Data> {
  *
  * @example
  * ```js
- * import { useQuerySelect } from '@wordpress/data';
- * import { store as coreDataStore } from '@wordpress/core-data';
+ * import { useQuerySelect, store as hizzleStore } from '@hizzlewp/store';
  *
- * function PageTitleDisplay( { id } ) {
- *   const { data: page, isResolving } = useQuerySelect( ( query ) => {
- *     return query( coreDataStore ).getEntityRecord( 'postType', 'page', id )
+ * function SubscriberDisplay( { id } ) {
+ *   const { data: subscriber, isResolving } = useQuerySelect( ( query ) => {
+ *     return query( hizzleStore ).getCollectionRecord( 'noptin', 'subscribers', id )
  *   }, [ id ] );
  *
  *   if ( isResolving ) {
  *     return 'Loading...';
  *   }
  *
- *   return page.title;
+ *   return subscriber.email;
  * }
  *
  * // Rendered in the application:
- * // <PageTitleDisplay id={ 10 } />
+ * // <SubscriberDisplay id={ 10 } />
  * ```
  *
- * In the above example, when `PageTitleDisplay` is rendered into an
- * application, the page and the resolution details will be retrieved from
+ * In the above example, when `SubscriberDisplay` is rendered into an
+ * application, the subscriber and the resolution details will be retrieved from
  * the store state using the `mapSelect` callback on `useQuerySelect`.
  *
- * If the id prop changes then any page in the state for that id is
+ * If the id prop changes then any subscriber in the state for that id is
  * retrieved. If the id prop doesn't change and other props are passed in
- * that do change, the title will not change because the dependency is just
+ * that do change, the subscriber will not change because the dependency is just
  * the id.
  * @see useSelect
  *
@@ -111,6 +110,7 @@ type DataWithSelectors<Data> = {
  */
 const enrichSelectors = memoize( ( ( selectors ) => {
 	const resolvers: Record<string, (...args: unknown[]) => DataWithSelectors<any>> = {};
+
 	for ( const selectorName in selectors ) {
 		if ( META_SELECTORS.includes( selectorName ) ) {
 			continue;

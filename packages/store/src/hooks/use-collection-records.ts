@@ -11,6 +11,7 @@ import useQuerySelect from './use-query-select';
 import { store as hizzleStore } from '..';
 import type { Options } from '.';
 import type { Status } from './constants';
+import type { CollectionRecord } from '../types';
 
 interface EntityRecordsResolution< RecordType > {
 	/** The requested entity record */
@@ -84,12 +85,12 @@ const EMPTY_ARRAY = [];
  *
  * In the above example, when `SubscribersList` is rendered into an
  * application, the list of records and the resolution details will be retrieved from
- * the store state using `getRecords()`, or resolved if missing.
+ * the store state using `getCollectionRecords()`, or resolved if missing.
  *
  * @return Collection records data.
  * @template RecordType
  */
-export const useRecords = < RecordType >(
+export const useCollectionRecords = < RecordType = CollectionRecord >(
 	namespace: string,
 	collection: string,
 	queryArgs: Record< string, unknown > = {},
@@ -109,7 +110,8 @@ export const useRecords = < RecordType >(
 					data: EMPTY_ARRAY,
 				};
 			}
-			return query( hizzleStore ).getRecords( namespace, collection, queryArgs );
+
+			return query( hizzleStore ).getCollectionRecords( namespace, collection, queryArgs );
 		},
 		[ namespace, collection, queryAsString, options.enabled ]
 	);
@@ -123,12 +125,12 @@ export const useRecords = < RecordType >(
 				};
 			}
 			return {
-				totalItems: select( hizzleStore ).getRecordsTotalItems(
+				totalItems: select( hizzleStore ).getCollectionRecordsTotalItems(
 					namespace,
 					collection,
 					queryArgs
 				),
-				totalPages: select( hizzleStore ).getRecordsTotalPages(
+				totalPages: select( hizzleStore ).getCollectionRecordsTotalPages(
 					namespace,
 					collection,
 					queryArgs

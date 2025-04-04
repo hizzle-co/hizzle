@@ -4,6 +4,14 @@
 import React, { createContext, useContext, useMemo } from 'react';
 
 /**
+ * Internal dependencies
+ */
+import { store as hizzleStore } from '.';
+import useQuerySelect from './hooks/use-query-select';
+import { useCollectionRecords } from './hooks/use-collection-records';
+import type { CollectionConfig, CollectionRecordKey, CollectionRecord } from './types';
+
+/**
  * The type of the collection context.
  */
 type NamespaceCollection = {
@@ -20,7 +28,7 @@ type NamespaceCollection = {
 	/**
 	 * Optional. The current record ID.
 	 */
-	recordId?: number;
+	recordId?: CollectionRecordKey;
 };
 
 /**
@@ -53,6 +61,7 @@ type CollectionProviderProps = NamespaceCollection & {
  * @param {Object} props            The component's props.
  * @param {string} props.namespace  The collection namespace.
  * @param {string} props.collection The collection name.
+ * @param {number} props.recordId   The record ID.
  * @param {*}      props.children   The children to wrap.
  *
  * @return {Object} The provided children, wrapped with
@@ -102,7 +111,7 @@ export function useProvidedCollection() {
  *
  * @return {number|undefined} The current record ID from context.
  */
-export function useProvidedRecordId( namespace = undefined, collection = undefined ) {
+export function useProvidedRecordId( namespace: string | undefined = undefined, collection: string | undefined = undefined ) {
 	const context = useContext( CollectionContext );
 
 	if ( !namespace || !collection ) {
@@ -110,4 +119,29 @@ export function useProvidedRecordId( namespace = undefined, collection = undefin
 	}
 
 	return context?.[ namespace ]?.[ collection ];
+}
+
+/**
+ * Hook that returns the current collection config.
+ */
+export function useProvidedCollectionConfig() {
+	const { namespace, collection } = useProvidedCollection() || {};
+
+	const { data: config, ...querySelectRest } = useQuerySelect<CollectionConfig>(
+		( query ) => {
+			if ( !namespace || !collection ) {
+				return {
+					data: null,
+				};
+			}
+
+			return query( hizzleStore ).getCollectionConfig( namespace, collection );
+		},
+		[ namespace, collection ]
+	);
+
+	return {
+		config,
+		...querySelectRest,
+	};
 }

@@ -8,7 +8,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { STORE_NAME } from './constants';
-import { DEFAULT_ENTITY_KEY } from './constants';
+import { DEFAULT_ENTITY_KEY, DEFAULT_CONTEXT } from './constants';
 import {
 	forwardResolver,
 	getNormalizedCommaSeparable,
@@ -33,10 +33,7 @@ import { CollectionRecordKey, CollectionConfig } from './types';
 export const getCollectionRecord =
 	( namespace: string, collection: string, key: CollectionRecordKey = '', query: GetRecordsHttpQuery = {} ) =>
 		async ( { select, dispatch, registry, resolveSelect } ) => {
-			const configs = await resolveSelect.getCollectionsConfig( namespace );
-			const entityConfig = configs.find(
-				( config ) => config.collection === collection
-			);
+			const entityConfig = await resolveSelect.getCollectionConfig( namespace, collection );
 			if ( !entityConfig ) {
 				return;
 			}
@@ -46,6 +43,8 @@ export const getCollectionRecord =
 				[ 'collections', 'records', namespace, collection, key ],
 				{ exclusive: false }
 			);
+
+			const ID_KEY = entityConfig.key || DEFAULT_ENTITY_KEY;
 
 			try {
 				if ( query !== undefined && query._fields ) {
@@ -59,7 +58,7 @@ export const getCollectionRecord =
 								...( getNormalizedCommaSeparable(
 									query._fields
 								) || [] ),
-								entityConfig.key || DEFAULT_ENTITY_KEY,
+								ID_KEY,
 							] ),
 						].join(),
 					};
@@ -85,8 +84,8 @@ export const getCollectionRecord =
 
 					// The resolution cache won't consider query as reusable based on the
 					// fields, so it's tested here, prior to initiating the REST request,
-					// and without causing `getRecords` resolution to occur.
-					const hasRecords = select.hasRecords(
+					// and without causing `getCollectionRecords` resolution to occur.
+					const hasRecords = select.hasCollectionRecords(
 						namespace,
 						collection,
 						query
@@ -120,7 +119,7 @@ export const getCollectionRecord =
 				}
 
 				registry.batch( () => {
-					dispatch.receiveRecords( namespace, collection, [ record ], query );
+					dispatch.receiveCollectionRecords( namespace, collection, [ record ], query, undefined, ID_KEY );
 					dispatch.receiveUserPermissions(
 						receiveUserPermissionArgs
 					);
@@ -155,10 +154,7 @@ export const getEditedCollectionRecord = forwardResolver( 'getCollectionRecord' 
 export const getCollectionRecords =
 	( namespace: string, collection: string, query: Record<string, any> = {} ) =>
 		async ( { dispatch, registry, resolveSelect } ) => {
-			const configs: CollectionConfig[] = await resolveSelect.getCollectionsConfig( namespace );
-			const entityConfig = configs.find(
-				( config ) => config.collection === collection
-			);
+			const entityConfig: CollectionConfig | undefined = await resolveSelect.getCollectionConfig( namespace, collection );
 			if ( !entityConfig ) {
 				return;
 			}
@@ -169,12 +165,12 @@ export const getCollectionRecords =
 				{ exclusive: false }
 			);
 
-			const key = entityConfig.key || DEFAULT_ENTITY_KEY;
+			const ID_KEY = entityConfig.key || DEFAULT_ENTITY_KEY;
 
 			function getResolutionsArgs( records ) {
 				return records
-					.filter( ( record ) => record?.[ key ] )
-					.map( ( record ) => [ namespace, collection, record[ key ] ] );
+					.filter( ( record ) => record?.[ ID_KEY ] )
+					.map( ( record ) => [ namespace, collection, record[ ID_KEY ] ] );
 			}
 
 			try {
@@ -188,7 +184,7 @@ export const getCollectionRecords =
 							...new Set( [
 								...( getNormalizedCommaSeparable( query._fields ) ||
 									[] ),
-								key,
+								ID_KEY,
 							] ),
 						].join(),
 					};
@@ -203,7 +199,8 @@ export const getCollectionRecords =
 					meta: { totalItems: number; totalPages: number; };
 				if ( entityConfig.supportsPagination && query.per_page !== -1 ) {
 					const response = await apiFetch<Response>( { path, parse: false } );
-					records = Object.values( await response.json() );
+					records = await response.json();
+
 					meta = {
 						totalItems: parseInt(
 							response.headers.get( 'X-WP-Total' ) as string
@@ -232,14 +229,16 @@ export const getCollectionRecords =
 
 						records.push( ...pageRecords );
 						registry.batch( () => {
-							dispatch.receiveRecords(
+							dispatch.receiveCollectionRecords(
 								namespace,
 								collection,
 								records,
-								query
+								query,
+								undefined,
+								ID_KEY
 							);
 							dispatch.finishResolutions(
-								'getRecord',
+								'getCollectionRecord',
 								getResolutionsArgs( pageRecords )
 							);
 						} );
@@ -274,25 +273,25 @@ export const getCollectionRecords =
 				}
 
 				registry.batch( () => {
-					dispatch.receiveRecords(
+					dispatch.receiveCollectionRecords(
 						namespace,
 						collection,
 						records,
 						query,
-						false,
-						undefined,
-						meta
+						meta,
+						ID_KEY,
 					);
 
 					// When requesting all fields, the list of results can be used to resolve
-					// the `getRecord` and `canUser` selectors in addition to `getRecords`.
+					// the `getCollectionRecord` and `canUser` selectors in addition to `getCollectionRecords`.
 					// See https://github.com/WordPress/gutenberg/pull/26575
 					// See https://github.com/WordPress/gutenberg/pull/64504
 					if ( !query?._fields && !query.context ) {
 						const targetHints = records
-							.filter( ( record ) => record?.[ key ] )
+							.filter( ( record ) => record?.[ ID_KEY ] )
 							.map( ( record ) => ( {
-								id: record[ key ],
+								links: record?._links,
+								id: record[ ID_KEY ],
 								permissions: getUserPermissionsFromAllowHeader(
 									record?._links?.self?.[ 0 ].targetHints.allow
 								),
@@ -321,7 +320,7 @@ export const getCollectionRecords =
 							receiveUserPermissionArgs
 						);
 						dispatch.finishResolutions(
-							'getRecord',
+							'getCollectionRecord',
 							getResolutionsArgs( records )
 						);
 						dispatch.finishResolutions(
@@ -368,8 +367,9 @@ export const getCollectionConfig =
 				...config,
 				namespace,
 				collection,
+				props: config.schema || [],
 				baseURL: `/${ namespace }/v1/${ collection }`,
-				baseURLParams: { context: 'edit' },
+				baseURLParams: { context: DEFAULT_CONTEXT },
 				transientEdits: {
 					selection: true,
 				},

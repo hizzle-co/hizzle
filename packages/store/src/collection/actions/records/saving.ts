@@ -50,7 +50,7 @@ export const saveCollectionRecord =
         collection: string,
         data: Record<string, any>,
         {
-            throwOnError = false,
+            throwOnError = true,
             fetchHandler = apiFetch
         } = {}
     ) =>
@@ -116,10 +116,10 @@ export const saveCollectionRecord =
                         collection,
                         [ updatedRecord ],
                         undefined,
+                        undefined,
+                        collectionConfig.key || DEFAULT_ENTITY_KEY,
                         true,
                         data,
-                        undefined,
-                        collectionConfig.key || DEFAULT_ENTITY_KEY
                     );
                 } catch ( _error ) {
                     hasError = true;
@@ -152,7 +152,7 @@ export const saveCollectionRecord =
  * @param {Object=} options  Saving options.
  */
 export const saveEditedCollectionRecord =
-    ( namespace, collection, recordId, options ) =>
+    ( namespace: string, collection: string, recordId: CollectionRecordKey, options: { throwOnError?: boolean, fetchHandler?: typeof apiFetch } = {} ) =>
         async ( { select, dispatch, resolveSelect } ) => {
             if ( !select.hasEditsForCollectionRecord( namespace, collection, recordId ) ) {
                 return;

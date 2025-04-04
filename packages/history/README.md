@@ -5,7 +5,7 @@ This package contains history utilities for the HizzleWP framework.
 Usage example:
 
 ```tsx
-import { Router, Outlet, updatePath, useQuery, onQueryChange } from '@hizzlewp/history';
+import { Router, Outlet, updatePath, useQuery, onQueryChange, useRoute } from '@hizzlewp/history';
 import { Button } from '@wordpress/components';
 
 /**

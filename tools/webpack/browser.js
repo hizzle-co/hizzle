@@ -7,7 +7,7 @@ const DependencyExtractionWebpackPlugin = require('../../packages/dependency-ext
 const { baseConfig, devServer } = require('./base.js');
 const { generateConfigs, camelCaseDash } = require('./utils.js');
 const NODE_ONLY_PACKAGES = ['dependency-extraction-webpack-plugin'];
-const NON_MODULE_PACKAGES = ['settings'];
+const NON_MODULE_PACKAGES = ['settings', 'store-ui'];
 
 /**
  * Function to create package-specific config.

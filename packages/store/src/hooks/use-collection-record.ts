@@ -10,22 +10,24 @@ import { useMemo } from '@wordpress/element';
 import useQuerySelect from './use-query-select';
 import { store as hizzleStore } from '..';
 import type { Status } from './constants';
+import { CollectionRecordKey, CollectionRecord } from '../types';
+import apiFetch from '@wordpress/api-fetch';
 
 export interface RecordResolution<RecordType> {
-	/** The requested entity record */
+	/** The requested collection record or null if not resolved */
 	record: RecordType | null;
 
-	/** The edited entity record */
-	editedRecord: Partial<RecordType>;
+	/** The edited collection record */
+	editedRecord: RecordType | undefined;
 
-	/** The edits to the edited entity record */
+	/** The edits to the edited collection record */
 	edits: Partial<RecordType>;
 
-	/** Apply local (in-browser) edits to the edited entity record */
-	edit: ( diff: Partial<RecordType> ) => void;
+	/** Apply local (in-browser) edits to the edited collection record */
+	edit: ( diff: Partial<RecordType>, editOptions?: { undoIgnore?: boolean } ) => void;
 
 	/** Persist the edits to the server */
-	save: () => Promise<void>;
+	save: ( saveOptions?: { throwOnError?: boolean, fetchHandler?: typeof apiFetch } ) => Promise<void>;
 
 	/**
 	 * Is the record still being resolved?
@@ -65,18 +67,16 @@ const EMPTY_OBJECT = {};
 /**
  * Resolves the specified collection record.
  *
- * @since 6.1.0 Introduced in WordPress core.
- *
  * @param    namespace  Namespace e.g, noptin.
  * @param    collection Collection e.g, `subscribers`.
  * @param    recordId   ID of the requested record.
  * @param    options    Optional hook options.
  * @example
  * ```js
- * import { useRecord } from '@hizzlewp/store';
+ * import { useCollectionRecord } from '@hizzlewp/store';
  *
  * function SubscriberDisplay( { id } ) {
- *   const { record, isResolving, error } = useRecord( 'noptin', 'subscribers', id );
+ *   const { record, isResolving, error } = useCollectionRecord( 'noptin', 'subscribers', id );
  *
  *   if ( isResolving ) {
  *     return 'Loading...';
@@ -95,7 +95,7 @@ const EMPTY_OBJECT = {};
  *
  * In the above example, when `SubscriberDisplay` is rendered into an
  * application, the subscriber and the resolution details will be retrieved from
- * the store state using `getRecord()`, or resolved if missing.
+ * the store state using `getCollectionRecord()`, or resolved if missing.
  *
  * @example
  * ```js
@@ -104,10 +104,10 @@ const EMPTY_OBJECT = {};
  * import { __ } from '@wordpress/i18n';
  * import { TextControl } from '@wordpress/components';
  * import { store as noticeStore } from '@wordpress/notices';
- * import { useRecord } from '@hizzlewp/store';
+ * import { useCollectionRecord } from '@hizzlewp/store';
  *
  * function SubscriberForm( { id } ) {
- * 	const subscriber = useRecord( 'noptin', 'subscribers', id );
+ * 	const subscriber = useCollectionRecord( 'noptin', 'subscribers', id );
  * 	const { createSuccessNotice, createErrorNotice } =
  * 		useDispatch( noticeStore );
  *
@@ -158,51 +158,50 @@ const EMPTY_OBJECT = {};
  * `useRecord()`;
  *
  * @return Entity record data.
- * @template RecordType
  */
-export const useRecord = <RecordType>(
+export const useCollectionRecord = <RecordType extends CollectionRecord>(
 	namespace: string,
 	collection: string,
-	recordId: string | number,
+	recordId: CollectionRecordKey,
 	options: Options = { enabled: true }
 ): RecordResolution<RecordType> => {
-	const { editRecord, saveRecord } = useDispatch( hizzleStore );
+	const { editCollectionRecord, saveEditedCollectionRecord } = useDispatch( hizzleStore );
 
 	const mutations = useMemo(
-		() => ( {
-			edit: ( record, editOptions: any = {} ) =>
-				editRecord( namespace, collection, recordId, record, editOptions ),
-			save: ( saveOptions: any = {} ) =>
-				saveRecord( namespace, collection, recordId, {
+		(): Pick<RecordResolution<RecordType>, 'edit' | 'save'> => ( {
+			edit: ( edits: Partial<RecordType>, editOptions: { undoIgnore?: boolean } = {} ) =>
+				editCollectionRecord( namespace, collection, recordId, edits, editOptions ),
+			save: ( saveOptions: { throwOnError?: boolean, fetchHandler?: typeof apiFetch } = {} ) =>
+				saveEditedCollectionRecord( namespace, collection, recordId, {
 					throwOnError: true,
 					...saveOptions,
 				} ),
 		} ),
-		[ editRecord, namespace, collection, recordId, saveRecord ]
+		[ editCollectionRecord, namespace, collection, recordId, saveEditedCollectionRecord ]
 	);
 
 	const { editedRecord, hasEdits, edits } = useSelect(
-		( select ) => {
+		( select ): Pick<RecordResolution<RecordType>, 'editedRecord' | 'hasEdits' | 'edits'> => {
 			if ( !options.enabled ) {
 				return {
-					editedRecord: EMPTY_OBJECT,
+					editedRecord: EMPTY_OBJECT as RecordType,
 					hasEdits: false,
 					edits: EMPTY_OBJECT,
 				};
 			}
 
 			return {
-				editedRecord: select( hizzleStore ).getEditedRecord(
+				editedRecord: select( hizzleStore ).getEditedCollectionRecord(
+					namespace,
+					collection,
+					recordId
+				) as RecordType | undefined,
+				hasEdits: select( hizzleStore ).hasEditsForCollectionRecord(
 					namespace,
 					collection,
 					recordId
 				),
-				hasEdits: select( hizzleStore ).hasEditsForRecord(
-					namespace,
-					collection,
-					recordId
-				),
-				edits: select( hizzleStore ).getRecordNonTransientEdits(
+				edits: select( hizzleStore ).getCollectionRecordNonTransientEdits(
 					namespace,
 					collection,
 					recordId
@@ -219,7 +218,7 @@ export const useRecord = <RecordType>(
 					data: null,
 				};
 			}
-			return query( hizzleStore ).getRecord(
+			return query( hizzleStore ).getCollectionRecord(
 				namespace,
 				collection,
 				recordId

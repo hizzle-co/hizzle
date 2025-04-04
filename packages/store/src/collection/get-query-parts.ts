@@ -8,6 +8,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { withWeakMapCache, getNormalizedCommaSeparable } from '../utils';
 import { DEFAULT_PAGE, DEFAULT_PER_PAGE, DEFAULT_CONTEXT } from '../constants';
+import { CollectionRecordKey } from '../types';
 
 /**
  * An object of properties describing a specific query.
@@ -36,7 +37,7 @@ type WPQueriedDataQueryParts = {
 	/**
 	 * Specific item IDs to include.
 	 */
-	include?: number[];
+	include?: CollectionRecordKey[];
 
 	/**
 	 * Scope under which the request is made; determines returned fields in response.
@@ -71,7 +72,7 @@ export function getQueryParts( query: Record<string, any> ): WPQueriedDataQueryP
 		let value = query[ key ];
 
 		switch ( key ) {
-			case 'page':
+			case 'paged':
 				parts[ key ] = Number( value );
 
 				if ( parts.page !== DEFAULT_PAGE ) {
@@ -98,7 +99,9 @@ export function getQueryParts( query: Record<string, any> ): WPQueriedDataQueryP
 			case '_fields':
 				parts.fields = getNormalizedCommaSeparable( value ) ?? [];
 				break;
-
+			case 'page':
+				// Page is the admin page, so we use paged instead.
+				break;
 			default:
 
 				// Two requests with different include values cannot have same results.

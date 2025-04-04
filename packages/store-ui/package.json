@@ -1,0 +1,47 @@
+{
+	"name": "@hizzlewp/store-ui",
+	"version": "1.0.0",
+	"description": "This package displays data provided by the `@hizzlewp/store` package.",
+	"author": "picocodes",
+	"license": "GPL-2.0-or-later",
+	"keywords": [
+		"wordpress",
+		"hizzle"
+	],
+	"homepage": "https://github.com/hizzle-co/hizzle/tree/main/packages/store-ui",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/hizzle-co/hizzle.git",
+		"directory": "packages/store-ui"
+	},
+	"bugs": {
+		"url": "https://github.com/hizzle-co/hizzle/issues"
+	},
+	"engines": {
+		"node": ">=18.12.0",
+		"npm": ">=8.19.2"
+	},
+	"main": "build-module/index.js",
+	"module": "build-module/index.esm.js",
+	"types": "build-types/index.d.ts",
+	"files": [
+		"build-module/",
+		"build-types/"
+	],
+	"dependencies": {
+		"@hizzlewp/components": "^1.2.4",
+		"@hizzlewp/history": "^1.0.1",
+		"@hizzlewp/interface": "^1.2.4",
+		"@hizzlewp/records": "^1.0.3",
+		"@hizzlewp/store": "^1.0.0",
+		"@wordpress/components": "^29.7.0",
+		"@wordpress/data": "^10.21.0"
+	},
+	"peerDependencies": {
+		"react": "^18.0.0"
+	},
+	"sideEffects": false,
+	"publishConfig": {
+		"access": "public"
+	}
+}

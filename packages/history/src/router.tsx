@@ -171,13 +171,23 @@ interface RouterProps {
 	 * Provide a default <Outlet /> (with no path) to render the top level route if you provide children.
 	 */
 	children?: React.ReactNode;
+
+	/**
+	 * The base path to use if no path matches.
+	 */
+	basePath?: string;
 }
 
 /**
  * Router component
  */
-export const Router: React.FC<RouterProps> = ( { children, routes } ) => {
-	const path = usePath();
+export const Router: React.FC<RouterProps> = ( { children, routes, basePath = '/' } ) => {
+	let path = usePath();
+
+	// If no path, use the base path.
+	if ( !path || path === '/' ) {
+		path = basePath;
+	}
 
 	const value = useMemo( () => {
 		// If no routes or no path, return empty params

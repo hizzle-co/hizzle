@@ -1,4 +1,4 @@
-import type { EntityResource } from '../selectors';
+import type { CollectionResource } from '../selectors';
 
 export const ALLOWED_RESOURCE_ACTIONS = [
 	'create',
@@ -26,7 +26,7 @@ export function getUserPermissionsFromAllowHeader( allowedMethods ) {
 	return permissions;
 }
 
-export function getUserPermissionCacheKey( action, resource: EntityResource ) {
+export function getUserPermissionCacheKey( action, resource: CollectionResource ) {
 	const key = [ action, resource.namespace, resource.collection, resource.id ]
 		.filter( Boolean )
 		.join( '/' );

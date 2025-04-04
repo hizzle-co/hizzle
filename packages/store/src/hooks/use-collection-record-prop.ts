@@ -8,7 +8,7 @@ import { useDispatch, useSelect } from '@wordpress/data';
  * Internal dependencies
  */
 import { store as hizzleStore } from '..';
-import { useRecordId } from '.';
+import { useProvidedRecordId } from '.';
 
 /**
  * Hook that returns the value and a setter for the
@@ -28,14 +28,14 @@ import { useRecordId } from '.';
  * 							  `protected` props.
  */
 export const useRecordProp = ( namespace: string, collection: string, prop: string, _id: number | string ) => {
-	const providerId = useRecordId( namespace, collection );
+	const providerId = useProvidedRecordId( namespace, collection );
 	const id = _id ?? providerId;
 
 	const { value, fullValue } = useSelect(
 		( select ) => {
-			const { getRecord, getEditedRecord } = select( hizzleStore );
-			const record = getRecord( namespace, collection, id ); // Trigger resolver.
-			const editedRecord = getEditedRecord( namespace, collection, id );
+			const { getCollectionRecord, getEditedCollectionRecord } = select( hizzleStore );
+			const record = getCollectionRecord( namespace, collection, id ); // Trigger resolver.
+			const editedRecord = getEditedCollectionRecord( namespace, collection, id );
 			return record && editedRecord
 				? {
 						value: editedRecord[ prop ],
@@ -45,14 +45,14 @@ export const useRecordProp = ( namespace: string, collection: string, prop: stri
 		},
 		[ namespace, collection, id, prop ]
 	);
-	const { editRecord } = useDispatch( hizzleStore );
+	const { editCollectionRecord } = useDispatch( hizzleStore );
 	const setValue = useCallback(
 		( newValue ) => {
-			editRecord( namespace, collection, id, {
+			editCollectionRecord( namespace, collection, id, {
 				[ prop ]: newValue,
 			} );
 		},
-		[ editRecord, namespace, collection, id, prop ]
+		[ editCollectionRecord, namespace, collection, id, prop ]
 	);
 
 	return [ value, setValue, fullValue ];

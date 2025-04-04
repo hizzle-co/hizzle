@@ -15,18 +15,18 @@ import {
 	replaceAction,
 	onSubKey,
 } from '../../../utils';
-import { DEFAULT_ENTITY_KEY } from '../../../constants';
+import { DEFAULT_ENTITY_KEY, DEFAULT_CONTEXT } from '../../../constants';
 import getQueryParts from '../../get-query-parts';
 import type { CollectionRecord, CollectionRecordKey } from '../../../types';
 import type { collectionState } from '.';
-import type { RemoveItemsAction } from '../../actions';
+import type { RemoveItemsAction, ReceiveCollectionRecordsAction } from '../../actions';
 
 type QueriedDataState = collectionState[ 'queriedData' ]
 
 function getContextFromAction( action ) {
 	const { query } = action;
 	if ( !query ) {
-		return 'edit';
+		return DEFAULT_CONTEXT;
 	}
 
 	const queryParts = getQueryParts( query );
@@ -109,7 +109,7 @@ const removeRecordsById = (
  *
  * @return {Object} Next state.
  */
-const items = ( state: QueriedDataState[ 'items' ] = { view: {}, edit: {} }, action: RemoveItemsAction ): QueriedDataState[ 'items' ] => {
+const items = ( state: QueriedDataState[ 'items' ] = { view: {}, edit: {} }, action: RemoveItemsAction | ReceiveCollectionRecordsAction ): QueriedDataState[ 'items' ] => {
 	switch ( action.type ) {
 		case 'RECEIVE_COLLECTION_RECORDS': {
 			const context = getContextFromAction( action );
@@ -118,7 +118,7 @@ const items = ( state: QueriedDataState[ 'items' ] = { view: {}, edit: {} }, act
 				...state,
 				[ context ]: {
 					...state[ context ],
-					...action.items.reduce( ( accumulator, value ) => {
+					...action.records.reduce( ( accumulator, value ) => {
 						const itemId = value?.[ key ];
 
 						accumulator[ itemId ] = conservativeMapItem(
@@ -210,7 +210,7 @@ const itemIsComplete = ( state: QueriedDataState[ 'itemIsComplete' ] = { view: {
  *
  * @return {Object} Next state.
  */
-const receiveQueries: Reducer<QueriedDataState[ 'queries' ] > = compose(
+const receiveQueries: Reducer<QueriedDataState[ 'queries' ]> = compose(
 	// Limit to matching action type so we don't attempt to replace action on
 	// an unhandled action.
 	ifMatchingAction( ( action ) => 'query' in action ),

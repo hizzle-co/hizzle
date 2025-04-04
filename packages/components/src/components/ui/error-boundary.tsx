@@ -6,7 +6,11 @@ import React, { ErrorInfo, ReactNode } from 'react';
 /**
  * WordPress dependencies.
  */
-import { __experimentalText as Text, Button } from '@wordpress/components';
+import {
+    __experimentalText as Text,
+    Button,
+    __experimentalVStack as VStack
+} from '@wordpress/components';
 
 /**
  * Props for the ErrorBoundary component.
@@ -124,7 +128,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
             return (
                 <div>
-                    <div
+                    <VStack
                         style={ {
                             backgroundColor: '#FEE2E2',
                             border: '1px solid #F87171',
@@ -135,12 +139,14 @@ export class ErrorBoundary extends React.Component<Props, State> {
                         } }
                         role="alert"
                     >
-                        <Text as="strong" weight={ 500 } color="#B91C1C">
-                            Oops! Something went wrong.
-                        </Text>&nbsp;
-                        <Text color="#B91C1C">
-                            This error is being logged.
-                        </Text>
+                        <div>
+                            <Text as="strong" weight={ 500 } color="#B91C1C">
+                                Oops! Something went wrong.
+                            </Text>&nbsp;
+                            <Text color="#B91C1C">
+                                This error is being logged.
+                            </Text>
+                        </div>
                         <details style={ { marginTop: '0.5rem', fontSize: '0.875rem' } }>
                             <summary>Click for error details</summary>
                             <pre style={ {
@@ -154,14 +160,16 @@ export class ErrorBoundary extends React.Component<Props, State> {
                             </pre>
                         </details>
 
-                        <Button
-                            onClick={ this.resetErrorBoundary }
-                            variant="primary"
-                            __next40pxDefaultSize
-                        >
-                            Try Again
-                        </Button>
-                    </div>
+                        <div>
+                            <Button
+                                onClick={ this.resetErrorBoundary }
+                                variant="primary"
+                                __next40pxDefaultSize
+                            >
+                                Try Again
+                            </Button>
+                        </div>
+                    </VStack>
                 </div>
             );
         }

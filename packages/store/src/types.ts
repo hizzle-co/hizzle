@@ -88,6 +88,11 @@ export type RecordProp = {
 	is_tokens: boolean;
 
 	/**
+	 * Whether the prop is a primary field.
+	 */
+	is_primary: boolean;
+
+	/**
 	 * Additional JS props for the prop.
 	 */
 	js_props?: Record<string, any>;
@@ -126,6 +131,11 @@ export type CollectionConfig = {
 			 * The title shown in the admin menu.
 			 */
 			title: string;
+
+			/**
+			 * The href of the route.
+			 */
+			href?: string;
 		};
 	};
 
@@ -187,6 +197,11 @@ export type CollectionConfig = {
 		 * The import text, e.g, Import Subscribers.
 		 */
 		import?: string;
+
+		/**
+		 * The save item text, e.g, Save Subscriber.
+		 */
+		save_item?: string;
 	};
 
 	/**
@@ -243,6 +258,121 @@ export type CollectionConfig = {
 	 * Whether the collection supports pagination.
 	 */
 	supportsPagination: boolean;
+
+	/**
+	 * Record overview tabs.
+	 */
+	tabs?: Record<string, {
+		/**
+		 * The title of the tab.
+		 */
+		title: string;
+
+		/**
+		 * Tab type.
+		 */
+		type: 'table';
+
+		/**
+		 * Empty message (if type is table).
+		 */
+		emptyMessage?: string;
+
+		/**
+		 * The table headers to display ( if type is table ).
+		 */
+		headers: {
+			/**
+			 * The label of the header.
+			 */
+			label: string;
+
+			/**
+			 * The record prop.
+			 */
+			name: string;
+
+			/**
+			 * Whether this is the primary column.
+			 */
+			is_primary?: boolean;
+
+			/**
+			 * Whether this is a badge column.
+			 */
+			is_badge?: boolean;
+
+			/**
+			 * Whether this is a numeric column.
+			 */
+			is_numeric?: boolean;
+
+			/**
+			 * The URL to link to.
+			 */
+			url?: string;
+
+			/**
+			 * The alignment of the column.
+			 */
+			align?: 'left' | 'center' | 'right';
+
+			/**
+			 * Whether this column displays a list of values.
+			 */
+			is_list?: boolean;
+
+			/**
+			 * The item template for each list item.
+			 */
+			item?: string;
+
+			/**
+			 * The arguments for the item template.
+			 */
+			args?: string[];
+		}[];
+	}>;
+
+	/**
+	 * Fills for the collection.
+	 */
+	fills?: {
+		/**
+		 * The slot name.
+		 */
+		name: string;
+
+		/**
+		 * The content of the fill.
+		 */
+		content?: string;
+
+		/**
+		 * The upsell to display.
+		 */
+		upsell?: {
+			/**
+			 * The text of the button.
+			 */
+			buttonText: string;
+
+			/**
+			 * The URL to link to.
+			 */
+			buttonURL: string;
+
+			/**
+			 * The content of the upsell.
+			 */
+			content: string;
+		};
+	}[];
+
+	/**
+	 * Badge props for the collection.
+	 */
+	badges?: string[];
 
 	/**
 	 * Extra properties for the collection.

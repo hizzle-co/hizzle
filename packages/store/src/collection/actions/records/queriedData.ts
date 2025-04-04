@@ -58,10 +58,10 @@ export function receiveCollectionRecords(
 	collection: string,
 	records: Array<any>,
 	query: object | null,
+	meta: object | undefined = undefined,
+	key: CollectionRecordKey | undefined = undefined,
 	invalidateCache: boolean = false,
 	persistedEdits: object | undefined = undefined,
-	meta: object | undefined = undefined,
-	key: CollectionRecordKey | undefined = undefined
 ): ReceiveCollectionRecordsAction {
 
 	const action: ReceiveCollectionRecordsAction = {

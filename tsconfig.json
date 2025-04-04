@@ -6,7 +6,8 @@
 		{ "path": "packages/records" },
 		{ "path": "packages/settings" },
 		{ "path": "packages/history" },
-		{ "path": "packages/store" }
+		{ "path": "packages/store" },
+		{ "path": "packages/store-ui" }
 	],
 	"files": []
 }

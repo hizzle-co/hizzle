@@ -25,8 +25,8 @@
         }
     }
 
-    .components-notice-list {
-        margin: 0 20px 20px;
+    .components-notice-list:empty {
+        display: none;
     }
 }
 

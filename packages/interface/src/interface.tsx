@@ -11,10 +11,24 @@ import {
 	FullscreenMode,
 } from '@wordpress/interface';
 import { store as preferencesStore } from '@wordpress/preferences';
-import { useSelect } from '@wordpress/data';
+import { useSelect, useDispatch } from '@wordpress/data';
 import { useViewportMatch } from '@wordpress/compose';
 
 const STORE_NAME = 'hizzlewp/interface';
+
+export const usePreferences = ( key: string, namespace: string = STORE_NAME ) => {
+	const preferences = useSelect(
+		( select ) => select( preferencesStore ).get( namespace, key ),
+		[ key ]
+	);
+
+	const { set } = useDispatch( preferencesStore );
+
+	return {
+		preferences,
+		setPreferences: ( value: any ) => set( namespace, key, value ),
+	};
+};
 
 const WithFullscreenMode = ( { children }: { children: React.ReactNode } ) => {
 	const isFullscreenActive = useSelect(

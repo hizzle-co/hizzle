@@ -93,6 +93,9 @@ export function getHistory( defaultRoute = '/' ): History {
                 const query = getQueryArgs( window.location.search );
                 const pathname = ( query.hizzlewp_path as string || defaultRoute ).toLowerCase().replace(/\/$/, '');
 
+                // Remove page from query.
+                delete query.page;
+
                 return {
                     query,
                     pathname: pathname.startsWith( '/' ) ? pathname : `/${ pathname }`,
