@@ -1,9 +1,9 @@
 node_modules/
 build-module/
 build-types/
-index-ir.json
-index-exports.json
-index-ast.json
+*-ir.json
+*-exports.json
+*-ast.json
 **/tsconfig.tsbuildinfo
 
 # Composer

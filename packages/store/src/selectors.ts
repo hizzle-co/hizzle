@@ -69,7 +69,6 @@ export function hasRedo( state: State ): boolean {
  * @param state    Data state.
  * @param action   Action to check. One of: 'create', 'read', 'update', 'delete'.
  * @param resource Entity resource to check. Accepts entity object `{ namespace: 'noptin', collection: 'subscribers', id: 1 }`.
- * @param id       Optional ID of the rest resource to check.
  *
  * @return Whether or not the user can perform the action,
  *                             or `undefined` if the OPTIONS request is still being made.
