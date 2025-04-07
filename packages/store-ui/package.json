@@ -1,6 +1,6 @@
 {
 	"name": "@hizzlewp/store-ui",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "This package displays data provided by the `@hizzlewp/store` package.",
 	"author": "picocodes",
 	"license": "GPL-2.0-or-later",
@@ -29,11 +29,11 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@hizzlewp/components": "^1.2.4",
-		"@hizzlewp/history": "^1.0.1",
-		"@hizzlewp/interface": "^1.2.4",
-		"@hizzlewp/records": "^1.0.3",
-		"@hizzlewp/store": "^1.0.0",
+		"@hizzlewp/components": "^1.2.5",
+		"@hizzlewp/history": "^1.0.2",
+		"@hizzlewp/interface": "^1.2.5",
+		"@hizzlewp/records": "^1.0.4",
+		"@hizzlewp/store": "^1.0.1",
 		"@wordpress/components": "^29.7.0",
 		"@wordpress/data": "^10.21.0"
 	},
