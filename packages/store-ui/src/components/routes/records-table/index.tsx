@@ -8,7 +8,9 @@ import React, { useMemo, useCallback } from "react";
  */
 import {
 	Notice,
-	Spinner
+	Spinner,
+	Button,
+	__experimentalHStack as HStack,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 
@@ -36,26 +38,45 @@ export const RecordsTable = () => {
 	// If we're here, the config is already resolved and won't return undefined.
 	const { config: { namespace, collection, props, ignore, hidden, badges } } = useProvidedCollectionConfig() || {};
 
-	// Current query.
-	const query = useQuery();
-
-	// Record results for the current query.
-	const results = useCollectionRecords( namespace, collection, query );
-
 	// Prepare the state saved in preferences.
 	const { preferences, setPreferences } = usePreferences( 'recordsTablePreferences', `${ namespace }/${ collection }` );
 
 	// Backwards compatibility.
 	const { preferences: viewPreferences } = usePreferences( 'view', `${ namespace }/${ collection }` );
 
+	// Current query.
+	const query = useQuery();
+	const preparedQuery = useMemo( () => {
+		const preparedQuery = { ...query };
+
+		if ( !query.orderby && preferences?.sorting?.[ 0 ]?.id ) {
+			preparedQuery.orderby = preferences.sorting[ 0 ].id;
+			preparedQuery.order = preferences.sorting[ 0 ].desc ? 'desc' : 'asc';
+		}
+
+		if ( !query.per_page && preferences?.pagination?.pageSize ) {
+			preparedQuery.per_page = preferences.pagination.pageSize;
+		}
+
+		return preparedQuery;
+	}, [ query, preferences ] );
+
+	// Record results for the current query.
+	const results = useCollectionRecords( namespace, collection, preparedQuery );
+
 	// Available columns.
-	const columns = useMemo( () => {
+	const { columns, primaryColumn } = useMemo( () => {
 		const columns: TableProviderProps<Record<string, any>>[ 'columns' ] = [];
+		let primaryColumn = '';
 
 		props.forEach( ( prop ) => {
 			// Abort if dynamic column.
 			if ( ( prop.is_textarea && !prop.is_tokens && ( !prop.enum || Array.isArray( prop.enum ) ) ) || ignore.includes( prop.name ) || 'hide' === prop.js_props?.table ) {
 				return;
+			}
+
+			if ( prop.is_primary ) {
+				primaryColumn = prop.name;
 			}
 
 			columns.push( {
@@ -71,12 +92,10 @@ export const RecordsTable = () => {
 						path={ `${ namespace }/${ collection }/${ row.original.id }` }
 					/>
 				),
-				//elements: prop.enum ? useOptions( prop.enum ) : undefined,
-				//...prop
 			} );
 		} );
 
-		return columns;
+		return { columns, primaryColumn };
 	}, [ props, ignore ] );
 
 	const columnVisibility = useMemo( () => {
@@ -95,6 +114,10 @@ export const RecordsTable = () => {
 
 		const state = {
 			columnVisibility,
+			columnPinning: {
+				left: [ 'hizzlewp-selection', primaryColumn ].filter( Boolean ),
+				right: [ 'hizzlewp-actions' ],
+			},
 			...preferences,
 			sorting: querySort ? [ { id: querySort, desc: queryOrder === 'desc' } ] : ( preferences?.sorting || [] ),
 			pagination: {
@@ -107,7 +130,10 @@ export const RecordsTable = () => {
 
 		return state;
 	}, [ results.records, query, preferences, setPreferences ] );
-
+	console.log( {
+		left: [ 'hizzlewp-selection', primaryColumn ].filter( Boolean ),
+		right: [ 'hizzlewp-actions' ],
+	}, state )
 	// Update state.
 	const onChange = useCallback( ( state: Partial<TableProviderProps<Record<string, any>>[ 'state' ]> ) => {
 		setPreferences( state );
@@ -147,7 +173,33 @@ export const RecordsTable = () => {
 				enablePagination
 				state={ state }
 				onChange={ onChange }
+				onColumnPinningChange={ ( columnPinning ) => onChange( { ...state, columnPinning: columnPinning( state?.columnPinning || {} ) } ) }
+				getRowId={ ( row ) => row.id }
+				debugTable={ true }
+				bulkActions={ ( selected, isAllSelected: boolean ) => (
+					<BulkActions
+						selected={ selected }
+						isAllSelected={ isAllSelected }
+						query={ preparedQuery }
+					/>
+				) }
 			/>
 		</ErrorBoundary>
 	);
 }
+
+const BulkActions = ( { selected, isAllSelected, query } ) => {
+	return (
+		<>
+			<Button>
+				{ __( 'Edit', 'hizzlewp' ) }
+			</Button>
+			<Button>
+				{ __( 'Export', 'hizzlewp' ) }
+			</Button>
+			<Button>
+				{ __( 'Delete', 'hizzlewp' ) }
+			</Button>
+		</>
+	);
+};

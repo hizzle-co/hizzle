@@ -95,6 +95,7 @@ export function TableProvider<TData>( {
 	state = {},
 	columns,
 	bulkActions,
+	initialState,
 	...tableOptions
 }: TableProviderProps<TData> ) {
 
@@ -107,8 +108,6 @@ export function TableProvider<TData>( {
 			{
 				id: 'hizzlewp-selection',
 				header: ( { table } ) => {
-					const state = table.getState();
-					console.log( state );
 					return (
 						<CheckboxControl
 							type="checkbox"
@@ -129,7 +128,6 @@ export function TableProvider<TData>( {
 						disabled={ !row.getCanSelect() }
 						aria-label={ row.getIsSelected() ? 'Unselect item' : 'Select item' }
 						className="hizzle-records__table-selection-checkbox"
-						data-row={ row }
 						__nextHasNoMarginBottom
 					/>
 				),
@@ -146,7 +144,13 @@ export function TableProvider<TData>( {
 		getCoreRowModel: getCoreRowModel(),
 		state,
 		enableSorting,
-		enableRowSelection: true,
+		initialState: {
+			...initialState,
+			columnPinning: {
+				left: [ 'hizzlewp-selection' ],
+				right: [ 'hizzlewp-actions' ],
+			},
+		},
 		onColumnOrderChange: ( columnOrder ) => {
 			if ( onChange && columnOrder ) {
 				onChange( { ...state, columnOrder } );
@@ -191,7 +195,7 @@ export function TableProvider<TData>( {
 		} ),
 	} );
 
-	const value = useMemo( () => ( { table } ), [ table ] );
+	const value = useMemo( () => ( { table } ), [ table.getState() ] );
 
 	return (
 		<TableContext.Provider value={ value }>{ children }</TableContext.Provider>

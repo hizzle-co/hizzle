@@ -6,12 +6,15 @@ import React from 'react';
 /**
  * WordPress dependencies
  */
-import { __experimentalVStack as VStack } from '@wordpress/components';
+import {
+	__experimentalVStack as VStack,
+	__experimentalHStack as HStack,
+} from '@wordpress/components';
 
 /**
  * Internal dependencies
  */
-import { TableProvider, TableProviderProps } from './context';
+import { TableProvider, TableProviderProps, useTable } from './context';
 import { Head } from './head';
 import { Body } from './body';
 import { Pagination } from './pagination';
@@ -22,9 +25,12 @@ export function Table<TData = Record<string, unknown>>(
 	props: TableProps<TData>
 ) {
 	return (
-		<TableProvider {...props}>
+		<TableProvider { ...props }>
+			<ActionsPanel
+				bulkActions={ props.bulkActions }
+			/>
 			<div className="hizzle-records__table-wrapper dataviews-wrapper">
-				<VStack spacing={4}>
+				<VStack spacing={ 4 }>
 					<table className="hizzle-records__table">
 						<Head />
 						<Body />
@@ -35,3 +41,17 @@ export function Table<TData = Record<string, unknown>>(
 		</TableProvider>
 	);
 }
+
+const ActionsPanel = ( { bulkActions }: { bulkActions: TableProviderProps<any>[ 'bulkActions' ] } ) => {
+	const table = useTable();
+
+	return (
+		<HStack expanded={ false }>
+			{ bulkActions && bulkActions(
+				table.getSelectedRowModel().rows.map( ( row ) => row.id ),
+				table.getIsAllPageRowsSelected(),
+				table.getIsAllRowsSelected()
+			) }
+		</HStack>
+	);
+};

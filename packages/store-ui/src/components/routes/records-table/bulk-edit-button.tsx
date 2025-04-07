@@ -89,7 +89,7 @@ const EditForm = ( { editableFields, onSave, changes, setAttributes } ) => {
 /**
  * Displays the bulk edit modal.
  */
-const TheModal = ( { editableFields, namespace, collection, query, selected, count } ) => {
+const TheModal = ( { editableFields, isAllSelected, query, selected } ) => {
 	const dispatch = useDispatch( `${ namespace }/${ collection }` );
 	const [ error, setError ] = useState( null );
 	const [ saving, setSaving ] = useState( false );
@@ -189,31 +189,37 @@ const TheModal = ( { editableFields, namespace, collection, query, selected, cou
  * Displays a bulk edit button.
  *
  */
-export default function BulkEditButton( props ) {
+export default function BulkEditButton( { isBulkEditing = true, selected = [], isAllSelected = false, query = {} } ) {
 
 	const [ isOpen, setOpen ] = useState( false );
-	const editableFields = useFilterableFields( props );
+	const editableFields = useFilterableFields( { isBulkEditing } );
 
 	// Whether we should display the button.
-	const displayButton = editableFields.length > 0;
+	if ( editableFields.length === 0 ) {
+		return null;
+	}
 
 	// Display the button.
 	return (
 		<>
-			{ displayButton && (
-				<>
-					<Button
-						onClick={ () => setOpen( true ) }
-						variant="tertiary"
-						text={ __( 'Bulk Edit', 'newsletter-optin-box' ) }
-					/>
+			<Button
+				onClick={ () => setOpen( true ) }
+				variant="tertiary"
+				text={ selected.length > 0 ? __( 'Edit Selected', 'newsletter-optin-box' ) : __( 'Bulk Edit', 'newsletter-optin-box' ) }
+				label={ selected.length > 0 ? __( 'Edit Selected', 'newsletter-optin-box' ) : __( 'Edit all matching records', 'newsletter-optin-box' ) }
+				showTooltip
+				icon="edit"
+			/>
 
-					{ isOpen && (
-						<Modal title={ __( 'Bulk Edit', 'newsletter-optin-box' ) } onRequestClose={ () => setOpen( false ) }>
-							<TheModal editableFields={ editableFields } { ...props } />
-						</Modal>
-					) }
-				</>
+			{ isOpen && (
+				<Modal title={ __( 'Bulk Edit', 'newsletter-optin-box' ) } onRequestClose={ () => setOpen( false ) }>
+					<TheModal
+						editableFields={ editableFields }
+						selected={ selected }
+						isAllSelected={ isAllSelected }
+						query={ query }
+					/>
+				</Modal>
 			) }
 		</>
 	);

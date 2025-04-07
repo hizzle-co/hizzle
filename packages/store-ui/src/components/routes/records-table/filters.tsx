@@ -156,7 +156,7 @@ const TheModal = ( { currentFilters, fields, setOpen, setQuery } ) => {
 /**
  * Returns a list of filterable fields.
  */
-export const useFilterableFields = ( { namespace, collection, isBulkEditing = false } ) => {
+export const useFilterableFields = ( { isBulkEditing = false } ) => {
 	const { config: data } = useProvidedCollectionConfig();
 
 	return useMemo( () => {

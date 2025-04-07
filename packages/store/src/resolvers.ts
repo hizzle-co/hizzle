@@ -75,6 +75,7 @@ export const getCollectionRecord =
 					entityConfig.baseURL + ( key ? '/' + key : '' ),
 					{
 						...entityConfig.baseURLParams,
+						uniqid: Math.random(),
 						...query,
 					}
 				);
@@ -192,6 +193,8 @@ export const getCollectionRecords =
 
 				const path = addQueryArgs( entityConfig.baseURL, {
 					...entityConfig.baseURLParams,
+					uniqid: Math.random(),
+					__next_as_array: true,
 					...query,
 				} );
 
@@ -356,7 +359,7 @@ export const getCollectionConfig =
 		async ( { dispatch } ) => {
 
 			const config = await apiFetch<CollectionConfig>( {
-				path: `/${ namespace }/v1/${ collection }/collection_schema`,
+				path: `/${ namespace }/v1/${ collection }/collection_schema?uniqid=${ Math.random() }`,
 			} );
 
 			if ( !config ) {
@@ -369,7 +372,7 @@ export const getCollectionConfig =
 				collection,
 				props: config.schema || [],
 				baseURL: `/${ namespace }/v1/${ collection }`,
-				baseURLParams: { context: DEFAULT_CONTEXT },
+				baseURLParams: { context: DEFAULT_CONTEXT, uniqid: Math.random() },
 				transientEdits: {
 					selection: true,
 				},

@@ -10,7 +10,7 @@ import {
 /**
  * WordPress dependencies
  */
-import { getQueryArgs, addQueryArgs } from '@wordpress/url';
+import { getQueryArgs, addQueryArgs, getQueryArg } from '@wordpress/url';
 import { QueryArgParsed } from '@wordpress/url/build-types/get-query-arg';
 
 /**
@@ -67,6 +67,14 @@ interface History {
 
 let _history: History;
 
+const prepareURL = ( url: string ) => {
+    if ( ! getQueryArg( url, 'page' ) ) {
+        url = addQueryArgs( url, { page: getQueryArg( window.location.href, 'page' ) } );
+    }
+
+    return url;
+};
+
 /**
  * Recreate `history` to coerce React Router into accepting path arguments found in query
  * parameter `hizzlewp_path`, allowing a url hash to be avoided. Since hash portions of the url are
@@ -75,6 +83,7 @@ let _history: History;
  * @return {History} React-router history object with `get location` modified.
  */
 export function getHistory( defaultRoute = '/' ): History {
+
     if ( !_history ) {
         let listeners: ( ( location: CustomEvent<{ state: Record<string, string> }> | PopStateEvent ) => void )[] = [];
 
@@ -95,6 +104,11 @@ export function getHistory( defaultRoute = '/' ): History {
 
                 // Remove page from query.
                 delete query.page;
+                delete query.hizzlewp_path;
+
+                if ( '1' === query.paged ) {
+                    delete query.paged;
+                }
 
                 return {
                     query,
@@ -102,13 +116,13 @@ export function getHistory( defaultRoute = '/' ): History {
                 };
             },
             push( url, data = {} ) {
-                window.history.pushState( data, '', url );
+                window.history.pushState( data, '', prepareURL( url ) );
                 handleEvent( new CustomEvent( 'pushstate', {
                     detail: { state: data },
                 } ) );
             },
             replace( url, data = {} ) {
-                window.history.replaceState( data, '', url );
+                window.history.replaceState( data, '', prepareURL( url ) );
                 handleEvent( new CustomEvent( 'replacestate', {
                     detail: { state: data },
                 } ) );
@@ -192,7 +206,7 @@ export function getNewPath(
         }
     } );
 
-    return addQueryArgs( 'admin.php', args );
+    return prepareURL( addQueryArgs( 'admin.php', args ) );
 }
 
 /**
