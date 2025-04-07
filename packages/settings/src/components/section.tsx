@@ -11,6 +11,7 @@ import {
 	__experimentalSurface as Surface,
 	__experimentalVStack as VStack,
 	Button,
+	Animate,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useViewportMatch } from '@wordpress/compose';
@@ -46,7 +47,7 @@ export const Section = () => {
 	const { tab, section } = useMemo( () => {
 
 		// If no tab is provided, use the first tab.
-		if ( !params.get( 'tab' ) ) {
+		if ( !params?.get( 'tab' ) ) {
 			return {
 				tab: tabs[ 0 ].name,
 				section: tabs[ 0 ].sections[ 0 ].name,
@@ -86,7 +87,7 @@ export const Section = () => {
 			tab: tab.name,
 			section: section.name,
 		};
-	}, [ params.get( 'tab' ), params.get( 'section' ), tabs ] );
+	}, [ params?.get( 'tab' ), params?.get( 'section' ), tabs ] );
 
 	const currentTab = useMemo( () => {
 		return tabs.find( ( _tab ) => _tab.name === tab );
@@ -178,25 +179,40 @@ const SectionsList = ( { name, sections, currentTab, currentSection }: SectionsL
 	);
 }
 
+const MaybeAnimate = ( { children }: { children: React.ReactNode } ) => {
+	const { isSaving } = useSettings();
+
+	if ( isSaving ) {
+		return (
+			<Animate type="loading">{
+				( { className } ) => (
+					<div className={ className } style={ { cursor: 'wait' } }>
+						{ children }
+					</div>
+				)
+			}</Animate>
+		);
+	}
+
+	return children;
+};
+
 export const SettingsList = ( { settings } ) => {
 	const { isSaving } = useSettings();
 
 	return (
-		<VStack spacing={ 4 } style={ {
-			maxWidth: 620,
-			opacity: isSaving ? 0.5 : 1,
-			pointerEvents: isSaving ? 'none' : 'auto',
-			cursor: isSaving ? 'wait' : 'auto',
-		} }>
-			{ Object.keys( settings ).map( ( setting ) => (
-				<ErrorBoundary key={ setting }>
-					<SingleSetting
-						settingKey={ setting }
-						setting={ settings[ setting ] }
-					/>
-				</ErrorBoundary>
-			) ) }
-		</VStack>
+		<MaybeAnimate>
+			<VStack spacing={ 4 } style={ { maxWidth: 620, pointerEvents: isSaving ? 'none' : 'auto' } }>
+				{ Object.keys( settings ).map( ( setting ) => (
+					<ErrorBoundary key={ setting }>
+						<SingleSetting
+							settingKey={ setting }
+							setting={ settings[ setting ] }
+						/>
+					</ErrorBoundary>
+				) ) }
+			</VStack>
+		</MaybeAnimate>
 	);
 }
 

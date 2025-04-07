@@ -95,8 +95,8 @@ const SettingsContext = createContext<ISettingsContextProps>( {
 	saved: {},
 	settings: [],
 	isSaving: false,
-	setAttributes: () => {},
-	save: () => {},
+	setAttributes: () => { },
+	save: () => { },
 } );
 
 /**
