@@ -16,6 +16,7 @@ import {
 	__experimentalVStack as VStack,
 	__experimentalHeading as Heading,
 	__experimentalText as Text,
+	NavigableMenu,
 	Card,
 	CardHeader,
 	CardBody,
@@ -74,6 +75,7 @@ const Layout = (): React.ReactNode => {
 				actions.push( {
 					text: title,
 					onClick: !extra.href ? () => updatePath( route ) : undefined,
+					variant: 'secondary',
 					...extra,
 				} );
 			} );
@@ -85,27 +87,41 @@ const Layout = (): React.ReactNode => {
 	return (
 		<Card isRounded={ false }>
 			<CardHeader as={ HStack }>
-				<Heading level={ 1 } size={ 18 } variant="muted">
-					{ config.labels?.name || 'Items' }
-					<Slot name={ `${ basePath }/title` }>
-						{ ( fills ) => (
-							( Array.isArray( fills ) && fills.length > 0 ) && (
-								<ErrorBoundary>
-									<Text variant="muted">/</Text>
-									<Text>{ fills }</Text>
-								</ErrorBoundary>
-							)
-						) }
-					</Slot>
-				</Heading>
 				<ErrorBoundary>
-					<HStack expanded={ false }>
-						{ actions.map( ( action ) => (
-							<ErrorBoundary key={ action.text }>
-								<Button { ...action } />
-							</ErrorBoundary>
-						) ) }
-					</HStack>
+					<Heading level={ 1 } size={ 16 } truncate>
+						<Slot name={ `${ basePath }/title` }>
+							{ ( fills ) => (
+								( Array.isArray( fills ) && fills.length > 0 ) ? (
+									<>
+										{ fills }
+									</>
+								) : (
+									<>
+										{ config.labels?.name || 'Items' }
+									</>
+								)
+							) }
+						</Slot>
+					</Heading>
+				</ErrorBoundary>
+				<ErrorBoundary>
+					{ actions && (
+						<HStack
+							as={ NavigableMenu }
+							orientation="horizontal"
+							className="hizzle-store-ui__header-menu"
+							expanded={ false }
+							spacing={ 0 }
+							alignment="stretch"
+							wrap
+						>
+							{ actions.map( ( action ) => (
+								<ErrorBoundary key={ action.text }>
+									<Button __next40pxDefaultSize { ...action } />
+								</ErrorBoundary>
+							) ) }
+						</HStack>
+					) }
 				</ErrorBoundary>
 			</CardHeader>
 

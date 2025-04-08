@@ -1,17 +1,12 @@
 /**
  * External dependencies
  */
-import React, { useState, useMemo, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
-	Spinner,
 	Fill,
-	Tip,
-	Flex,
-	FlexBlock,
+	FlexItem,
 	Slot,
-	Button,
 	__experimentalHStack as HStack,
-	__experimentalVStack as VStack,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { useDispatch } from "@wordpress/data";
@@ -20,74 +15,14 @@ import { store as noticesStore } from '@wordpress/notices';
 /**
  * HizzleWP dependencies
  */
-import { Setting, ErrorBoundary } from '@hizzlewp/components';
+import { ErrorBoundary } from '@hizzlewp/components';
 import { updatePath } from '@hizzlewp/history';
-import { store as hizzleStore } from '@hizzlewp/store';
+import { store as hizzleStore, useProvidedCollectionConfig } from '@hizzlewp/store';
 
 /**
  * Local dependancies.
  */
-import { prepareField } from "./records-table/filters";
-import { useProvidedCollectionConfig } from "@hizzlewp/store";
-
-export const prepareEditableSchemaFields = ( schema, hidden, ignore ) => (
-	schema.map( ( field ) => {
-
-		// Abort for readonly and dynamic fields.
-		if ( field.readonly || field.is_dynamic || 'metadata' === field.name ) {
-			return null;
-		}
-
-		// Abort for hidden fields...
-		if ( Array.isArray( hidden ) && hidden.includes( field.name ) ) {
-			return null;
-		}
-
-		// ... and fields to ignore.
-		if ( Array.isArray( ignore ) && ignore.includes( field.name ) ) {
-			return null;
-		}
-
-		return prepareField( field );
-	} ).filter( item => !!item )
-);
-
-export const EditSchemaForm = ( { record, onChange, schema, hidden, ignore, onSubmit, loading, slotName, submitText } ) => {
-
-	// Prepare form fields.
-	const fields = useMemo( () => prepareEditableSchemaFields( schema, hidden, ignore ), [ schema, hidden, ignore ] );
-
-	return (
-		<VStack as="form" spacing={ 4 } style={ { opacity: loading ? 0.5 : 1 } } onSubmit={ onSubmit }>
-
-			{ fields.map( ( field ) => (
-				<Setting
-					settingKey={ field.name }
-					saved={ record }
-					setAttributes={ onChange }
-					setting={ field }
-					key={ field.name }
-				/>
-			) ) }
-
-			{ slotName && (
-				<Slot name={ slotName }>
-					{ ( fills ) => (
-						Array.isArray( fills ) ?
-							fills.map( ( fill, index ) => (
-								<Tip key={ index }>{ fill }</Tip>
-							)
-							) : fills
-					) }
-				</Slot>
-			) }
-
-			<Button className="hizzlewp-block-button" variant="primary" onClick={ onSubmit } isBusy={ loading } __next40pxDefaultSize>
-				{ loading ? <Spinner /> : submitText }
-			</Button>
-		</VStack>
-	);
-}
+import { EditRecordForm } from "../edit-record-form";
 
 /**
  * Displays the record creation form.
@@ -104,7 +39,7 @@ const CreateRecordForm: React.FC = () => {
 	const { createErrorNotice, createSuccessNotice, removeAllNotices } = useDispatch( noticesStore );
 
 	// A function to create a new record.
-	const handleSubmit = useCallback( ( e: React.FormEvent<HTMLFormElement> | undefined ) => {
+	const handleSubmit = useCallback( ( e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement> ) => {
 
 		e?.preventDefault();
 
@@ -144,11 +79,11 @@ const CreateRecordForm: React.FC = () => {
 
 	// Display the add record form.
 	return (
-		<EditSchemaForm
+		<EditRecordForm
 			record={ record }
 			onChange={ ( newProps ) => setRecord( { ...record, ...newProps } ) }
 			onSubmit={ handleSubmit }
-			submitText={ labels?.save_item || __( 'Save', 'newsletter-optin-box' ) }
+			submitText={ labels?.save_item || 'Save' }
 			schema={ props }
 			hidden={ hidden }
 			ignore={ newIgnore }
@@ -158,13 +93,13 @@ const CreateRecordForm: React.FC = () => {
 	);
 };
 
-const SectionWithErrorBoundary: React.FC<{ children: React.ReactNode }> = ( { children } ) => {
+export const SectionWithErrorBoundary: React.FC<{ children: React.ReactNode }> = ( { children } ) => {
 	return (
-		<FlexBlock>
+		<FlexItem style={ { width: 400, maxWidth: '100%' } }>
 			<ErrorBoundary>
 				{ children }
 			</ErrorBoundary>
-		</FlexBlock>
+		</FlexItem>
 	);
 };
 
@@ -178,7 +113,7 @@ export const CreateRecord: React.FC = () => {
 
 	// Display the add record form.
 	return (
-		<HStack alignment="flex-start" wrap>
+		<HStack alignment="flex-start" justify="space-between" wrap>
 			<Fill name={ `/${ namespace }/${ collection }/title` }>
 				{ labels?.add_new_item || 'Add New Item' }
 			</Fill>

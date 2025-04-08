@@ -1,48 +1,64 @@
 .hizzlewp-upsell-card {
-    background-color: #cbeeff;
-    padding: 1rem;
-    border-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-    margin-bottom: 1rem;
+	background-color: #cbeeff;
+	padding: 1rem;
+	border-radius: 4px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 100px;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+	margin-bottom: 1rem;
 
-    & p {
-        font-size: 14px;
-        color: #001012;
-    }
+	& p {
+		font-size: 14px;
+		color: #001012;
+	}
 
-    & .components-button {
-        margin-left: 4px;
-    }
+	& .components-button {
+		margin-left: 4px;
+	}
 }
 
 .hizzlewp-block-button {
-    width: 100%;
-    justify-content: center;
-    font-size: 14px;
-    min-height: 50px;
+	width: 100%;
+	justify-content: center;
+	font-size: 14px;
+	height: 50px;
 }
 
 .hizzlewp-avatar {
-    height: 32px;
-    width: 32px;
-    max-width: 32px;
-    max-height: 32px;
-    overflow: hidden;
-    border-radius: 50%;
-    box-shadow: 2px 2px 2px rgb(0 0 0 / 5%);
+	height: 32px;
+	width: 32px;
+	max-width: 32px;
+	max-height: 32px;
+	overflow: hidden;
+	border-radius: 50%;
+	box-shadow: 2px 2px 2px rgb(0 0 0 / 5%);
 }
 
 .hizzlewp-badge {
-    white-space: nowrap;
+	white-space: nowrap;
 	border-radius: 200px;
 	height: 24px;
 	line-height: 24px;
 	padding: 3px 9px;
 	display: inline-block;
 	box-sizing: content-box;
+}
+
+.hizzle-store-ui__header-menu {
+	& .components-button {
+		border-radius: 0;
+
+		+.components-button {
+			margin-left: -1px;
+		}
+
+		&.is-secondary {
+			--wp-components-color-accent: #ddd;
+			color: #1e1e1e;
+			background-color: rgba(var(--wp-admin-theme-color--rgb), .04);
+		}
+	}
 }
