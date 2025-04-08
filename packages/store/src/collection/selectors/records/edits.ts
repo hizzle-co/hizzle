@@ -29,7 +29,7 @@ export function getCollectionRecordEdits(
 ) {
     return state.collections.records?.[ namespace ]?.[ collection ]?.edits?.[
         recordId
-    ];
+    ] || {};
 }
 
 /**
