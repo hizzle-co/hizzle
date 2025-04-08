@@ -454,7 +454,7 @@ export function Setting( {
 		setting.el === 'multi_checkbox' ||
 		setting.el === 'multi_checkbox_alt'
 	) {
-		return <MultiCheckbox { ...defaultAttributes } options={ options } />;
+		return <MultiCheckbox { ...defaultAttributes } __nextHasNoMarginBottom options={ options } />;
 	}
 
 	// Conditional logic editor.
