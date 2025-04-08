@@ -2,6 +2,10 @@
  * External dependencies
  */
 import React, { useMemo } from "react";
+
+/**
+ * WordPress dependencies
+ */
 import {
 	Spinner,
 	Tip,
@@ -11,6 +15,9 @@ import {
 	__experimentalVStack as VStack,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
+import {
+	useShortcut,
+} from '@wordpress/keyboard-shortcuts';
 
 /**
  * HizzleWP dependencies
@@ -52,6 +59,12 @@ export const EditRecordForm = ( { record, onChange, schema, hidden, ignore, onSu
 
 	// Prepare form fields.
 	const fields = useMemo( () => prepareEditableRecordFields( schema, hidden, ignore ), [ schema, hidden, ignore ] );
+
+	// Handle the save shortcut.
+	useShortcut( 'hizzlewp/save-record', ( e: React.KeyboardEvent<HTMLFormElement> ) => {
+		e?.preventDefault();
+		onSubmit();
+	} );
 
 	return (
 		<MaybeAnimate loading={ loading }>
