@@ -1,7 +1,11 @@
 /**
  * External dependencies
  */
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
+
+/**
+ * WordPress dependencies
+ */
 import {
 	Fill,
 	FlexItem,
@@ -35,7 +39,7 @@ const CreateRecordForm: React.FC = () => {
 	const { saveCollectionRecord } = useDispatch( hizzleStore );
 	const [ loading, setLoading ] = useState( false );
 	const [ record, setRecord ] = useState( {} );
-	const newIgnore = [ ...ignore, ...Object.keys( defaultProps || {} ) ];
+	const newIgnore = useMemo( () => [ ...ignore, ...Object.keys( defaultProps || {} ) ], [ ignore, defaultProps ] );
 	const { createErrorNotice, createSuccessNotice, removeAllNotices } = useDispatch( noticesStore );
 
 	// A function to create a new record.
@@ -57,7 +61,7 @@ const CreateRecordForm: React.FC = () => {
 					__( 'Record saved successfully.', 'newsletter-optin-box' ),
 					{
 						isDismissible: true,
-						type: 'default',
+						type: 'snackbar',
 					}
 				);
 
@@ -71,6 +75,15 @@ const CreateRecordForm: React.FC = () => {
 						type: 'default',
 					}
 				);
+
+				// Scroll to the top of the page after saving
+				const mainContent = document.getElementById( 'hizzlewp-collection__main-content' );
+				if ( mainContent ) {
+					mainContent.parentElement?.scrollTo( {
+						top: 0,
+						behavior: 'smooth'
+					} );
+				}
 			} )
 			.finally( () => {
 				setLoading( false );

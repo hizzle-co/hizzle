@@ -86,7 +86,7 @@ const Layout = (): React.ReactNode => {
 
 	return (
 		<Card isRounded={ false }>
-			<CardHeader as={ HStack }>
+			<CardHeader size='small' as={ HStack } wrap>
 				<ErrorBoundary>
 					<Heading level={ 1 } size={ 16 } truncate>
 						<Slot name={ `${ basePath }/title` }>
@@ -184,11 +184,11 @@ export const Main = ( { defaultNamespace, defaultCollection }: { defaultNamespac
 	const { params } = useRoute();
 	const namespace = params?.get( 'namespace' ) || defaultNamespace;
 	const collection = params?.get( 'collection' ) || defaultCollection;
-	const id = params?.get( 'id' );
+	const id = params?.get( 'recordId' );
 
 	// Render the rest of the page.
 	return (
-		<CollectionProvider namespace={ namespace } collection={ collection } recordId={ id }>
+		<CollectionProvider namespace={ namespace } collection={ collection } recordId={ id ? Number(id) : id }>
 			<ErrorBoundary>
 				<CheckConfig>
 					<Layout />

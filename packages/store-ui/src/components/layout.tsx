@@ -34,15 +34,15 @@ export default function Layout( { defaultNamespace, defaultCollection, ...props 
 
 	const theContent = useMemo( () => {
 		return (
-			<VStack style={ { padding: 20 } }>
-				<ErrorBoundary>
-					<Collection defaultNamespace={ defaultNamespace } defaultCollection={ defaultCollection } />
-				</ErrorBoundary>
+			<VStack id="hizzlewp-collection__main-content" style={ { padding: 20 } }>
 				<ErrorBoundary>
 					<EditorSnackbars />
 				</ErrorBoundary>
 				<ErrorBoundary>
 					<EditorNotices />
+				</ErrorBoundary>
+				<ErrorBoundary>
+					<Collection defaultNamespace={ defaultNamespace } defaultCollection={ defaultCollection } />
 				</ErrorBoundary>
 			</VStack>
 		);
