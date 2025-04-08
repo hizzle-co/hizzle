@@ -66,7 +66,7 @@ export const ViewRecord: React.FC = () => {
     return (
         <>
             <Fill name={ `/${ namespace }/${ collection }/title` }>
-                { labels?.edit_item || 'Edit Item' }
+                { labels?.singular_name || 'Item' }
             </Fill>
             <CheckRecord>
                 <Outlet path="/:namespace/:collection/:recordId" />

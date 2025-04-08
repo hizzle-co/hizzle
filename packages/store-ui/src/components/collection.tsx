@@ -15,6 +15,7 @@ import { Router } from '@hizzlewp/history';
 import { Main } from "./routes/main";
 import { RecordsTable } from "./routes/records-table";
 import { CreateRecord } from "./routes/create-record";
+import { ViewRecord, RecordOverview } from "./routes/view-record";
 
 /**
  * Displays a single collection.
@@ -69,12 +70,12 @@ export const Collection = ( { defaultNamespace, defaultCollection }: { defaultNa
 						path: '/:namespace/:collection/:recordId',
 						element: (
 							<ErrorBoundary>
-								TODO
+								<ViewRecord />
 							</ErrorBoundary>
 						),
 						index: (
 							<ErrorBoundary>
-								TODO
+								<RecordOverview />
 							</ErrorBoundary>
 						),
 						children: [
