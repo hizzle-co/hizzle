@@ -30,6 +30,16 @@ export interface RecordResolution<RecordType> {
 	save: ( saveOptions?: { throwOnError?: boolean, fetchHandler?: typeof apiFetch } ) => Promise<void>;
 
 	/**
+	 * Is the record being saved?
+	 */
+	isSaving: boolean;
+
+	/**
+	 * Error that occurred while saving the record.
+	 */
+	savingError: Error | undefined;
+
+	/**
 	 * Is the record still being resolved?
 	 */
 	isResolving: boolean;
@@ -180,13 +190,15 @@ export const useCollectionRecord = <RecordType extends CollectionRecord>(
 		[ editCollectionRecord, namespace, collection, recordId, saveEditedCollectionRecord ]
 	);
 
-	const { editedRecord, hasEdits, edits } = useSelect(
-		( select ): Pick<RecordResolution<RecordType>, 'editedRecord' | 'hasEdits' | 'edits'> => {
+	const edits = useSelect(
+		( select ): Pick<RecordResolution<RecordType>, 'editedRecord' | 'hasEdits' | 'edits' | 'isSaving' | 'savingError' > => {
 			if ( !options.enabled ) {
 				return {
 					editedRecord: EMPTY_OBJECT as RecordType,
 					hasEdits: false,
 					edits: EMPTY_OBJECT,
+					isSaving: false,
+					savingError: undefined,
 				};
 			}
 
@@ -202,6 +214,16 @@ export const useCollectionRecord = <RecordType extends CollectionRecord>(
 					recordId
 				),
 				edits: select( hizzleStore ).getCollectionRecordNonTransientEdits(
+					namespace,
+					collection,
+					recordId
+				),
+				isSaving: select( hizzleStore ).isSavingCollectionRecord(
+					namespace,
+					collection,
+					recordId
+				),
+				savingError: select( hizzleStore ).getLastCollectionSaveError(
 					namespace,
 					collection,
 					recordId
@@ -229,9 +251,7 @@ export const useCollectionRecord = <RecordType extends CollectionRecord>(
 
 	return {
 		record,
-		editedRecord,
-		hasEdits,
-		edits,
+		...edits,
 		...querySelectRest,
 		...mutations,
 	};
