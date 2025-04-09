@@ -97,6 +97,11 @@ export const doRemoteCollectionRecordAction =
                             undefined,
                             true,
                         );
+
+                        dispatch.invalidateResolution(
+                            'getCollectionRecordOverview',
+                            [ namespace, collection, recordId ]
+                        );
                     }
                 } catch ( _error ) {
                     hasError = true;
