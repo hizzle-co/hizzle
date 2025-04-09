@@ -25,9 +25,39 @@ import { store as hizzleStore } from '@hizzlewp/store';
 import { updatePath } from '@hizzlewp/history';
 
 /**
+ * The props for the delete modal.
+ */
+type DeleteModalProps = {
+    /**
+     * The namespace of the collection.
+     */
+    namespace: string;
+
+    /**
+     * The collection of the record.
+     */
+    collection: string;
+
+    /**
+     * The ID of the record.
+     */
+    id: string;
+
+    /**
+     * The confirmation message.
+     */
+    confirm?: string;
+
+    /**
+     * A function to close the modal.
+     */
+    closeModal: () => void;
+}
+
+/**
  * Displays a delete modal.
  */
-export const DeleteModal = ( { confirm = undefined, closeModal, namespace, collection, id } ) => {
+export const DeleteModal = ( { confirm = undefined, closeModal, namespace, collection, id }: DeleteModalProps ) => {
 
     // Prepare the state.
     const { deleteCollectionRecord } = useDispatch( hizzleStore );
@@ -112,9 +142,19 @@ export const DeleteModal = ( { confirm = undefined, closeModal, namespace, colle
 }
 
 /**
+ * The props for the delete link.
+ */
+type DeleteLinkProps = Omit<DeleteModalProps, 'closeModal'> & {
+    /**
+     * The label of the link.
+     */
+    label: string;
+}
+
+/**
  * Displays a delete link.
  */
-export const DeleteLink = ( { label, ...extra } ) => {
+export const DeleteLink = ( { label, ...extra }: DeleteLinkProps ) => {
 
     // Prepare the state.
     const [ isModalOpen, setIsModalOpen ] = useState( false );

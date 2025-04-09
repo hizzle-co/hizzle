@@ -1,0 +1,67 @@
+.hizzlewp-stat-card {
+    padding: 0.25rem;
+    text-align: center;
+    box-shadow: 2px 2px 2px rgb(0 0 0 / 5%);
+    min-width: 100px;
+    border-radius: 4px;
+
+    &__success {
+        background-color: #d4edda;
+        color: #155724;
+
+        & h2,
+        & h3 {
+            color: #155724;
+        }
+    }
+
+    &__info {
+        background-color: #cbeeff;
+        color: #0c5460;
+
+        & h2,
+        & h3 {
+            color: #0c5460;
+        }
+    }
+
+    &__warning {
+        background-color: #fff3cd;
+        color: #856404;
+
+        & h2,
+        & h3 {
+            color: #856404;
+        }
+    }
+
+    &__error {
+        background-color: #f8cbcb;
+        color: #cc1818;
+
+        & h2,
+        & h3 {
+            color: #cc1818;
+        }
+    }
+
+    &__dark {
+        background-color: #212529;
+        color: #f8f9fa;
+
+        & h2,
+        & h3 {
+            color: #f8f9fa;
+        }
+    }
+
+    &__default {
+        background-color: #f8f9fa;
+        color: #212529;
+
+        & h2,
+        & h3 {
+            color: #212529;
+        }
+    }
+}
