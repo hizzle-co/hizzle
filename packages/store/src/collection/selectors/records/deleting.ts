@@ -20,9 +20,7 @@ export function isDeletingCollectionRecord(
     recordId: CollectionRecordKey
 ): boolean {
     return (
-        state.collections.records?.[ namespace ]?.[ collection ]?.deleting?.[
-            recordId as CollectionRecordKey
-        ]?.pending ?? false
+        state.collections.records?.[ namespace ]?.[ collection ]?.deleting?.[ recordId ]?.pending ?? false
     );
 }
 

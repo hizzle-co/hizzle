@@ -15,6 +15,7 @@ import { edits } from './edits';
 import { saving } from './saving';
 import { deleting } from './deleting';
 import { queriedData } from './queriedData';
+import { remoteActions } from './remote-actions';
 
 export type collectionState = State[ 'collections' ][ 'records' ][ 'namespace' ][ 'collection' ]
 
@@ -58,6 +59,7 @@ export const records = ( collection: CollectionConfig ) => {
         edits,
         saving,
         deleting,
+        remoteActions,
     } );
 
     const matchesAction = ( action ) => (

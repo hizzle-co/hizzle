@@ -81,7 +81,7 @@ export const deleteCollectionRecord =
         recordId: CollectionRecordKey,
         query: object | null = null,
         {
-            throwOnError = false,
+            throwOnError = true,
             fetchHandler = apiFetch,
         } = {},
     ) =>

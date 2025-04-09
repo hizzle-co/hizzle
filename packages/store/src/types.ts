@@ -462,6 +462,11 @@ export interface State {
 					deleting: Record<CollectionRecordKey, Partial<API_STATE>>;
 
 					/**
+					 * Record of remote actions for the entity, keyed by action name.
+					 */
+					remoteActions: Record<string, Record<CollectionRecordKey, Partial<API_STATE>>>;
+
+					/**
 					 * Data for entity queries.
 					 */
 					queriedData: {
