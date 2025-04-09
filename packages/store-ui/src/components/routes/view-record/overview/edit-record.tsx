@@ -9,11 +9,6 @@ import React, { useCallback, useMemo } from "react";
 import { __ } from "@wordpress/i18n";
 import { useDispatch } from '@wordpress/data';
 import { store as noticesStore } from '@wordpress/notices';
-import {
-	Fill,
-	Slot,
-	__experimentalHStack as HStack,
-} from "@wordpress/components";
 
 /**
  * HizzleWP dependencies
@@ -23,14 +18,12 @@ import { useCollectionRecord, useProvidedCollectionConfig, useProvidedRecordId }
 /**
  * Internal dependencies
  */
-//import { OverviewSection } from "./overview-section";
-import { SectionWithErrorBoundary } from '../create-record';
-import { EditRecordForm } from "../../edit-record-form";
+import { EditRecordForm } from "../../../edit-record-form";
 
 /**
- * Allows the user to create new records.
+ * Allows the user to edit records.
  */
-export const RecordOverview: React.FC = () => {
+export const EditRecord: React.FC = () => {
 
 	// Prepare the state.
 	// If we're here, we already have a record ID and the record is already loaded.
@@ -83,32 +76,16 @@ export const RecordOverview: React.FC = () => {
 
 	// Display the add record form.
 	return (
-		<HStack alignment="flex-start" justify="space-between" wrap>
-			<Fill name={ `/${ namespace }/${ collection }/title` }>
-				/
-			</Fill>
-			<Fill name={ `/${ namespace }/${ collection }/title` }>
-				{ labels?.edit_item || 'Edit' }
-			</Fill>
-
-			<SectionWithErrorBoundary>
-				<EditRecordForm
-					record={ editedRecord || {} }
-					onChange={ edit }
-					onSubmit={ onSaveRecord }
-					submitText={ labels?.save_item || 'Save' }
-					schema={ props }
-					hidden={ hidden }
-					ignore={ newIgnore }
-					loading={ isSaving }
-					slotName={ `${ namespace }_${ collection }_record_overview_below` }
-				/>
-			</SectionWithErrorBoundary>
-
-			<SectionWithErrorBoundary>
-				<Slot name={ `${ namespace }_${ collection }_record_overview_upsell` } />
-				OverviewSection
-			</SectionWithErrorBoundary>
-		</HStack>
+		<EditRecordForm
+			record={ editedRecord || {} }
+			onChange={ edit }
+			onSubmit={ onSaveRecord }
+			submitText={ labels?.save_item || 'Save' }
+			schema={ props }
+			hidden={ hidden }
+			ignore={ newIgnore }
+			loading={ isSaving }
+			slotName={ `${ namespace }_${ collection }_record_overview_below` }
+		/>
 	);
 }

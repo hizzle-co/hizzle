@@ -18,7 +18,6 @@ import {
  * HizzleWP dependencies
  */
 import { store as hizzleStore } from '@hizzlewp/store';
-import { updatePath } from '@hizzlewp/history';
 
 /**
  * Displays a remote action link.
@@ -62,8 +61,6 @@ export const RemoteActionLink = ( { label, actionName, namespace, collection, id
                         type: 'snackbar',
                     }
                 );
-
-                updatePath( `/${ namespace }/${ collection }` );
             } )
             .catch( ( error ) => {
                 createErrorNotice(
