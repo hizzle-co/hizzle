@@ -13,6 +13,11 @@ import { Outlet } from '@hizzlewp/history';
 import { useProvidedCollectionConfig, useCollectionRecord, useProvidedRecordId } from '@hizzlewp/store';
 
 /**
+ * Local dependencies
+ */
+import { Tabs } from "./tabs";
+
+/**
  * Ensure that the record config is loaded before rendering the page.
  *
  */
@@ -66,7 +71,7 @@ export const ViewRecord: React.FC = () => {
     return (
         <>
             <Fill name={ `/${ namespace }/${ collection }/title` }>
-                { labels?.singular_name || 'Item' }
+                <Tabs />
             </Fill>
             <CheckRecord>
                 <Outlet path="/:namespace/:collection/:recordId" />

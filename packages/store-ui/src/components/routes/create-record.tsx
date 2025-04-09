@@ -11,6 +11,7 @@ import {
 	FlexItem,
 	Slot,
 	__experimentalHStack as HStack,
+	__experimentalHeading as Heading,
 } from "@wordpress/components";
 import { __ } from "@wordpress/i18n";
 import { useDispatch } from "@wordpress/data";
@@ -128,7 +129,9 @@ export const CreateRecord: React.FC = () => {
 	return (
 		<HStack alignment="flex-start" justify="space-between" wrap>
 			<Fill name={ `/${ namespace }/${ collection }/title` }>
-				{ labels?.add_new_item || 'Add New Item' }
+				<Heading level={ 1 } size={ 16 } truncate>
+					{ labels?.add_new_item || 'Add New Item' }
+				</Heading>
 			</Fill>
 			<SectionWithErrorBoundary>
 				<CreateRecordForm />

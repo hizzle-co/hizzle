@@ -8,8 +8,7 @@ import React, { createContext, useContext, useMemo } from 'react';
  */
 import { store as hizzleStore } from '.';
 import useQuerySelect from './hooks/use-query-select';
-import { useCollectionRecords } from './hooks/use-collection-records';
-import type { CollectionConfig, CollectionRecordKey, CollectionRecord } from './types';
+import type { CollectionConfig, CollectionRecordKey } from './types';
 
 /**
  * The type of the collection context.

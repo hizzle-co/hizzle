@@ -8,7 +8,6 @@ import React from "react";
  */
 import { __ } from "@wordpress/i18n";
 import {
-    Fill,
     Slot,
     __experimentalHStack as HStack,
     __experimentalVStack as VStack,
@@ -39,13 +38,6 @@ export const RecordOverview: React.FC = () => {
     // Display the add record form.
     return (
         <HStack alignment="flex-start" justify="space-between" wrap>
-            <Fill name={ `/${ namespace }/${ collection }/title` }>
-                /
-            </Fill>
-            <Fill name={ `/${ namespace }/${ collection }/title` }>
-                { labels?.edit_item || 'Edit' }
-            </Fill>
-
             <SectionWithErrorBoundary>
                 <EditRecord />
             </SectionWithErrorBoundary>

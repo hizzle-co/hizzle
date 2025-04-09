@@ -1,7 +1,7 @@
 /**
  * External dependencies.
  */
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 
 /**
  * WordPress dependencies.
@@ -15,7 +15,6 @@ import {
 	__experimentalHStack as HStack,
 	__experimentalVStack as VStack,
 	__experimentalHeading as Heading,
-	__experimentalText as Text,
 	NavigableMenu,
 	Card,
 	CardHeader,
@@ -23,6 +22,7 @@ import {
 } from '@wordpress/components';
 import type { ButtonProps } from '@wordpress/components/build-types/button/types';
 import { __ } from "@wordpress/i18n";
+import { arrowLeft } from "@wordpress/icons";
 
 /**
  * HizzleWP dependencies.
@@ -42,36 +42,27 @@ import { UpsellCard } from "../upsell";
  * @param {Object} props
  */
 const Layout = (): React.ReactNode => {
-	const { config } = useProvidedCollectionConfig();
+	const { config: { namespace, collection, labels, routes, fills } } = useProvidedCollectionConfig();
 	const { path } = useRoute();
 
-	const basePath = `/${ config.namespace }/${ config.collection }`;
+	const basePath = `/${ namespace }/${ collection }`;
 
 	const actions = useMemo( () => {
 		const actions: ButtonProps[] = [];
 
-		if ( !config ) {
+		if ( basePath !== path ) {
 			return actions;
 		}
 
-		if ( basePath === path ) {
-			// Show button to add new item.
-			actions.push( {
-				text: config.labels?.add_new_item || 'Add New',
-				onClick: () => updatePath( `${ basePath }/add` ),
-				variant: 'primary',
-			} );
-		} else {
-			// Show button to view items.
-			actions.push( {
-				text: config.labels?.view_items || 'View Items',
-				onClick: () => updatePath( basePath ),
-				variant: 'primary',
-			} );
-		}
+		// Show button to add new item.
+		actions.push( {
+			text: labels?.add_new_item || 'Add New',
+			onClick: () => updatePath( `${ basePath }/add` ),
+			variant: 'primary',
+		} );
 
-		if ( config.routes ) {
-			Object.entries( config.routes ).forEach( ( [ route, { title, ...extra } ] ) => {
+		if ( routes ) {
+			Object.entries( routes ).forEach( ( [ route, { title, ...extra } ] ) => {
 				actions.push( {
 					text: title,
 					onClick: !extra.href ? () => updatePath( route ) : undefined,
@@ -82,30 +73,47 @@ const Layout = (): React.ReactNode => {
 		}
 
 		return actions;
-	}, [ config, path ] );
+	}, [ labels, routes, path ] );
+
+	/**
+	 * Goes to the collection index.
+	 */
+	const goToCollectionIndex = useCallback( () => {
+		updatePath( `${ namespace }/${ collection }` );
+	}, [ namespace, collection ] );
 
 	return (
 		<Card isRounded={ false }>
 			<CardHeader size='small' as={ HStack } wrap>
+
 				<ErrorBoundary>
-					<Heading level={ 1 } size={ 16 } truncate>
-						<Slot name={ `${ basePath }/title` }>
-							{ ( fills ) => (
-								( Array.isArray( fills ) && fills.length > 0 ) ? (
-									<>
-										{ fills }
-									</>
-								) : (
-									<>
-										{ config.labels?.name || 'Items' }
-									</>
-								)
-							) }
-						</Slot>
-					</Heading>
+					<HStack expanded={ false } spacing={ 2 } justify="flex-start" wrap>
+						{
+							basePath !== path ? (
+								<>
+									<Button
+										variant="primary"
+										onClick={ goToCollectionIndex }
+										icon={ arrowLeft }
+										label={ labels?.view_items || 'View Items' }
+										showTooltip
+										__next40pxDefaultSize
+									/>
+
+									<span>
+										<Slot name={ `${ basePath }/title` } />
+									</span>
+								</>
+							) : (
+								<Heading level={ 1 } size={ 16 } truncate>
+									{ labels?.name || 'Items' }
+								</Heading>
+							)
+						}
+					</HStack>
 				</ErrorBoundary>
 				<ErrorBoundary>
-					{ actions && (
+					{ actions.length > 0 && (
 						<HStack
 							as={ NavigableMenu }
 							orientation="horizontal"
@@ -131,7 +139,7 @@ const Layout = (): React.ReactNode => {
 						<Outlet path="/:namespace/:collection" />
 					</ErrorBoundary>
 					<Slot name="noptin-interface-notices" />
-					{ config.fills && config.fills.map( ( fill ) => (
+					{ fills && fills.map( ( fill ) => (
 						<Fill key={ fill.name } name={ `${ fill.name }` }>
 							<ErrorBoundary>
 								{ fill.content && <span dangerouslySetInnerHTML={ { __html: fill.content } } /> }
@@ -188,7 +196,7 @@ export const Main = ( { defaultNamespace, defaultCollection }: { defaultNamespac
 
 	// Render the rest of the page.
 	return (
-		<CollectionProvider namespace={ namespace } collection={ collection } recordId={ id ? Number(id) : id }>
+		<CollectionProvider namespace={ namespace } collection={ collection } recordId={ id ? Number( id ) : id }>
 			<ErrorBoundary>
 				<CheckConfig>
 					<Layout />
