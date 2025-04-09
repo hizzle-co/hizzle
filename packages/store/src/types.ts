@@ -481,6 +481,11 @@ export interface State {
 						itemIsComplete: Record<API_CONTEXT, Record<CollectionRecordKey, boolean>>;
 
 						/**
+						 * Record of overview data for the entity, keyed by entity ID.
+						 */
+						overview: Record<CollectionRecordKey, Array<any>>;
+
+						/**
 						 * Query results as arrays of item IDs, grouped by context and query string.
 						 */
 						queries: {

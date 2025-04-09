@@ -21,6 +21,40 @@ import { GetRecordsHttpQuery } from './selectors';
 import { CollectionRecordKey, CollectionConfig } from './types';
 
 /**
+ * Requests a collection's record overview from the REST API.
+ *
+ * @param {string}        namespace  Collection namespace.
+ * @param {string}        collection Collection name.
+ * @param {number|string} key   Record's key
+ */
+export const getCollectionRecordOverview =
+	( namespace: string, collection: string, recordId: CollectionRecordKey = '' ) =>
+		async ( { dispatch, resolveSelect } ) => {
+			const entityConfig = await resolveSelect.getCollectionConfig( namespace, collection );
+			if ( !entityConfig ) {
+				return;
+			}
+
+			const path = addQueryArgs(
+				`${ entityConfig.baseURL }/${ recordId }/overview`,
+				{
+					...entityConfig.baseURLParams,
+					uniqid: Math.random(),
+				}
+			);
+
+			const overview = await apiFetch( { path } );
+
+			dispatch( {
+				type: 'RECEIVE_COLLECTION_RECORD_OVERVIEW',
+				namespace,
+				collection,
+				recordId,
+				overview,
+			} );
+		};
+
+/**
  * Requests a collection's record from the REST API.
  *
  * @param {string}           namespace  Collection namespace.
@@ -120,7 +154,7 @@ export const getCollectionRecord =
 				}
 
 				registry.batch( () => {
-					dispatch.receiveCollectionRecords( namespace, collection, [ record ], query, undefined, ID_KEY );
+					dispatch.receiveCollectionRecords( namespace, collection, [ record ], query );
 					dispatch.receiveUserPermissions(
 						receiveUserPermissionArgs
 					);
@@ -237,8 +271,6 @@ export const getCollectionRecords =
 								collection,
 								records,
 								query,
-								undefined,
-								ID_KEY
 							);
 							dispatch.finishResolutions(
 								'getCollectionRecord',
@@ -282,7 +314,6 @@ export const getCollectionRecords =
 						records,
 						query,
 						meta,
-						ID_KEY,
 					);
 
 					// When requesting all fields, the list of results can be used to resolve

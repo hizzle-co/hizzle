@@ -117,7 +117,6 @@ export const saveCollectionRecord =
                         [ updatedRecord ],
                         undefined,
                         undefined,
-                        collectionConfig.key || DEFAULT_ENTITY_KEY,
                         true,
                         data,
                     );

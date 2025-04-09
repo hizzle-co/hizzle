@@ -7,7 +7,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { CollectionRecordKey } from '../../../types';
-import { DEFAULT_ENTITY_KEY, STORE_NAME } from '../../../constants';
+import { STORE_NAME } from '../../../constants';
 import type { CollectionAction } from '..';
 
 export type DoRemoteCollectionRecordActionAction = CollectionAction & {
@@ -95,7 +95,6 @@ export const doRemoteCollectionRecordAction =
                             [ response.record?.data ],
                             undefined,
                             undefined,
-                            collectionConfig.key || DEFAULT_ENTITY_KEY,
                             true,
                         );
                     }

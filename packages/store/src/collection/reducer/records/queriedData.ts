@@ -19,7 +19,7 @@ import { DEFAULT_ENTITY_KEY, DEFAULT_CONTEXT } from '../../../constants';
 import getQueryParts from '../../get-query-parts';
 import type { CollectionRecord, CollectionRecordKey } from '../../../types';
 import type { collectionState } from '.';
-import type { RemoveItemsAction, ReceiveCollectionRecordsAction } from '../../actions';
+import type { RemoveItemsAction, ReceiveCollectionRecordsAction, ReceiveCollectionRecordOverviewAction } from '../../actions';
 
 type QueriedDataState = collectionState[ 'queriedData' ]
 
@@ -158,6 +158,7 @@ const items = ( state: QueriedDataState[ 'items' ] = { view: {}, edit: {} }, act
 const itemIsComplete = ( state: QueriedDataState[ 'itemIsComplete' ] = { view: {}, edit: {} }, action: RemoveItemsAction | ReceiveCollectionRecordsAction ): QueriedDataState[ 'itemIsComplete' ] => {
 	switch ( action.type ) {
 		case 'RECEIVE_COLLECTION_RECORDS': {
+
 			const context = getContextFromAction( action );
 			const { query, key = DEFAULT_ENTITY_KEY } = action;
 
@@ -290,8 +291,28 @@ const queries = ( state: QueriedDataState[ 'queries' ] = { view: {}, edit: {} },
 	}
 };
 
+/**
+ * Reducer tracking item overviews, keyed by ID.
+ *
+ * @param {Object<string,Object<string,boolean>>} state  Current state.
+ * @param {Object}                                action Dispatched action.
+ *
+ * @return {Object<string,Object<string,boolean>>} Next state.
+ */
+const overview = ( state: QueriedDataState[ 'overview' ] = {}, action: ReceiveCollectionRecordOverviewAction ): QueriedDataState[ 'overview' ] => {
+	if ( 'RECEIVE_COLLECTION_RECORD_OVERVIEW' === action.type ) {
+		return {
+			...state,
+			[ action.recordId ]: action.overview,
+		};
+	}
+
+	return state;
+}
+
 export const queriedData = combineReducers( {
 	items,
 	itemIsComplete,
+	overview,
 	queries,
 } );

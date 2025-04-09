@@ -57,9 +57,8 @@ export function receiveCollectionRecords(
 	namespace: string,
 	collection: string,
 	records: Array<any>,
-	query: object | null,
+	query: object | undefined = undefined,
 	meta: object | undefined = undefined,
-	key: CollectionRecordKey | undefined = undefined,
 	invalidateCache: boolean = false,
 	persistedEdits: object | undefined = undefined,
 ): ReceiveCollectionRecordsAction {
@@ -72,7 +71,6 @@ export function receiveCollectionRecords(
 		records: Array.isArray( records ) ? records : [ records ],
 		persistedEdits,
 		meta,
-		key,
 	}
 
 	if ( query ) {

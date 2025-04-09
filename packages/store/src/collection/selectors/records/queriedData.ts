@@ -230,7 +230,7 @@ const queriedItemsCacheByState = new WeakMap<any, EquivalentKeyMap>();
  *
  * @return {?Array} Query items.
  */
-export const getQueriedItems = createSelector( ( state: State['collections']['records']['namespace']['collection']['queriedData'], query = {} ) => {
+export const getQueriedItems = createSelector( ( state: State[ 'collections' ][ 'records' ][ 'namespace' ][ 'collection' ][ 'queriedData' ], query = {} ) => {
 	let queriedItemsCache = queriedItemsCacheByState.get( state );
 	if ( queriedItemsCache ) {
 		const queriedItems = queriedItemsCache.get( query );
@@ -255,7 +255,7 @@ export const getQueriedItems = createSelector( ( state: State['collections']['re
  *
  * @return {?Array} Query items.
  */
-function getQueriedItemsUncached( state: State['collections']['records']['namespace']['collection']['queriedData'], query?: Record<string, any> ) {
+function getQueriedItemsUncached( state: State[ 'collections' ][ 'records' ][ 'namespace' ][ 'collection' ][ 'queriedData' ], query?: Record<string, any> ) {
 	const { stableKey, page, perPage, include, fields, context } =
 		getQueryParts( query );
 
@@ -266,7 +266,7 @@ function getQueriedItemsUncached( state: State['collections']['records']['namesp
 		itemIds = state.queries[ context ][ stableKey ].itemIds;
 	}
 
-	if ( ! Array.isArray( itemIds ) ) {
+	if ( !Array.isArray( itemIds ) ) {
 		return null;
 	}
 
@@ -283,14 +283,14 @@ function getQueriedItemsUncached( state: State['collections']['records']['namesp
 	// Iterate through the item IDs in the specified range.
 	for ( let i = startOffset; i < endOffset; i++ ) {
 		const itemId = itemIds[ i ];
-		if ( Array.isArray( include ) && ! include.includes( itemId ) ) {
+		if ( Array.isArray( include ) && !include.includes( itemId ) ) {
 			continue;
 		}
 		if ( itemId === undefined ) {
 			continue;
 		}
 		// Having a target item ID doesn't guarantee that this object has been queried.
-		if ( ! state.items[ context ]?.hasOwnProperty( itemId ) ) {
+		if ( !state.items[ context ]?.hasOwnProperty( itemId ) ) {
 			return null;
 		}
 
@@ -315,7 +315,7 @@ function getQueriedItemsUncached( state: State['collections']['records']['namesp
 		} else {
 			// If expecting a complete item, validate that completeness, or
 			// otherwise abort.
-			if ( ! state.itemIsComplete[ context ]?.[ itemId ] ) {
+			if ( !state.itemIsComplete[ context ]?.[ itemId ] ) {
 				return null;
 			}
 
@@ -408,3 +408,17 @@ export const getCollectionRecordsTotalPages = (
 	// Return the total number of pages.
 	return Math.ceil( totalItems / perPage );
 };
+
+/**
+ * Returns the overview for a given record.
+ *
+ * @param state State tree
+ * @param namespace  The namespace of the collection.
+ * @param collection The collection name.
+ * @param recordId The record ID.
+ *
+ * @return The overview for the given record.
+ */
+export const getCollectionRecordOverview = ( state: State, namespace: string, collection: string, recordId: CollectionRecordKey ) => {
+	return state.collections.records?.[ namespace ]?.[ collection ]?.queriedData?.overview?.[ recordId ] ?? null;
+}
