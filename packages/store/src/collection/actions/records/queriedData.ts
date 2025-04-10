@@ -4,6 +4,28 @@
 import { CollectionRecordKey } from '../../../types';
 import type { CollectionAction } from '..';
 
+export type ReceiveCollectionRecordTabContentAction = CollectionAction & {
+	/**
+	 * The type of the action.
+	 */
+	type: 'RECEIVE_COLLECTION_RECORD_TAB_CONTENT';
+
+	/**
+	 * The ID of the record.
+	 */
+	recordId: CollectionRecordKey;
+
+	/**
+	 * The tab name.
+	 */
+	tabName: string;
+
+	/**
+	 * The tab content.
+	 */
+	content: any;
+};
+
 export type ReceiveCollectionRecordsAction = CollectionAction & {
 	/**
 	 * The type of the action.
@@ -78,4 +100,32 @@ export function receiveCollectionRecords(
 	}
 
 	return action;
+}
+
+/**
+ * Returns an action object used in signalling that a record's tab content has been received.
+ *
+ * @param {string}        namespace  Namespace of the record.
+ * @param {string}        collection Collection of the record.
+ * @param {number|string} recordId   Record id of received tab content.
+ * @param {tabName}       tabName    The tab name, e.g, overview.
+ * @param {any}           content    The tab content.
+ * @return {Object} Action object.
+ */
+export function receiveCollectionRecordTabContent(
+	namespace: string,
+	collection: string,
+	recordId: CollectionRecordKey,
+	tabName: string,
+	content: any,
+): ReceiveCollectionRecordTabContentAction {
+
+	return {
+		type: 'RECEIVE_COLLECTION_RECORD_TAB_CONTENT',
+		namespace,
+		collection,
+		recordId,
+		tabName,
+		content,
+	}
 }

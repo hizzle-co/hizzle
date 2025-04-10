@@ -6,17 +6,18 @@ import { store as hizzleStore } from '..';
 import { CollectionRecordKey } from '../types';
 
 /**
- * Resolves the specified collection record's overview.
+ * Resolves the specified collection record's tab content.
  *
  * @param    namespace  Namespace e.g, noptin.
  * @param    collection Collection e.g, `subscribers`.
  * @param    recordId   ID of the requested record.
+ * @param    tabName    The tab name, e.g, overview.
  * @example
  * ```js
- * import { useCollectionRecordOverview } from '@hizzlewp/store';
+ * import { useCollectionRecordTabContent } from '@hizzlewp/store';
  *
  * function SubscriberDisplay( { id } ) {
- *   const { data: overview, isResolving, error } = useCollectionRecordOverview( 'noptin', 'subscribers', id );
+ *   const { data: overview, isResolving, error } = useCollectionRecordTabContent( 'noptin', 'subscribers', id, 'overview );
  *
  *   if ( isResolving ) {
  *     return 'Loading...';
@@ -33,20 +34,22 @@ import { CollectionRecordKey } from '../types';
  *
  * @return Entity record overview.
  */
-export const useCollectionRecordOverview = (
+export const useCollectionRecordTabContent = (
 	namespace: string,
 	collection: string,
 	recordId: CollectionRecordKey,
+	tabName: string,
 ) => {
 
 	return useQuerySelect<Array<any>>(
 		( query ) => {
-			return query( hizzleStore ).getCollectionRecordOverview(
+			return query( hizzleStore ).getCollectionRecordTabContent(
 				namespace,
 				collection,
-				recordId
+				recordId,
+				tabName,
 			);
 		},
-		[ namespace, collection, recordId ]
+		[ namespace, collection, recordId, tabName ]
 	);
 }

@@ -21,14 +21,15 @@ import { GetRecordsHttpQuery } from './selectors';
 import { CollectionRecordKey, CollectionConfig } from './types';
 
 /**
- * Requests a collection's record overview from the REST API.
+ * Requests a collection's record tab content from the REST API.
  *
  * @param {string}        namespace  Collection namespace.
  * @param {string}        collection Collection name.
- * @param {number|string} key   Record's key
+ * @param {number|string} recordId   Record's key
+ * @param {string}        tabName    The tab name.
  */
-export const getCollectionRecordOverview =
-	( namespace: string, collection: string, recordId: CollectionRecordKey = '' ) =>
+export const getCollectionRecordTabContent =
+	( namespace: string, collection: string, recordId: CollectionRecordKey, tabName: string ) =>
 		async ( { dispatch, resolveSelect } ) => {
 			const entityConfig = await resolveSelect.getCollectionConfig( namespace, collection );
 			if ( !entityConfig ) {
@@ -36,22 +37,16 @@ export const getCollectionRecordOverview =
 			}
 
 			const path = addQueryArgs(
-				`${ entityConfig.baseURL }/${ recordId }/overview`,
+				`${ entityConfig.baseURL }/${ recordId }/${ tabName }`,
 				{
 					...entityConfig.baseURLParams,
 					uniqid: Math.random(),
 				}
 			);
 
-			const overview = await apiFetch( { path } );
+			const content = await apiFetch( { path } );
 
-			dispatch( {
-				type: 'RECEIVE_COLLECTION_RECORD_OVERVIEW',
-				namespace,
-				collection,
-				recordId,
-				overview,
-			} );
+			dispatch.receiveCollectionRecordTabContent( namespace, collection, recordId, tabName, content );
 		};
 
 /**
@@ -399,6 +394,7 @@ export const getCollectionConfig =
 
 			dispatch.addCollectionConfig( {
 				...config,
+				tabs: ( config.tabs && ! Array.isArray( config.tabs ) ) ? config.tabs : undefined,
 				namespace,
 				collection,
 				props: config.schema || [],

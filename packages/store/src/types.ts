@@ -260,7 +260,7 @@ export type CollectionConfig = {
 	supportsPagination: boolean;
 
 	/**
-	 * Record overview tabs.
+	 * "View record screen" tabs.
 	 */
 	tabs?: Record<string, {
 		/**
@@ -481,9 +481,13 @@ export interface State {
 						itemIsComplete: Record<API_CONTEXT, Record<CollectionRecordKey, boolean>>;
 
 						/**
-						 * Record of overview data for the entity, keyed by entity ID.
+						 * Data to display in the record tabs.
 						 */
-						overview: Record<CollectionRecordKey, Array<any>>;
+						tabs: {
+							[ recordId: CollectionRecordKey ]: {
+								[ tabName: string ]: any
+							}
+						};
 
 						/**
 						 * Query results as arrays of item IDs, grouped by context and query string.

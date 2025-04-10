@@ -410,15 +410,16 @@ export const getCollectionRecordsTotalPages = (
 };
 
 /**
- * Returns the overview for a given record.
+ * Returns the content for a given record and tab.
  *
  * @param state State tree
  * @param namespace  The namespace of the collection.
  * @param collection The collection name.
- * @param recordId The record ID.
+ * @param recordId   The record ID.
+ * @param tabName    The tab name.
  *
- * @return The overview for the given record.
+ * @return The tab content.
  */
-export const getCollectionRecordOverview = ( state: State, namespace: string, collection: string, recordId: CollectionRecordKey ) => {
-	return state.collections.records?.[ namespace ]?.[ collection ]?.queriedData?.overview?.[ recordId ] ?? null;
+export const getCollectionRecordTabContent = ( state: State, namespace: string, collection: string, recordId: CollectionRecordKey, tabName: string ) => {
+	return state.collections.records?.[ namespace ]?.[ collection ]?.queriedData?.tabs?.[ recordId ]?.[ tabName ] ?? null;
 }

@@ -99,9 +99,18 @@ export const doRemoteCollectionRecordAction =
                         );
 
                         dispatch.invalidateResolution(
-                            'getCollectionRecordOverview',
-                            [ namespace, collection, recordId ]
+                            'getCollectionRecordTabContent',
+                            [ namespace, collection, recordId, 'overview' ]
                         );
+
+                        if ( collectionConfig.tabs ) {
+                            Object.keys( collectionConfig.tabs ).forEach( key => {
+                                dispatch.invalidateResolution(
+                                    'getCollectionRecordTabContent',
+                                    [ namespace, collection, recordId, key ]
+                                );
+                            } )
+                        }
                     }
                 } catch ( _error ) {
                     hasError = true;

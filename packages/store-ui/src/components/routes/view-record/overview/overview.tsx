@@ -14,7 +14,7 @@ import { __ } from "@wordpress/i18n";
 /**
  * HizzleWP dependencies
  */
-import { useCollectionRecordOverview } from '@hizzlewp/store';
+import { useCollectionRecordTabContent } from '@hizzlewp/store';
 
 /**
  * Internal dependencies
@@ -30,7 +30,7 @@ import { Card } from "./card";
 export const Overview = ( { namespace, collection, id } ) => {
 
     // Prepare the overview.
-    const overview = useCollectionRecordOverview( namespace, collection, id );
+    const overview = useCollectionRecordTabContent( namespace, collection, id, 'overview' );
 
     // In case we don't have an overview yet, display a spinner.
     if ( overview.isResolving ) {
