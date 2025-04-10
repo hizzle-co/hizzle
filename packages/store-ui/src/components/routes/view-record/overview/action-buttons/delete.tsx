@@ -17,6 +17,7 @@ import {
     Modal,
     Notice,
 } from "@wordpress/components";
+import { trash } from "@wordpress/icons";
 
 /**
  * HizzleWP dependencies
@@ -161,7 +162,7 @@ export const DeleteLink = ( { label, ...extra }: DeleteLinkProps ) => {
 
     return (
         <>
-            <Button isDestructive onClick={ () => setIsModalOpen( true ) } variant="secondary">
+            <Button isDestructive onClick={ () => setIsModalOpen( true ) } icon={ trash } variant="secondary">
                 { label }
             </Button>
             { isModalOpen && (

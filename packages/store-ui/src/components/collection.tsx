@@ -15,7 +15,7 @@ import { Router } from '@hizzlewp/history';
 import { Main } from "./routes/main";
 import { RecordsTable } from "./routes/records-table";
 import { CreateRecord } from "./routes/create-record";
-import { ViewRecord, RecordOverview } from "./routes/view-record";
+import { ViewRecord, RecordOverview, TabContent } from "./routes/view-record";
 
 /**
  * Displays a single collection.
@@ -83,7 +83,7 @@ export const Collection = ( { defaultNamespace, defaultCollection }: { defaultNa
 								path: '/:namespace/:collection/:recordId/:tab',
 								element: (
 									<ErrorBoundary>
-										TODO
+										<TabContent />
 									</ErrorBoundary>
 								),
 							}

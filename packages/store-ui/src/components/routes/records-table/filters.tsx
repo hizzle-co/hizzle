@@ -207,7 +207,7 @@ export const useFilterableFields = ( { isBulkEditing = false } ) => {
  */
 export const prepareField = ( field ) => {
 
-	const prepared = {
+	const prepared: Record<string, any> = {
 		default: field.default,
 		label: field.label,
 		el: 'input',
@@ -235,7 +235,7 @@ export const prepareField = ( field ) => {
 		prepared.options = field.enum;
 
 		if ( field.multiple ) {
-			prepared.el = 'multi_checkbox';
+			prepared.multiple = true;
 		}
 	} else if ( field.is_textarea ) {
 		prepared.el = 'textarea';
