@@ -12,6 +12,8 @@ import {
 	useReactTable,
 	getCoreRowModel,
 	getFilteredRowModel,
+	getPaginationRowModel,
+	getSortedRowModel,
 	TableOptions,
 	Table,
 	TableState,
@@ -92,7 +94,7 @@ export function TableProvider<TData>( {
 	enableFiltering = true,
 	enablePagination = true,
 	onChange,
-	state = {},
+	state = undefined,
 	columns,
 	bulkActions,
 	initialState,
@@ -151,47 +153,61 @@ export function TableProvider<TData>( {
 				right: [ 'hizzlewp-actions' ],
 			},
 		},
-		onColumnOrderChange: ( columnOrder ) => {
-			if ( onChange && columnOrder ) {
-				onChange( { ...state, columnOrder } );
-			}
-		},
-		onColumnVisibilityChange: ( columnVisibility ) => {
-			if ( onChange && columnVisibility ) {
-				onChange( {
-					...state,
-					columnVisibility: columnVisibility(
-						state.columnVisibility || {}
-					),
-				} );
-			}
-		},
-		...( enableSorting && {
-			manualSorting: true,
-			onSortingChange: ( sorting ) => {
-				if ( onChange && sorting ) {
+
+		// Server-side state management.
+		...( state && {
+			onColumnOrderChange: ( columnOrder ) => {
+				if ( onChange && columnOrder ) {
+					onChange( { ...state, columnOrder } );
+				}
+			},
+			onColumnVisibilityChange: ( columnVisibility ) => {
+				if ( onChange && columnVisibility ) {
 					onChange( {
 						...state,
-						sorting: sorting( state.sorting ),
-						pagination: {
-							pageSize: state.pagination?.pageSize || 10,
-							pageIndex: 0,
-						},
+						columnVisibility: columnVisibility(
+							state.columnVisibility || {}
+						),
 					} );
 				}
 			},
+			...( enableSorting && {
+				manualSorting: true,
+				onSortingChange: ( sorting ) => {
+					if ( onChange && sorting ) {
+						onChange( {
+							...state,
+							sorting: sorting( state.sorting ),
+							pagination: {
+								pageSize: state.pagination?.pageSize || 10,
+								pageIndex: 0,
+							},
+						} );
+					}
+				},
+			} ),
+			...( enableFiltering && { getFilteredRowModel: getFilteredRowModel() } ),
+			...( enablePagination && {
+				manualPagination: true,
+				onPaginationChange: ( pagination ) => {
+					if ( onChange && pagination ) {
+						onChange( {
+							...state,
+							pagination: pagination( state.pagination ),
+						} );
+					}
+				},
+			} ),
 		} ),
-		...( enableFiltering && { getFilteredRowModel: getFilteredRowModel() } ),
-		...( enablePagination && {
-			manualPagination: true,
-			onPaginationChange: ( pagination ) => {
-				if ( onChange && pagination ) {
-					onChange( {
-						...state,
-						pagination: pagination( state.pagination ),
-					} );
-				}
-			},
+
+		// Client-side state management.
+		...( !state && {
+			...( enablePagination && {
+				getPaginationRowModel: getPaginationRowModel(),
+			} ),
+			...( enableSorting && {
+				getSortedRowModel: getSortedRowModel(),
+			} ),
 		} ),
 	} );
 

@@ -4,102 +4,108 @@
 @import 'variables';
 
 .hizzle-records__table-wrapper {
-	height: 100%;
-	overflow: auto;
-	box-sizing: border-box;
-	scroll-padding-bottom: $grid-unit-80;
-	/* stylelint-disable-next-line property-no-unknown -- '@container' not globally permitted */
-	container: hizzle-records__table-wrapper / inline-size;
-	display: flex;
-	flex-direction: column;
-	font-size: $default-font-size;
-	line-height: $default-line-height;
+    height: 100%;
+    overflow: auto;
+    box-sizing: border-box;
+    scroll-padding-bottom: $grid-unit-80;
+    /* stylelint-disable-next-line property-no-unknown -- '@container' not globally permitted */
+    container: hizzle-records__table-wrapper / inline-size;
+    display: flex;
+    flex-direction: column;
+    font-size: $default-font-size;
+    line-height: $default-line-height;
 }
 
 .hizzle-records__table-actions,
 .hizzle-records__table-filters {
-	box-sizing: border-box;
-	padding: $grid-unit-20 $grid-unit-60;
-	flex-shrink: 0;
-	position: sticky;
-	left: 0;
+    box-sizing: border-box;
+    padding: $grid-unit-20 $grid-unit-60;
+    flex-shrink: 0;
+    position: sticky;
+    left: 0;
 
-	@media not (prefers-reduced-motion) {
-		transition: padding ease-out 0.1s;
-	}
+    @media not (prefers-reduced-motion) {
+        transition: padding ease-out 0.1s;
+    }
 }
 
 .hizzle-records__table-no-results,
 .hizzle-records__table-loading {
-	padding: 0 $grid-unit-60;
-	flex-grow: 1;
-	display: flex;
-	align-items: center;
-	justify-content: center;
+    padding: 0 $grid-unit-60;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
-	@media not (prefers-reduced-motion) {
-		transition: padding ease-out 0.1s;
-	}
+    @media not (prefers-reduced-motion) {
+        transition: padding ease-out 0.1s;
+    }
 }
 
 @container (max-width: 430px) {
-	.hizzle-records__table-actions,
-	.hizzle-records__table-filters {
-		padding: $grid-unit-15 $grid-unit-30;
-	}
 
-	.hizzle-records__table-no-results,
-	.hizzle-records__table-loading {
-		padding-left: $grid-unit-30;
-		padding-right: $grid-unit-30;
-	}
+    .hizzle-records__table-actions,
+    .hizzle-records__table-filters {
+        padding: $grid-unit-15 $grid-unit-30;
+    }
+
+    .hizzle-records__table-no-results,
+    .hizzle-records__table-loading {
+        padding-left: $grid-unit-30;
+        padding-right: $grid-unit-30;
+    }
 }
 
 .hizzle-records__table-title-field {
-	font-size: $default-font-size;
-	font-weight: 500;
-	color: $gray-800;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	width: 100%;
+    font-size: $default-font-size;
+    font-weight: 500;
+    color: $gray-800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    --wp-components-color-accent: $gray-800;
 
-	a {
-		text-decoration: none;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-		display: block;
-		flex-grow: 0;
-		color: $gray-800;
+    a {
+        text-decoration: none;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        display: block;
+        flex-grow: 0;
+        color: $gray-800;
 
-		&:hover {
-			color: var(--wp-admin-theme-color);
-		}
-		@include link-reset();
-	}
+        &:hover {
+            color: var(--wp-admin-theme-color);
+        }
 
-	button.components-button.is-link {
-		text-decoration: none;
-		font-weight: inherit;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-		overflow: hidden;
-		display: block;
-		width: 100%;
-		color: $gray-900;
-		&:hover {
-			color: var(--wp-admin-theme-color);
-		}
-	}
+        @include link-reset();
+    }
+
+    .components-button.is-link {
+        text-decoration: none;
+        font-weight: inherit;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        display: block;
+        width: 100%;
+        color: $gray-900;
+
+        &:hover {
+            color: var(--wp-admin-theme-color);
+        }
+    }
 }
 
 .hizzle-records__table-title-field--clickable {
-	cursor: pointer;
-	color: $gray-800;
-	&:hover {
-		color: var(--wp-admin-theme-color);
-	}
-	@include link-reset();
+    cursor: pointer;
+    color: $gray-800;
+
+    &:hover {
+        color: var(--wp-admin-theme-color);
+    }
+
+    @include link-reset();
 }
 
 .hizzle-records__table {
@@ -152,11 +158,6 @@
         td:last-child,
         th:last-child {
             padding-right: $grid-unit-60;
-            text-align: right;
-
-            .hizzle-records__table__cell-content-wrapper {
-                justify-content: flex-end;
-            }
         }
 
         &:last-child {
@@ -226,7 +227,6 @@
 
         th {
             background-color: #f8f9fa;
-            border-top: 1px solid #f0f0f0;
             padding-top: $grid-unit-10;
             padding-bottom: $grid-unit-10;
             padding-left: $grid-unit-15;
@@ -237,6 +237,10 @@
             &:has(.hizzle-records__table-header-button):not(:first-child) {
                 padding-left: $grid-unit-05;
             }
+        }
+
+        &:last-child th {
+            border-bottom: 1px solid #f0f0f0;
         }
     }
 

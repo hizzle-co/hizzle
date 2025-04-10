@@ -133,22 +133,18 @@ const Layout = (): React.ReactNode => {
 				</ErrorBoundary>
 			</CardHeader>
 
-			<CardBody>
-				<VStack>
+			<ErrorBoundary>
+				<Outlet path="/:namespace/:collection" />
+			</ErrorBoundary>
+
+			{ fills && fills.map( ( fill ) => (
+				<Fill key={ fill.name } name={ `${ fill.name }` }>
 					<ErrorBoundary>
-						<Outlet path="/:namespace/:collection" />
+						{ fill.content && <span dangerouslySetInnerHTML={ { __html: fill.content } } /> }
+						{ fill.upsell && <UpsellCard upsell={ fill.upsell } /> }
 					</ErrorBoundary>
-					<Slot name="noptin-interface-notices" />
-					{ fills && fills.map( ( fill ) => (
-						<Fill key={ fill.name } name={ `${ fill.name }` }>
-							<ErrorBoundary>
-								{ fill.content && <span dangerouslySetInnerHTML={ { __html: fill.content } } /> }
-								{ fill.upsell && <UpsellCard upsell={ fill.upsell } /> }
-							</ErrorBoundary>
-						</Fill>
-					) ) }
-				</VStack>
-			</CardBody>
+				</Fill>
+			) ) }
 		</Card>
 	);
 }

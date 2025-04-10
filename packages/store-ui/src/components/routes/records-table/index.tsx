@@ -130,10 +130,7 @@ export const RecordsTable = () => {
 
 		return state;
 	}, [ results.records, query, preferences, setPreferences ] );
-	console.log( {
-		left: [ 'hizzlewp-selection', primaryColumn ].filter( Boolean ),
-		right: [ 'hizzlewp-actions' ],
-	}, state )
+
 	// Update state.
 	const onChange = useCallback( ( state: Partial<TableProviderProps<Record<string, any>>[ 'state' ]> ) => {
 		setPreferences( state );

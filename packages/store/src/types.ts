@@ -104,6 +104,86 @@ export type RecordProp = {
 }
 
 /**
+ * A single tab in the "View record screen".
+ */
+export type CollectionTab = {
+	/**
+	 * The title of the tab.
+	 */
+	title: string;
+
+	/**
+	 * Tab type.
+	 */
+	type: 'table';
+
+	/**
+	 * Empty message (if type is table).
+	 */
+	emptyMessage?: string;
+
+	/**
+	 * The table headers to display ( if type is table ).
+	 */
+	headers: {
+		/**
+		 * The label of the header.
+		 */
+		label: string;
+
+		/**
+		 * The record prop.
+		 */
+		name: string;
+
+		/**
+		 * Whether this is the primary column.
+		 */
+		is_primary?: boolean;
+
+		/**
+		 * Whether this is a badge column.
+		 */
+		is_badge?: boolean;
+
+		/**
+		 * Whether this is a numeric column.
+		 */
+		is_numeric?: boolean;
+
+		/**
+		 * Whether this is a boolean column.
+		 */
+		is_boolean?: boolean;
+
+		/**
+		 * The URL to link to.
+		 */
+		url?: string;
+
+		/**
+		 * The alignment of the column.
+		 */
+		align?: 'left' | 'center' | 'right';
+
+		/**
+		 * Whether this column displays a list of values.
+		 */
+		is_list?: boolean;
+
+		/**
+		 * The item template for each list item.
+		 */
+		item?: string;
+
+		/**
+		 * The arguments for the item template.
+		 */
+		args?: string[];
+	}[];
+}
+
+/**
  * The config of a collection.
  */
 export type CollectionConfig = {
@@ -262,77 +342,9 @@ export type CollectionConfig = {
 	/**
 	 * "View record screen" tabs.
 	 */
-	tabs?: Record<string, {
-		/**
-		 * The title of the tab.
-		 */
-		title: string;
-
-		/**
-		 * Tab type.
-		 */
-		type: 'table';
-
-		/**
-		 * Empty message (if type is table).
-		 */
-		emptyMessage?: string;
-
-		/**
-		 * The table headers to display ( if type is table ).
-		 */
-		headers: {
-			/**
-			 * The label of the header.
-			 */
-			label: string;
-
-			/**
-			 * The record prop.
-			 */
-			name: string;
-
-			/**
-			 * Whether this is the primary column.
-			 */
-			is_primary?: boolean;
-
-			/**
-			 * Whether this is a badge column.
-			 */
-			is_badge?: boolean;
-
-			/**
-			 * Whether this is a numeric column.
-			 */
-			is_numeric?: boolean;
-
-			/**
-			 * The URL to link to.
-			 */
-			url?: string;
-
-			/**
-			 * The alignment of the column.
-			 */
-			align?: 'left' | 'center' | 'right';
-
-			/**
-			 * Whether this column displays a list of values.
-			 */
-			is_list?: boolean;
-
-			/**
-			 * The item template for each list item.
-			 */
-			item?: string;
-
-			/**
-			 * The arguments for the item template.
-			 */
-			args?: string[];
-		}[];
-	}>;
+	tabs?: {
+		[ tabName: string ]: CollectionTab
+	};
 
 	/**
 	 * Fills for the collection.
