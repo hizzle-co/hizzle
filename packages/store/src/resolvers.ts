@@ -49,6 +49,15 @@ export const getCollectionRecordTabContent =
 			dispatch.receiveCollectionRecordTabContent( namespace, collection, recordId, tabName, content );
 		};
 
+getCollectionRecordTabContent.shouldInvalidate = ( action, namespace: string, collection: string ) => {
+	return (
+		( [ 'DO_BATCH_COLLECTION_ACTION_FINISH' ].includes( action.type ) ) &&
+		action.invalidateCache &&
+		namespace === action.namespace &&
+		collection === action.collection
+	);
+};
+
 /**
  * Requests a collection's record from the REST API.
  *
@@ -162,6 +171,15 @@ export const getCollectionRecord =
 				dispatch.__unstableReleaseStoreLock( lock );
 			}
 		};
+
+getCollectionRecord.shouldInvalidate = ( action, namespace: string, collection: string ) => {
+	return (
+		( [ 'DO_BATCH_COLLECTION_ACTION_FINISH' ].includes( action.type ) ) &&
+		action.invalidateCache &&
+		namespace === action.namespace &&
+		collection === action.collection
+	);
+};
 
 /**
  * Requests a collection's record from the REST API.
@@ -367,7 +385,7 @@ export const getCollectionRecords =
 
 getCollectionRecords.shouldInvalidate = ( action, namespace: string, collection: string ) => {
 	return (
-		( action.type === 'RECEIVE_COLLECTION_RECORDS' || action.type === 'REMOVE_ITEMS' ) &&
+		( [ 'DO_BATCH_COLLECTION_ACTION_FINISH', 'RECEIVE_COLLECTION_RECORDS', 'REMOVE_ITEMS' ].includes( action.type ) ) &&
 		action.invalidateCache &&
 		namespace === action.namespace &&
 		collection === action.collection
@@ -394,7 +412,7 @@ export const getCollectionConfig =
 
 			dispatch.addCollectionConfig( {
 				...config,
-				tabs: ( config.tabs && ! Array.isArray( config.tabs ) ) ? config.tabs : undefined,
+				tabs: ( config.tabs && !Array.isArray( config.tabs ) ) ? config.tabs : undefined,
 				namespace,
 				collection,
 				props: config.schema || [],

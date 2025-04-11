@@ -135,3 +135,105 @@ export const doRemoteCollectionRecordAction =
                 dispatch.__unstableReleaseStoreLock( lock );
             }
         };
+
+type BatchAction = {
+
+    /**
+     * The records to create.
+     */
+    create?: Record<string, any>[];
+
+    /**
+     * The records to update.
+     *
+     * Can be a boolean if importing records,
+     * so that existing records are either updated or skipped.
+     */
+    update?: Record<string, any>[] | boolean;
+
+    /**
+     * The records to delete.
+     */
+    delete?: CollectionRecordKey[];
+
+    /**
+     * The records to import.
+     */
+    import?: Record<string, any>[];
+};
+
+/**
+ * Trigger a batch action on a collection record.
+ *
+ * @param {string}      namespace  Namespace of the collection.
+ * @param {string}      collection Collection name.
+ * @param {BatchAction} action     Action to perform.
+ * @param {Object}   options       Options for the action.
+ * @param {boolean}  options.throwOnError If false, this action suppresses all
+ *                                the exceptions. Defaults to false.
+ * @param {Function} options.fetchHandler The fetch handler to use. Defaults to apiFetch.
+ */
+export const doBatchCollectionAction =
+    (
+        namespace: string,
+        collection: string,
+        action: BatchAction,
+        {
+            throwOnError = true,
+            fetchHandler = apiFetch
+        } = {}
+    ) =>
+        async ( { resolveSelect, dispatch } ) => {
+            const collectionConfig = await resolveSelect.getCollectionConfig( namespace, collection );
+
+            if ( !collectionConfig ) {
+                return;
+            }
+
+            const lock = await dispatch.__unstableAcquireStoreLock(
+                STORE_NAME,
+                [ 'collections', 'records', namespace, collection ],
+                { exclusive: true }
+            );
+
+            try {
+                dispatch( {
+                    type: 'DO_BATCH_COLLECTION_ACTION_START',
+                    namespace,
+                    collection,
+                    action,
+                } );
+                let response;
+                let error;
+                let hasError = false;
+                try {
+                    const path = `${ collectionConfig.baseURL }/batch`;
+
+                    response = await fetchHandler( {
+                        path,
+                        method: 'POST',
+                        data: action,
+                    } );
+                } catch ( _error ) {
+                    hasError = true;
+                    error = _error;
+                }
+
+                dispatch( {
+                    type: 'DO_BATCH_COLLECTION_ACTION_FINISH',
+                    namespace,
+                    collection,
+                    action,
+                    error,
+                    invalidateCache: !!error,
+                } );
+
+                if ( hasError && throwOnError ) {
+                    throw error;
+                }
+
+                return response;
+            } finally {
+                dispatch.__unstableReleaseStoreLock( lock );
+            }
+        };
