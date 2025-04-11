@@ -10,6 +10,7 @@ import {
 	Fill,
 	FlexItem,
 	Slot,
+	CardBody,
 	__experimentalHStack as HStack,
 	__experimentalHeading as Heading,
 } from "@wordpress/components";
@@ -127,25 +128,27 @@ export const CreateRecord: React.FC = () => {
 
 	// Display the add record form.
 	return (
-		<HStack alignment="flex-start" justify="space-between" wrap>
-			<Fill name={ `/${ namespace }/${ collection }/title` }>
-				<Heading level={ 1 } size={ 16 } truncate>
-					{ labels?.add_new_item || 'Add New Item' }
-				</Heading>
-			</Fill>
-			<SectionWithErrorBoundary>
-				<CreateRecordForm />
-			</SectionWithErrorBoundary>
+		<CardBody>
+			<HStack alignment="flex-start" justify="space-between" wrap>
+				<Fill name={ `/${ namespace }/${ collection }/title` }>
+					<Heading level={ 1 } size={ 16 } truncate>
+						{ labels?.add_new_item || 'Add New Item' }
+					</Heading>
+				</Fill>
+				<SectionWithErrorBoundary>
+					<CreateRecordForm />
+				</SectionWithErrorBoundary>
 
-			<Slot name={ `${ namespace }_${ collection }_record_create_upsell` }>
-				{ ( fills ) => (
-					fills ? (
-						<SectionWithErrorBoundary>
-							{ fills }
-						</SectionWithErrorBoundary>
-					) : null
-				) }
-			</Slot>
-		</HStack>
+				<Slot name={ `${ namespace }_${ collection }_record_create_upsell` }>
+					{ ( fills ) => (
+						fills ? (
+							<SectionWithErrorBoundary>
+								{ fills }
+							</SectionWithErrorBoundary>
+						) : null
+					) }
+				</Slot>
+			</HStack>
+		</CardBody>
 	);
 }

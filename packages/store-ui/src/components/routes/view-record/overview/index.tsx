@@ -12,6 +12,7 @@ import {
     __experimentalHStack as HStack,
     __experimentalVStack as VStack,
 } from "@wordpress/components";
+import { CardBody } from "@wordpress/components";
 
 /**
  * HizzleWP dependencies
@@ -37,17 +38,19 @@ export const RecordOverview: React.FC = () => {
 
     // Display the add record form.
     return (
-        <HStack alignment="flex-start" justify="space-between" wrap>
-            <SectionWithErrorBoundary>
-                <EditRecord />
-            </SectionWithErrorBoundary>
+        <CardBody>
+            <HStack alignment="flex-start" justify="space-between" wrap>
+                <SectionWithErrorBoundary>
+                    <EditRecord />
+                </SectionWithErrorBoundary>
 
-            <SectionWithErrorBoundary>
-                <VStack spacing={ 5 }>
-                    <Slot name={ `${ namespace }_${ collection }_record_overview_upsell` } />
-                    <Overview namespace={ namespace } collection={ collection } id={ recordId } />
-                </VStack>
-            </SectionWithErrorBoundary>
-        </HStack>
+                <SectionWithErrorBoundary>
+                    <VStack spacing={ 5 }>
+                        <Slot name={ `${ namespace }_${ collection }_record_overview_upsell` } />
+                        <Overview namespace={ namespace } collection={ collection } id={ recordId } />
+                    </VStack>
+                </SectionWithErrorBoundary>
+            </HStack>
+        </CardBody>
     );
 }

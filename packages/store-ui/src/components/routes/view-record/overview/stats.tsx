@@ -7,17 +7,18 @@ import {
     __experimentalHStack as HStack,
     __experimentalText as Text,
 } from "@wordpress/components";
+import React from "react";
 
 /**
  * Displays a stat card
  *
  * @param {Object} props
- * @param {Number} props.value - The value to display.
- * @param {String} props.label - The label to display.
+ * @param {React.ReactNode} props.value - The value to display.
+ * @param {React.ReactNode} props.label - The label to display.
  * @param {String} props.status - success, info, warning, error, light
  * @return {JSX.Element} The stat card.
  */
-const StatCard = ( { value, label, status } ) => {
+export const StatCard = ( { value, label, status = 'default' } ) => {
 
     return (
         <div className={ `hizzlewp-stat-card hizzlewp-stat-card__${ status || 'default' }` }>

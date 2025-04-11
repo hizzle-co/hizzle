@@ -83,8 +83,8 @@ const Layout = (): React.ReactNode => {
 	}, [ namespace, collection ] );
 
 	return (
-		<Card isRounded={ false }>
-			<CardHeader size='small' as={ HStack } wrap>
+		<>
+			<HStack wrap>
 
 				<ErrorBoundary>
 					<HStack expanded={ false } spacing={ 2 } justify="flex-start" wrap>
@@ -131,21 +131,23 @@ const Layout = (): React.ReactNode => {
 						</HStack>
 					) }
 				</ErrorBoundary>
-			</CardHeader>
+			</HStack>
+			<Card isRounded={ false }>
 
-			<ErrorBoundary>
-				<Outlet path="/:namespace/:collection" />
-			</ErrorBoundary>
+				<ErrorBoundary>
+					<Outlet path="/:namespace/:collection" />
+				</ErrorBoundary>
 
-			{ fills && fills.map( ( fill ) => (
-				<Fill key={ fill.name } name={ `${ fill.name }` }>
-					<ErrorBoundary>
-						{ fill.content && <span dangerouslySetInnerHTML={ { __html: fill.content } } /> }
-						{ fill.upsell && <UpsellCard upsell={ fill.upsell } /> }
-					</ErrorBoundary>
-				</Fill>
-			) ) }
-		</Card>
+				{ fills && fills.map( ( fill ) => (
+					<Fill key={ fill.name } name={ `${ fill.name }` }>
+						<ErrorBoundary>
+							{ fill.content && <span dangerouslySetInnerHTML={ { __html: fill.content } } /> }
+							{ fill.upsell && <UpsellCard upsell={ fill.upsell } /> }
+						</ErrorBoundary>
+					</Fill>
+				) ) }
+			</Card>
+		</>
 	);
 }
 

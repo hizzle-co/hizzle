@@ -34,7 +34,7 @@ export default function Layout( { defaultNamespace, defaultCollection, ...props 
 
 	const theContent = useMemo( () => {
 		return (
-			<VStack id="hizzlewp-collection__main-content" style={ { padding: 20 } }>
+			<VStack id="hizzlewp-collection__main-content" spacing={ 4 } style={ { padding: 20 } }>
 				<ErrorBoundary>
 					<EditorSnackbars />
 				</ErrorBoundary>
