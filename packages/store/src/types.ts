@@ -505,13 +505,45 @@ export interface State {
 						 * Query results as arrays of item IDs, grouped by context and query string.
 						 */
 						queries: {
+							/**
+							 * Queries grouped by context, e.g, view or edit.
+							 */
 							[ context: string ]: {
+
+								/**
+								 * Queries grouped by query string.
+								 */
 								[ query: string ]: {
+									/**
+									 * The IDs of the items in the query.
+									 */
 									itemIds: CollectionRecordKey[];
+
+									/**
+									 * Meta information about the query.
+									 */
 									meta: {
+										/**
+										 * The total number of items in the query.
+										 */
 										totalItems?: number;
+
+										/**
+										 * The total number of pages in the query.
+										 */
 										totalPages?: number;
 									};
+
+									/**
+									 * The IDs of the selected items in the query.
+									 */
+									selected: CollectionRecordKey[];
+
+									/**
+									 * Whether all matching records in the query are selected,
+									 * e.g, the current page might be displaying a subset of the total matching records.
+									 */
+									allSelected: boolean;
 								};
 							};
 						};

@@ -63,6 +63,45 @@ export type ReceiveCollectionRecordsAction = CollectionAction & {
 	key?: CollectionRecordKey;
 };
 
+export type ToggleAllCollectionRecordsSelectedAction = CollectionAction & {
+	/**
+	 * The type of the action.
+	 */
+	type: 'TOGGLE_ALL_COLLECTION_RECORDS_SELECTED';
+
+	/**
+	 * The query object.
+	 */
+	query?: Record<string, any>;
+
+	/**
+	 * Whether it is selected or unselected. Leave undefined to toggle.
+	 */
+	selected?: boolean;
+};
+
+export type ToggleCollectionRecordSelectedAction = Omit<ToggleAllCollectionRecordsSelectedAction, 'type'> & {
+	/**
+	 * The type of the action.
+	 */
+	type: 'TOGGLE_COLLECTION_RECORD_SELECTED';
+
+	/**
+	 * The ID of the record.
+	 */
+	recordId: CollectionRecordKey;
+
+	/**
+	 * Whether the shift key is pressed.
+	 */
+	isShiftKey: boolean;
+
+	/**
+	 * The ID of the record to start the range selection from.
+	 */
+	rangeStartId?: CollectionRecordKey;
+};
+
 /**
  * Returns an action object used in signalling that entity records have been received.
  *
@@ -128,4 +167,59 @@ export function receiveCollectionRecordTabContent(
 		tabName,
 		content,
 	}
+}
+
+/**
+ * Returns an action object used to toggle all records selection for a given query.
+ *
+ * @param {string} namespace  Namespace of the collection.
+ * @param {string} collection Collection name.
+ * @param {Object} query      Optional query parameters.
+ * @return {Object} Action object.
+ */
+export function toggleAllCollectionRecordsSelected(
+	namespace: string,
+	collection: string,
+	query: Record<string, any> = {},
+	selected?: boolean,
+): ToggleAllCollectionRecordsSelectedAction {
+	return {
+		type: 'TOGGLE_ALL_COLLECTION_RECORDS_SELECTED',
+		namespace,
+		collection,
+		query,
+		selected,
+	};
+}
+
+/**
+ * Returns an action object used to toggle a record selection for a given query.
+ *
+ * @param {string} namespace  Namespace of the collection.
+ * @param {string} collection Collection name.
+ * @param {Object} query      Optional query parameters.
+ * @param {number|string} recordId Record id of received tab content.
+ * @param {boolean} selected Whether to select the record.
+ * @param {boolean} isShiftKey Whether the shift key is pressed.
+ * @return {Object} Action object.
+ */
+export function toggleCollectionRecordSelected(
+	namespace: string,
+	collection: string,
+	query: Record<string, any>,
+	recordId: CollectionRecordKey,
+	selected?: boolean,
+	isShiftKey: boolean = false,
+	rangeStartId?: CollectionRecordKey,
+): ToggleCollectionRecordSelectedAction {
+	return {
+		type: 'TOGGLE_COLLECTION_RECORD_SELECTED',
+		namespace,
+		collection,
+		query,
+		recordId,
+		selected,
+		isShiftKey,
+		rangeStartId,
+	};
 }

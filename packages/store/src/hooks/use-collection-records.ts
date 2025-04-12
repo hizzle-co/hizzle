@@ -135,6 +135,16 @@ export const useCollectionRecords = < RecordType = CollectionRecord >(
 					collection,
 					queryArgs
 				),
+				selected: select( hizzleStore ).getSelectedCollectionRecords(
+					namespace,
+					collection,
+					queryArgs
+				),
+				allSelected: select( hizzleStore ).getIsAllCollectionRecordsSelected(
+					namespace,
+					collection,
+					queryArgs
+				),
 			};
 		},
 		[ namespace, collection, queryAsString, options.enabled ]

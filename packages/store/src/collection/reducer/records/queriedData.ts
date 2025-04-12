@@ -19,7 +19,13 @@ import { DEFAULT_ENTITY_KEY, DEFAULT_CONTEXT } from '../../../constants';
 import getQueryParts from '../../get-query-parts';
 import type { CollectionRecord, CollectionRecordKey } from '../../../types';
 import type { collectionState } from '.';
-import type { RemoveItemsAction, ReceiveCollectionRecordsAction, ReceiveCollectionRecordTabContentAction } from '../../actions';
+import type {
+	RemoveItemsAction,
+	ReceiveCollectionRecordsAction,
+	ReceiveCollectionRecordTabContentAction,
+	ToggleAllCollectionRecordsSelectedAction,
+	ToggleCollectionRecordSelectedAction,
+} from '../../actions';
 
 type QueriedDataState = collectionState[ 'queriedData' ]
 
@@ -199,6 +205,41 @@ const itemIsComplete = ( state: QueriedDataState[ 'itemIsComplete' ] = { view: {
 }
 
 /**
+ * Composable for query reducers.
+ */
+const withQueryComposables = (
+	cb: ( state: QueriedDataState[ 'queries' ][ 'context' ][ 'stableKey' ], action ) => QueriedDataState[ 'queries' ][ 'context' ][ 'stableKey' ]
+) => {
+	return compose(
+		// Limit to matching action type so we don't attempt to replace action on
+		// an unhandled action.
+		ifMatchingAction( ( action ) => 'query' in action ),
+
+		// Inject query parts into action for use both in `onSubKey` and reducer.
+		replaceAction( ( action ) => {
+			// `ifMatchingAction` still passes on initialization, where state is
+			// undefined and a query is not assigned. Avoid attempting to parse
+			// parts. `onSubKey` will omit by lack of `stableKey`.
+			if ( action.query ) {
+				return {
+					...action,
+					...getQueryParts( action.query ),
+				};
+			}
+
+			return action;
+		} ),
+
+		// Items are keyed by context.
+		onSubKey( 'context' ),
+
+		// Queries shape is shared, but keyed by query `stableKey` part. Original
+		// reducer tracks only a single query object.
+		onSubKey( 'stableKey' ),
+	)( cb ) as Reducer<QueriedDataState[ 'queries' ]>;
+}
+
+/**
  * Reducer tracking queries state, keyed by stable query key. Each reducer
  * query object includes `itemIds` and `requestingPageByPerPage`.
  *
@@ -207,33 +248,7 @@ const itemIsComplete = ( state: QueriedDataState[ 'itemIsComplete' ] = { view: {
  *
  * @return {Object} Next state.
  */
-const receiveQueries: Reducer<QueriedDataState[ 'queries' ]> = compose(
-	// Limit to matching action type so we don't attempt to replace action on
-	// an unhandled action.
-	ifMatchingAction( ( action ) => 'query' in action ),
-
-	// Inject query parts into action for use both in `onSubKey` and reducer.
-	replaceAction( ( action ) => {
-		// `ifMatchingAction` still passes on initialization, where state is
-		// undefined and a query is not assigned. Avoid attempting to parse
-		// parts. `onSubKey` will omit by lack of `stableKey`.
-		if ( action.query ) {
-			return {
-				...action,
-				...getQueryParts( action.query ),
-			};
-		}
-
-		return action;
-	} ),
-
-	// Items are keyed by context.
-	onSubKey( 'context' ),
-
-	// Queries shape is shared, but keyed by query `stableKey` part. Original
-	// reducer tracks only a single query object.
-	onSubKey( 'stableKey' ),
-)( ( state: QueriedDataState[ 'queries' ][ 'context' ][ 'stableKey' ], action ) => {
+const receiveQueries = withQueryComposables( ( state, action ) => {
 	const { page = 1, perPage = -1, key = DEFAULT_ENTITY_KEY } = action;
 
 	return {
@@ -244,8 +259,78 @@ const receiveQueries: Reducer<QueriedDataState[ 'queries' ]> = compose(
 			perPage
 		),
 		meta: action.meta,
+		selected: state?.selected || [],
+		allSelected: state?.allSelected || false,
 	};
-} ) as Reducer<QueriedDataState[ 'queries' ]>;
+} );
+
+/**
+ * Reducer handling TOGGLE_ALL_COLLECTION_RECORDS_SELECTED action.
+ *
+ * @param {Object} state  Current state.
+ * @param {Object} action Dispatched action.
+ *
+ * @return {Object} Next state.
+ */
+const toggleAllCollectionRecordsSelected = withQueryComposables( ( state, action ) => {
+	const { selected } = action;
+
+	return {
+		...state,
+		allSelected: selected !== undefined ? selected : !state.allSelected,
+	};
+} );
+
+/**
+ * Reducer handling TOGGLE_COLLECTION_RECORD_SELECTED action.
+ *
+ * @param {Object} state  Current state.
+ * @param {Object} action Dispatched action.
+ *
+ * @return {Object} Next state.
+ */
+const toggleCollectionRecordSelected = withQueryComposables( ( state, action ) => {
+	const { recordId, selected: actionSelected, isShiftKey, rangeStartId } = action;
+
+	// Safety check: if record is not part of the current item list, ignore
+	const recordPosition = state.itemIds.indexOf( recordId );
+	if ( recordPosition === -1 ) {
+		return { ...state };
+	}
+
+	let newSelected = [ ...state.selected ];
+	const selected = typeof actionSelected === 'boolean' ? actionSelected : !newSelected.includes( recordId );
+
+	// If Shift key is pressed, do range selection
+	if ( isShiftKey && rangeStartId && state.itemIds.includes( rangeStartId ) ) {
+		const startIndex = state.itemIds.indexOf( rangeStartId );
+		const start = Math.min( startIndex, recordPosition );
+		const end = Math.max( startIndex, recordPosition );
+
+		const rangeIds = state.itemIds.slice( start, end + 1 );
+
+		if ( selected ) {
+			// Add to selection (merge rangeIds with currently selected, avoiding duplicates)
+			newSelected = Array.from( new Set( [ ...newSelected, ...rangeIds ] ) );
+		} else {
+			// Remove from selection
+			newSelected = newSelected.filter( ( id ) => !rangeIds.includes( id ) );
+		}
+	} else {
+		// Toggle single item
+		const index = newSelected.indexOf( recordId );
+		if ( selected ) {
+			if ( index === -1 ) newSelected.push( recordId );
+		} else {
+			if ( index !== -1 ) newSelected.splice( index, 1 );
+		}
+	}
+
+	return {
+		...state,
+		selected: newSelected,
+	};
+} );
 
 /**
  * Reducer tracking queries state.
@@ -255,7 +340,7 @@ const receiveQueries: Reducer<QueriedDataState[ 'queries' ]> = compose(
  *
  * @return {Object} Next state.
  */
-const queries = ( state: QueriedDataState[ 'queries' ] = { view: {}, edit: {} }, action: RemoveItemsAction | ReceiveCollectionRecordsAction ): QueriedDataState[ 'queries' ] => {
+const queries = ( state: QueriedDataState[ 'queries' ] = { view: {}, edit: {} }, action: RemoveItemsAction | ReceiveCollectionRecordsAction | ToggleAllCollectionRecordsSelectedAction | ToggleCollectionRecordSelectedAction ): QueriedDataState[ 'queries' ] => {
 	switch ( action.type ) {
 		case 'RECEIVE_COLLECTION_RECORDS':
 			return receiveQueries( state, action );
@@ -278,7 +363,12 @@ const queries = ( state: QueriedDataState[ 'queries' ] = { view: {}, edit: {} },
 											( queryId ) =>
 												!removedItems[ queryId ]
 										),
-										meta: ( queryItems ).meta
+										meta: ( queryItems ).meta,
+										selected: ( queryItems ).selected.filter(
+											( queryId ) =>
+												!removedItems[ queryId ]
+										),
+										allSelected: ( queryItems ).allSelected
 									},
 								]
 							)
@@ -286,6 +376,10 @@ const queries = ( state: QueriedDataState[ 'queries' ] = { view: {}, edit: {} },
 					]
 				)
 			);
+		case 'TOGGLE_ALL_COLLECTION_RECORDS_SELECTED':
+			return toggleAllCollectionRecordsSelected( state, action );
+		case 'TOGGLE_COLLECTION_RECORD_SELECTED':
+			return toggleCollectionRecordSelected( state, action );
 		default:
 			return state;
 	}

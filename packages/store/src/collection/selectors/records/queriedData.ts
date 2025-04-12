@@ -423,3 +423,30 @@ export const getCollectionRecordsTotalPages = (
 export const getCollectionRecordTabContent = ( state: State, namespace: string, collection: string, recordId: CollectionRecordKey, tabName: string ) => {
 	return state.collections.records?.[ namespace ]?.[ collection ]?.queriedData?.tabs?.[ recordId ]?.[ tabName ] ?? null;
 }
+
+/**
+ * Returns the selected records for a given query.
+ *
+ * @param state State tree
+ * @param namespace  The namespace of the collection.
+ * @param collection The collection name.
+ * @param query Optional records query.
+ *
+ * @return The selected records.
+ */
+export const getSelectedCollectionRecords = ( state: State, namespace: string, collection: string, query: Record<string, any> ) => {
+	const { stableKey, context } = getQueryParts( query );
+	return state.collections.records?.[ namespace ]?.[ collection ]?.queriedData?.queries?.[ context ]?.[ stableKey ]?.selected ?? [];
+}
+
+/**
+ * Returns whether all records are selected for a given query.
+ *
+ * @param state State tree
+ * @param namespace  The namespace of the collection.
+ * @param collection The collection name.
+ */
+export const getIsAllCollectionRecordsSelected = ( state: State, namespace: string, collection: string, query: Record<string, any> ) => {
+	const { stableKey, context } = getQueryParts( query );
+	return state.collections.records?.[ namespace ]?.[ collection ]?.queriedData?.queries?.[ context ]?.[ stableKey ]?.allSelected ?? false;
+}
