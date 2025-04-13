@@ -215,3 +215,85 @@ export const saveSpecifiedCollectionRecordEdits =
                 options
             );
         };
+
+/**
+ * Action triggered to bulk update collection records.
+ *
+ * @param {string}        namespace   Namespace of the collection.
+ * @param {string}        collection  Collection name.
+ * @param {Record<string, any>} query Query object. We'll use the query to determine which records to update.
+ * @param {Record<string, any>} data  Data to update the records with.
+ * @param {Object}        options     Saving options.
+ * @param {boolean}       options.throwOnError If false, this action suppresses all
+ *                                the exceptions. Defaults to false.
+ * @param {Function} options.fetchHandler The fetch handler to use. Defaults to apiFetch.
+ */
+export const bulkUpdateCollectionRecords =
+    (
+        namespace: string,
+        collection: string,
+        query: Record<string, any>,
+        data: Record<string, any>,
+        {
+            throwOnError = true,
+            fetchHandler = apiFetch
+        } = {}
+    ) =>
+        async ( { dispatch, resolveSelect } ) => {
+            const collectionConfig = await resolveSelect.getCollectionConfig( namespace, collection );
+
+            if ( !collectionConfig ) {
+                return;
+            }
+
+            const lock = await dispatch.__unstableAcquireStoreLock(
+                STORE_NAME,
+                [ 'collections', 'records', namespace, collection ],
+                { exclusive: true }
+            );
+
+            try {
+                dispatch( {
+                    type: 'DO_BULK_UPDATE_COLLECTION_RECORDS_START',
+                    namespace,
+                    collection,
+                    query,
+                    data,
+                } );
+                let response;
+                let error;
+                let hasError = false;
+                try {
+
+                    response = await fetchHandler( {
+                        path: collectionConfig.baseURL,
+                        method: 'PATCH',
+                        data: {
+                            ...query,
+                            bulk_update: data,
+                        },
+                    } );
+                } catch ( _error ) {
+                    hasError = true;
+                    error = _error;
+                }
+
+                dispatch( {
+                    type: 'DO_BULK_UPDATE_COLLECTION_RECORDS_FINISH',
+                    namespace,
+                    collection,
+                    query,
+                    data,
+                    error,
+                    invalidateCache: !hasError,
+                } );
+
+                if ( hasError && throwOnError ) {
+                    throw error;
+                }
+
+                return response;
+            } finally {
+                dispatch.__unstableReleaseStoreLock( lock );
+            }
+        };
