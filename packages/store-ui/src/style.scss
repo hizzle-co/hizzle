@@ -65,7 +65,11 @@
 	}
 }
 
-.interface-interface-skeleton__footer .hizzle-records__table-pagination {
-    width: 100%;
-    padding: 10px 24px;
+.interface-interface-skeleton__footer {
+	z-index: 100;
+
+	.hizzle-records__table-pagination {
+		width: 100%;
+		padding: 4px 24px;
+	}
 }

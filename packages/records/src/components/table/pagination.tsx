@@ -14,12 +14,13 @@ import {
 	SelectControl,
 	Fill,
 } from '@wordpress/components';
+import { next, previous } from '@wordpress/icons';
 
 /**
  * Internal dependencies
  */
 import { useTable } from './context';
-import { next, previous } from '@wordpress/icons';
+import { PER_PAGE_OPTIONS } from '../../constants';
 
 /**
  * Pagination component for the table
@@ -27,35 +28,43 @@ import { next, previous } from '@wordpress/icons';
 export const Pagination = ( { footerSlot }: { footerSlot?: string } ) => {
 	const table = useTable();
 	const pageCount = table.getPageCount();
+	const rowCount = table.getRowCount();
 	const pageIndex = table.getState().pagination.pageIndex;
 	const pageSize = table.getState().pagination.pageSize;
 	const currentPage = table.getState().pagination.pageIndex + 1;
 
-	// If there's only one page, don't show pagination
-	if ( pageCount <= 1 ) {
+	// Don't show pagination if there are no rows.
+	if ( rowCount < 1 ) {
 		return null;
 	}
 
-	const pageSizeOptions = [
-		{ value: '10', label: __( '10 per page' ) },
-		{ value: '25', label: __( '25 per page' ) },
-		{ value: '50', label: __( '50 per page' ) },
-		{ value: '100', label: __( '100 per page' ) },
-	];
+	const pageSizeOptions = PER_PAGE_OPTIONS.map( ( value ) => {
+		return {
+			value: value.toString(),
+			label: sprintf(
+				// translators: 1: Number of records per page.
+				_x( '%1$s per page', 'paging' ),
+				value
+			),
+		};
+	} );
 
-	const pageSelectOptions = Array.from( Array( pageCount ) ).map( ( _, i ) => {
+	// Only show the "Show all" option if there are more rows than the largest per_page option.
+	if ( rowCount > PER_PAGE_OPTIONS[ PER_PAGE_OPTIONS.length - 1 ] ) {
+		pageSizeOptions.push( {
+			value: rowCount.toString(),
+			label: __( 'Show all' ),
+		} );
+	}
+
+	const pageSelectOptions = table.getPageOptions().map( ( i ) => {
 		const page = i + 1;
 		return {
 			value: page.toString(),
 			label: page.toString(),
 			'aria-label':
 				currentPage === page
-					? sprintf(
-						// translators: Current page number in total number of pages
-						__( 'Page %1$s of %2$s' ),
-						currentPage,
-						pageCount
-					)
+					? `Page ${ currentPage } of ${ pageCount }`
 					: page.toString(),
 		};
 	} );
