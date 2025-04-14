@@ -9,16 +9,14 @@ import React, { useMemo, useCallback } from "react";
 import {
 	Notice,
 	Spinner,
-	Button,
-	__experimentalHStack as HStack,
 } from "@wordpress/components";
-import { __ } from "@wordpress/i18n";
+import { useDispatch } from '@wordpress/data';
 
 /**
  * HizzleWP dependencies.
  */
 import { ErrorBoundary } from '@hizzlewp/components';
-import { useCollectionRecords, useProvidedCollectionConfig } from '@hizzlewp/store';
+import { useCollectionRecords, useProvidedCollectionConfig, store as hizzleStore } from '@hizzlewp/store';
 import { useQuery, updateQueryString } from '@hizzlewp/history';
 import { Table } from '@hizzlewp/records';
 import type { TableProviderProps } from '@hizzlewp/records/build-types/components/table/context';
@@ -28,6 +26,7 @@ import { usePreferences } from '@hizzlewp/interface';
  * Local dependencies.
  */
 import { DisplayCell } from './display-cell';
+import { Header } from './header';
 
 /**
  * Renders a records overview table for the matching path.
@@ -125,11 +124,12 @@ export const RecordsTable = () => {
 
 				// Don't read the current page from preferences, as it's not saved.
 				pageIndex: query.paged ? ( Number( query.paged ) - 1 ) : 0,
-			}
+			},
+			rowSelection: results.selected,
 		} as Partial<TableProviderProps<Record<string, any>>[ 'state' ]>;
 
 		return state;
-	}, [ results.records, query, preferences, setPreferences ] );
+	}, [ results.selected, query, preferences ] );
 
 	// Update state.
 	const onChange = useCallback( ( state: Partial<TableProviderProps<Record<string, any>>[ 'state' ]> ) => {
@@ -142,6 +142,9 @@ export const RecordsTable = () => {
 			paged: `${ ( state?.pagination?.pageIndex || 0 ) + 1 }`,
 		} );
 	}, [ setPreferences ] );
+
+	// Toggle a record's selection.
+	const { setSelectedCollectionRecords } = useDispatch( hizzleStore );
 
 	if ( results.isResolving || !results.hasResolved ) {
 		return (
@@ -161,6 +164,7 @@ export const RecordsTable = () => {
 
 	return (
 		<ErrorBoundary>
+			<Header query={ preparedQuery } />
 			<Table
 				rowCount={ results.totalItems || 0 }
 				data={ results.records || [] }
@@ -170,33 +174,12 @@ export const RecordsTable = () => {
 				enablePagination
 				state={ state }
 				onChange={ onChange }
+				onRowSelectionChange={ ( rowSelection ) => setSelectedCollectionRecords( namespace, collection, preparedQuery, rowSelection( state?.rowSelection || {} ) ) }
 				onColumnPinningChange={ ( columnPinning ) => onChange( { ...state, columnPinning: columnPinning( state?.columnPinning || {} ) } ) }
 				getRowId={ ( row ) => row.id }
 				debugTable={ true }
-				bulkActions={ ( selected, isAllSelected: boolean ) => (
-					<BulkActions
-						selected={ selected }
-						isAllSelected={ isAllSelected }
-						query={ preparedQuery }
-					/>
-				) }
+				footerSlot="hizzlewp-collection__footer"
 			/>
 		</ErrorBoundary>
 	);
 }
-
-const BulkActions = ( { selected, isAllSelected, query } ) => {
-	return (
-		<>
-			<Button>
-				{ __( 'Edit', 'hizzlewp' ) }
-			</Button>
-			<Button>
-				{ __( 'Export', 'hizzlewp' ) }
-			</Button>
-			<Button>
-				{ __( 'Delete', 'hizzlewp' ) }
-			</Button>
-		</>
-	);
-};

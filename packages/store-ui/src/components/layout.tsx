@@ -7,7 +7,7 @@ import React, { useMemo } from 'react';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { __experimentalVStack as VStack } from '@wordpress/components';
+import { __experimentalVStack as VStack, Slot } from '@wordpress/components';
 
 /**
  * HizzleWP dependencies.
@@ -53,6 +53,7 @@ export default function Layout( { defaultNamespace, defaultCollection, ...props 
 			className="hizzlewp-settings__interface"
 			header={ <TheHeader { ...props } /> }
 			content={ theContent }
+			footer={ <Slot name="hizzlewp-collection__footer" /> }
 		/>
 	);
 }

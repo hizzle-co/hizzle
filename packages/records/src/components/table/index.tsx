@@ -33,10 +33,15 @@ export type TableProps<TData = Record<string, unknown>> = Omit<TableProviderProp
 	 * Whether to show the table in loading state.
 	 */
 	isLoading?: boolean;
+
+	/**
+	 * Footer slot.
+	 */
+	footerSlot?: string;
 };
 
 export function Table<TData = Record<string, unknown>>(
-	{ emptyMessage, isLoading, ...props }: TableProps<TData>
+	{ emptyMessage, isLoading, footerSlot, ...props }: TableProps<TData>
 ) {
 	const hasData = props.data?.length > 0;
 
@@ -51,7 +56,7 @@ export function Table<TData = Record<string, unknown>>(
 						<Head />
 						{ hasData && <Body /> }
 					</table>
-					<Pagination />
+					<Pagination footerSlot={ footerSlot } />
 				</VStack>
 				{ ( !hasData || isLoading ) && (
 					<div
