@@ -18,7 +18,7 @@ import { useDispatch } from '@wordpress/data';
 import { ErrorBoundary } from '@hizzlewp/components';
 import { useCollectionRecords, useProvidedCollectionConfig, store as hizzleStore } from '@hizzlewp/store';
 import { useQuery, updateQueryString } from '@hizzlewp/history';
-import { Table } from '@hizzlewp/records';
+import { Table, PER_PAGE_OPTIONS } from '@hizzlewp/records';
 import type { TableProviderProps } from '@hizzlewp/records/build-types/components/table/context';
 import { usePreferences } from '@hizzlewp/interface';
 
@@ -46,7 +46,7 @@ export const RecordsTable = () => {
 	// Current query.
 	const query = useQuery();
 	const preparedQuery = useMemo( () => {
-		const preparedQuery = { ...query };
+		const preparedQuery: Record<string, any> = { ...query };
 
 		if ( !query.orderby && preferences?.sorting?.[ 0 ]?.id ) {
 			preparedQuery.orderby = preferences.sorting[ 0 ].id;
@@ -55,6 +55,11 @@ export const RecordsTable = () => {
 
 		if ( !query.per_page && preferences?.pagination?.pageSize ) {
 			preparedQuery.per_page = preferences.pagination.pageSize;
+		}
+
+		// If per_page is set but not in PER_PAGE_OPTIONS, default to -1 (show all)
+		if ( preparedQuery.per_page && !PER_PAGE_OPTIONS.includes( Number( query.per_page ) ) ) {
+			preparedQuery.per_page = -1;
 		}
 
 		return preparedQuery;
@@ -110,6 +115,7 @@ export const RecordsTable = () => {
 	const state = useMemo( () => {
 		const querySort = query.orderby;
 		const queryOrder = query.order || 'desc';
+		const isShowingAll = preparedQuery.per_page && Number( preparedQuery.per_page ) === -1;
 
 		const state = {
 			columnVisibility,
@@ -120,26 +126,27 @@ export const RecordsTable = () => {
 			...preferences,
 			sorting: querySort ? [ { id: querySort, desc: queryOrder === 'desc' } ] : ( preferences?.sorting || [] ),
 			pagination: {
-				pageSize: query.per_page || preferences?.pagination?.pageSize || 25,
+				pageSize: isShowingAll ? results.totalItems : ( query.per_page || preferences?.pagination?.pageSize || 25 ),
 
 				// Don't read the current page from preferences, as it's not saved.
-				pageIndex: query.paged ? ( Number( query.paged ) - 1 ) : 0,
+				pageIndex: isShowingAll ? 0 : ( query.paged ? ( Number( query.paged ) - 1 ) : 0 ),
 			},
 			rowSelection: results.selected,
 		} as Partial<TableProviderProps<Record<string, any>>[ 'state' ]>;
 
 		return state;
-	}, [ results.selected, query, preferences ] );
+	}, [ results.selected, results.totalItems, query, preferences ] );
 
 	// Update state.
 	const onChange = useCallback( ( state: Partial<TableProviderProps<Record<string, any>>[ 'state' ]> ) => {
 		setPreferences( state );
 
+		const isShowingAll = state?.pagination?.pageSize && !PER_PAGE_OPTIONS.includes( Number( state?.pagination?.pageSize ) );
 		updateQueryString( {
 			orderby: state?.sorting?.[ 0 ]?.id || '',
 			order: state?.sorting?.[ 0 ]?.desc ? 'desc' : 'asc',
-			per_page: `${ state?.pagination?.pageSize || 25 }`,
-			paged: `${ ( state?.pagination?.pageIndex || 0 ) + 1 }`,
+			per_page: isShowingAll ? '-1' : `${ state?.pagination?.pageSize || 25 }`,
+			paged: isShowingAll ? '1' : `${ ( state?.pagination?.pageIndex || 0 ) + 1 }`,
 		} );
 	}, [ setPreferences ] );
 
@@ -174,10 +181,10 @@ export const RecordsTable = () => {
 				enablePagination
 				state={ state }
 				onChange={ onChange }
+				enableRowSelection={ true }
 				onRowSelectionChange={ ( rowSelection ) => setSelectedCollectionRecords( namespace, collection, preparedQuery, rowSelection( state?.rowSelection || {} ) ) }
 				onColumnPinningChange={ ( columnPinning ) => onChange( { ...state, columnPinning: columnPinning( state?.columnPinning || {} ) } ) }
 				getRowId={ ( row ) => row.id }
-				debugTable={ true }
 				footerSlot="hizzlewp-collection__footer"
 			/>
 		</ErrorBoundary>
