@@ -102,7 +102,7 @@ export function TableProvider<TData>( {
 }: TableProviderProps<TData> ) {
 
 	const tableColumns = useMemo( () => {
-		if ( !bulkActions ) {
+		if ( !bulkActions && !tableOptions.enableRowSelection ) {
 			return columns;
 		}
 

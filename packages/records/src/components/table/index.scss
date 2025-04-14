@@ -146,8 +146,8 @@
             gap: $grid-unit-05;
         }
 
-        td:first-child,
-        th:first-child {
+        td:first-child:not(.hizzle-records__table__checkbox-column),
+        th:first-child:not(.hizzle-records__table__checkbox-column) {
             padding-left: $grid-unit-60;
 
             .hizzle-records__table-header-button {

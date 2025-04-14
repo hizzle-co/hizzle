@@ -1,15 +1,21 @@
 /**
  * External dependencies.
  */
-import React from "react";
+import React, { useMemo } from "react";
 
 /**
  * WordPress dependencies.
  */
-import { Flex, FlexBlock, FlexItem, Button, Icon } from "@wordpress/components";
+import {
+	Flex,
+	FlexItem,
+	Button,
+	Icon,
+	__experimentalHStack as HStack,
+} from "@wordpress/components";
 import { dateI18n, getSettings } from "@wordpress/date";
 import { getQueryArg, addQueryArgs } from "@wordpress/url";
-import { useState, useCallback } from "@wordpress/element";
+import { useState } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 
 /**
@@ -23,7 +29,10 @@ import { updatePath } from '@hizzlewp/history';
  */
 import getEnumBadge from "./enum-colors";
 
-const Badge = ( props ) => {
+/**
+ * Displays a badge.
+ */
+const Badge: React.FC<React.HTMLAttributes<HTMLSpanElement>> = ( props ) => {
 
 	const { className, ...rest } = props;
 
@@ -102,36 +111,49 @@ const PrimaryColumn: React.FC<PrimaryColumnProps> = ( { record, name, viewType, 
 
 	const value = record[ name ];
 	const avatar_url = viewType !== 'table' ? '' : normalizeAvatarColors( record.avatar_url, value );
-	const avatar = avatar_url ? <img className="hizzlewp-avatar" src={ avatar_url } alt={ value } /> : null;
-	const open = useCallback( () => path ? updatePath( path ) : null, [ path ] );
 
-	const ColValue = (
-		<Flex className="hizzlewp-table__cell--primary">
-			{ avatar && (
-				<FlexItem>
-					{ avatar }
-				</FlexItem>
-			) }
-			<FlexBlock>
-				{ value }
-			</FlexBlock>
-		</Flex>
-	);
+	const clickableProps = useMemo( () => {
 
-	const btnStyle = {
-		width: '100%',
-		alignItems: 'start',
-		textDecoration: 'none',
-	}
+		if ( !path ) {
+			return {
+				className: 'hizzle-records__table-title-field',
+			};
+		}
 
-	if ( !path ) {
-		return ColValue;
-	}
+		return {
+			className: 'hizzle-records__table-title-field hizzle-records__table-title-field--clickable',
+			role: 'button',
+			tabIndex: 0,
+			onClick: ( event: React.MouseEvent ) => {
+				// Prevents onChangeSelection from triggering.
+				event.stopPropagation();
+				updatePath( path );
+			},
+			onKeyDown: ( event: React.KeyboardEvent ) => {
+				if (
+					event.key === 'Enter' ||
+					event.key === '' ||
+					event.key === ' '
+				) {
+					// Prevents onChangeSelection from triggering.
+					event.stopPropagation();
+					updatePath( path );
+				}
+			},
+		};
+	}, [ path ] );
 
 	return (
-		<Button variant="link" style={ btnStyle } onClick={ open }>
-			{ ColValue }
-		</Button>
+		<HStack spacing={ 3 } justify="flex-start">
+			{ avatar_url && (
+				<div className="hizzle-records__table-column-primary__media">
+					<img className="hizzlewp-avatar" src={ avatar_url } alt={ value } />
+				</div>
+			) }
+			<div { ...clickableProps }>
+				{ value }
+			</div>
+		</HStack>
 	);
 }
 
