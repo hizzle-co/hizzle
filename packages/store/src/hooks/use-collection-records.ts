@@ -11,9 +11,9 @@ import useQuerySelect from './use-query-select';
 import { store as hizzleStore } from '..';
 import type { Options } from '.';
 import type { Status } from './constants';
-import type { CollectionRecord } from '../types';
+import type { CollectionRecord, CollectionRecordKey } from '../types';
 
-interface EntityRecordsResolution< RecordType > {
+interface EntityRecordsResolution<RecordType> {
 	/** The requested entity record */
 	records: RecordType[] | null;
 
@@ -39,6 +39,16 @@ interface EntityRecordsResolution< RecordType > {
 	 * The total number of pages.
 	 */
 	totalPages: number | null;
+
+	/**
+	 * The selected records.
+	 */
+	selected: Record<CollectionRecordKey, boolean>;
+
+	/**
+	 * Whether all records are selected.
+	 */
+	allSelected: boolean;
 
 	/** Error that occurred during resolution. */
 	error?: Error;
@@ -90,21 +100,21 @@ const EMPTY_ARRAY = [];
  * @return Collection records data.
  * @template RecordType
  */
-export const useCollectionRecords = < RecordType = CollectionRecord >(
+export const useCollectionRecords = <RecordType = CollectionRecord>(
 	namespace: string,
 	collection: string,
-	queryArgs: Record< string, unknown > = {},
+	queryArgs: Record<string, unknown> = {},
 	options: Options = { enabled: true }
-): EntityRecordsResolution< RecordType > => {
+): EntityRecordsResolution<RecordType> => {
 	// Serialize queryArgs to a string that can be safely used as a React dep.
 	// We can't just pass queryArgs as one of the deps, because if it is passed
 	// as an object literal, then it will be a different object on each call even
 	// if the values remain the same.
 	const queryAsString = addQueryArgs( '', queryArgs );
- 
+
 	const { data: records, ...rest } = useQuerySelect<RecordType[]>(
 		( query ) => {
-			if ( ! options.enabled ) {
+			if ( !options.enabled ) {
 				return {
 					// Avoiding returning a new reference on every execution.
 					data: EMPTY_ARRAY,
@@ -116,12 +126,14 @@ export const useCollectionRecords = < RecordType = CollectionRecord >(
 		[ namespace, collection, queryAsString, options.enabled ]
 	);
 
-	const { totalItems, totalPages } = useSelect(
+	const meta = useSelect(
 		( select ) => {
-			if ( ! options.enabled ) {
+			if ( !options.enabled ) {
 				return {
 					totalItems: null,
 					totalPages: null,
+					selected: {},
+					allSelected: false,
 				};
 			}
 			return {
@@ -152,8 +164,7 @@ export const useCollectionRecords = < RecordType = CollectionRecord >(
 
 	return {
 		records,
-		totalItems,
-		totalPages,
+		...meta,
 		...rest,
 	};
 }

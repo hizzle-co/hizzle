@@ -436,7 +436,7 @@ export const getCollectionRecordTabContent = ( state: State, namespace: string, 
  */
 export const getSelectedCollectionRecords = ( state: State, namespace: string, collection: string, query: Record<string, any> ) => {
 	const { stableKey, context } = getQueryParts( query );
-	return state.collections.records?.[ namespace ]?.[ collection ]?.queriedData?.queries?.[ context ]?.[ stableKey ]?.selected ?? [];
+	return state.collections.records?.[ namespace ]?.[ collection ]?.queriedData?.queries?.[ context ]?.[ stableKey ]?.selected ?? {};
 }
 
 /**

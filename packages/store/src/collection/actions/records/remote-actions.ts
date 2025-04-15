@@ -160,6 +160,11 @@ type BatchAction = {
      * The records to import.
      */
     import?: Record<string, any>[];
+
+    /**
+     * The query object.
+     */
+    query?: Record<string, any>;
 };
 
 /**
@@ -225,7 +230,7 @@ export const doBatchCollectionAction =
                     collection,
                     action,
                     error,
-                    invalidateCache: !!error,
+                    invalidateCache: !hasError,
                 } );
 
                 if ( hasError && throwOnError ) {

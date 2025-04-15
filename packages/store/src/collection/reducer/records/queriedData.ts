@@ -24,7 +24,7 @@ import type {
 	ReceiveCollectionRecordsAction,
 	ReceiveCollectionRecordTabContentAction,
 	ToggleAllCollectionRecordsSelectedAction,
-	ToggleCollectionRecordSelectedAction,
+	SetSelectedCollectionRecordsAction,
 } from '../../actions';
 
 type QueriedDataState = collectionState[ 'queriedData' ]
@@ -289,46 +289,13 @@ const toggleAllCollectionRecordsSelected = withQueryComposables( ( state, action
  *
  * @return {Object} Next state.
  */
-const toggleCollectionRecordSelected = withQueryComposables( ( state, action ) => {
-	const { recordId, selected: actionSelected, isShiftKey, rangeStartId } = action;
-
-	// Safety check: if record is not part of the current item list, ignore
-	const recordPosition = state.itemIds.indexOf( recordId );
-	if ( recordPosition === -1 ) {
-		return { ...state };
-	}
-
-	let newSelected = [ ...state.selected ];
-	const selected = typeof actionSelected === 'boolean' ? actionSelected : !newSelected.includes( recordId );
-
-	// If Shift key is pressed, do range selection
-	if ( isShiftKey && rangeStartId && state.itemIds.includes( rangeStartId ) ) {
-		const startIndex = state.itemIds.indexOf( rangeStartId );
-		const start = Math.min( startIndex, recordPosition );
-		const end = Math.max( startIndex, recordPosition );
-
-		const rangeIds = state.itemIds.slice( start, end + 1 );
-
-		if ( selected ) {
-			// Add to selection (merge rangeIds with currently selected, avoiding duplicates)
-			newSelected = Array.from( new Set( [ ...newSelected, ...rangeIds ] ) );
-		} else {
-			// Remove from selection
-			newSelected = newSelected.filter( ( id ) => !rangeIds.includes( id ) );
-		}
-	} else {
-		// Toggle single item
-		const index = newSelected.indexOf( recordId );
-		if ( selected ) {
-			if ( index === -1 ) newSelected.push( recordId );
-		} else {
-			if ( index !== -1 ) newSelected.splice( index, 1 );
-		}
-	}
+const setSelectedCollectionRecords = withQueryComposables( ( state, action ) => {
+	const { selected } = action;
 
 	return {
 		...state,
-		selected: newSelected,
+		selected,
+		allSelected: state.allSelected ? Object.values( selected ).every( Boolean ) : false,
 	};
 } );
 
@@ -340,7 +307,7 @@ const toggleCollectionRecordSelected = withQueryComposables( ( state, action ) =
  *
  * @return {Object} Next state.
  */
-const queries = ( state: QueriedDataState[ 'queries' ] = { view: {}, edit: {} }, action: RemoveItemsAction | ReceiveCollectionRecordsAction | ToggleAllCollectionRecordsSelectedAction | ToggleCollectionRecordSelectedAction ): QueriedDataState[ 'queries' ] => {
+const queries = ( state: QueriedDataState[ 'queries' ] = { view: {}, edit: {} }, action: RemoveItemsAction | ReceiveCollectionRecordsAction | ToggleAllCollectionRecordsSelectedAction | SetSelectedCollectionRecordsAction ): QueriedDataState[ 'queries' ] => {
 	switch ( action.type ) {
 		case 'RECEIVE_COLLECTION_RECORDS':
 			return receiveQueries( state, action );
@@ -364,9 +331,11 @@ const queries = ( state: QueriedDataState[ 'queries' ] = { view: {}, edit: {} },
 												!removedItems[ queryId ]
 										),
 										meta: ( queryItems ).meta,
-										selected: ( queryItems ).selected.filter(
-											( queryId ) =>
-												!removedItems[ queryId ]
+										selected: Object.fromEntries(
+											Object.entries( ( queryItems ).selected ).filter(
+												( [ queryId ] ) =>
+													!removedItems[ queryId ]
+											)
 										),
 										allSelected: ( queryItems ).allSelected
 									},
@@ -378,8 +347,8 @@ const queries = ( state: QueriedDataState[ 'queries' ] = { view: {}, edit: {} },
 			);
 		case 'TOGGLE_ALL_COLLECTION_RECORDS_SELECTED':
 			return toggleAllCollectionRecordsSelected( state, action );
-		case 'TOGGLE_COLLECTION_RECORD_SELECTED':
-			return toggleCollectionRecordSelected( state, action );
+		case 'SET_SELECTED_COLLECTION_RECORDS':
+			return setSelectedCollectionRecords( state, action );
 		default:
 			return state;
 	}

@@ -80,26 +80,21 @@ export type ToggleAllCollectionRecordsSelectedAction = CollectionAction & {
 	selected?: boolean;
 };
 
-export type ToggleCollectionRecordSelectedAction = Omit<ToggleAllCollectionRecordsSelectedAction, 'type'> & {
+export type SetSelectedCollectionRecordsAction = CollectionAction & {
 	/**
 	 * The type of the action.
 	 */
-	type: 'TOGGLE_COLLECTION_RECORD_SELECTED';
+	type: 'SET_SELECTED_COLLECTION_RECORDS';
 
 	/**
-	 * The ID of the record.
+	 * The query object.
 	 */
-	recordId: CollectionRecordKey;
+	query?: Record<string, any>;
 
 	/**
-	 * Whether the shift key is pressed.
+	 * The selected records.
 	 */
-	isShiftKey: boolean;
-
-	/**
-	 * The ID of the record to start the range selection from.
-	 */
-	rangeStartId?: CollectionRecordKey;
+	selected: Record<CollectionRecordKey, boolean>;
 };
 
 /**
@@ -203,23 +198,17 @@ export function toggleAllCollectionRecordsSelected(
  * @param {boolean} isShiftKey Whether the shift key is pressed.
  * @return {Object} Action object.
  */
-export function toggleCollectionRecordSelected(
+export function setSelectedCollectionRecords(
 	namespace: string,
 	collection: string,
 	query: Record<string, any>,
-	recordId: CollectionRecordKey,
-	selected?: boolean,
-	isShiftKey: boolean = false,
-	rangeStartId?: CollectionRecordKey,
-): ToggleCollectionRecordSelectedAction {
+	selected: Record<CollectionRecordKey, boolean>,
+): SetSelectedCollectionRecordsAction {
 	return {
-		type: 'TOGGLE_COLLECTION_RECORD_SELECTED',
+		type: 'SET_SELECTED_COLLECTION_RECORDS',
 		namespace,
 		collection,
 		query,
-		recordId,
 		selected,
-		isShiftKey,
-		rangeStartId,
 	};
 }

@@ -537,7 +537,7 @@ export interface State {
 									/**
 									 * The IDs of the selected items in the query.
 									 */
-									selected: CollectionRecordKey[];
+									selected: Record<CollectionRecordKey, boolean>;
 
 									/**
 									 * Whether all matching records in the query are selected,
