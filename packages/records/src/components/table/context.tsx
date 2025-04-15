@@ -81,9 +81,11 @@ export interface TableProviderProps<TData>
 /**
  * Create the context
  */
-const TableContext = createContext<TableContextProps<any> | undefined>(
+const TableContext = createContext<Table<any> | undefined>(
 	undefined
 );
+
+const functionOrValue = ( value: any, oldValue: any ) => typeof value === 'function' ? value( oldValue ) : value;
 
 /**
  * Provider component for the table context
@@ -135,10 +137,11 @@ export function TableProvider<TData>( {
 				),
 				enableSorting: false,
 				enableHiding: false,
+				enableGlobalFilter: false,
 			},
 			...columns,
 		];
-	}, [ columns, bulkActions ] );
+	}, [ columns, bulkActions, tableOptions.enableRowSelection ] );
 
 	const table = useReactTable( {
 		...tableOptions,
@@ -158,16 +161,14 @@ export function TableProvider<TData>( {
 		...( state && {
 			onColumnOrderChange: ( columnOrder ) => {
 				if ( onChange && columnOrder ) {
-					onChange( { ...state, columnOrder } );
+					onChange( { ...state, columnOrder: functionOrValue( columnOrder, state.columnOrder || [] ) } );
 				}
 			},
 			onColumnVisibilityChange: ( columnVisibility ) => {
 				if ( onChange && columnVisibility ) {
 					onChange( {
 						...state,
-						columnVisibility: columnVisibility(
-							state.columnVisibility || {}
-						),
+						columnVisibility: functionOrValue( columnVisibility, state.columnVisibility || {} ),
 					} );
 				}
 			},
@@ -177,23 +178,26 @@ export function TableProvider<TData>( {
 					if ( onChange && sorting ) {
 						onChange( {
 							...state,
-							sorting: sorting( state.sorting ),
-							pagination: {
-								pageSize: state.pagination?.pageSize || 10,
-								pageIndex: 0,
-							},
+							sorting: functionOrValue( sorting, state.sorting || [] ),
+							...(
+								state.pagination?.pageIndex ? {
+									pagination: {
+										pageSize: state.pagination?.pageSize || 10,
+										pageIndex: 0,
+									},
+								} : {}
+							),
 						} );
 					}
 				},
 			} ),
-			...( enableFiltering && { getFilteredRowModel: getFilteredRowModel() } ),
 			...( enablePagination && {
 				manualPagination: true,
 				onPaginationChange: ( pagination ) => {
 					if ( onChange && pagination ) {
 						onChange( {
 							...state,
-							pagination: pagination( state.pagination ),
+							pagination: functionOrValue( pagination, state.pagination || {} ),
 						} );
 					}
 				},
@@ -208,13 +212,15 @@ export function TableProvider<TData>( {
 			...( enableSorting && {
 				getSortedRowModel: getSortedRowModel(),
 			} ),
+			...( enableFiltering && {
+				getFilteredRowModel: getFilteredRowModel(),
+				globalFilterFn: 'includesString',
+			} ),
 		} ),
 	} );
 
-	const value = useMemo( () => ( { table } ), [ table.getState() ] );
-
 	return (
-		<TableContext.Provider value={ value }>{ children }</TableContext.Provider>
+		<TableContext.Provider value={ table }>{ children }</TableContext.Provider>
 	);
 }
 
@@ -228,5 +234,5 @@ export function useTable<TData>() {
 		throw new Error( 'useTable must be used within a TableProvider' );
 	}
 
-	return context.table as Table<TData>;
+	return context as Table<TData>;
 }
