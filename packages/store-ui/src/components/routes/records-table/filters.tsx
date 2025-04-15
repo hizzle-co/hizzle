@@ -9,6 +9,7 @@ import { __, _x, sprintf } from "@wordpress/i18n";
  * HizzleWP dependencies
  */
 import { Setting } from '@hizzlewp/components';
+import type { ISetting } from '@hizzlewp/components';
 import { useProvidedCollectionConfig } from "@hizzlewp/store";
 
 /**
@@ -207,7 +208,7 @@ export const useFilterableFields = ( { isBulkEditing = false } ) => {
  */
 export const prepareField = ( field ) => {
 
-	const prepared: Record<string, any> = {
+	const prepared: ISetting = {
 		default: field.default,
 		label: field.label,
 		el: 'input',

@@ -13,28 +13,46 @@ import {
 	Slot,
 	Button,
 	__experimentalHStack as HStack,
-	__experimentalVStack as VStack,
 	__experimentalHeading as Heading,
 	NavigableMenu,
 	Card,
-	CardHeader,
-	CardBody,
 } from '@wordpress/components';
 import type { ButtonProps } from '@wordpress/components/build-types/button/types';
 import { __ } from "@wordpress/i18n";
-import { arrowLeft } from "@wordpress/icons";
+import { arrowLeft, rotateRight } from "@wordpress/icons";
+import { useDispatch } from '@wordpress/data';
 
 /**
  * HizzleWP dependencies.
  */
 import { ErrorBoundary } from '@hizzlewp/components';
 import { Outlet, useRoute, updatePath } from '@hizzlewp/history';
-import { CollectionProvider, useProvidedCollectionConfig } from '@hizzlewp/store';
+import { CollectionProvider, useProvidedCollectionConfig, store as hizzleStore } from '@hizzlewp/store';
 
 /**
  * Internal dependencies.
  */
 import { UpsellCard } from "../upsell";
+import { usePreparedQuery } from './records-table';
+
+/**
+ * Refreshes the records.
+ */
+const RefreshRecords = ( { namespace, collection } ) => {
+	const query = usePreparedQuery( namespace, collection );
+	const { invalidateResolution } = useDispatch( hizzleStore );
+	const onRefresh = () => invalidateResolution( 'getCollectionRecords', [ namespace, collection, query ] );
+
+	return (
+		<Button
+			icon={ rotateRight }
+			onClick={ onRefresh }
+			variant="tertiary"
+			label="Refresh"
+			showTooltip
+		/>
+	)
+};
 
 /**
  * Displays main layout.
@@ -105,9 +123,12 @@ const Layout = (): React.ReactNode => {
 									</span>
 								</>
 							) : (
-								<Heading level={ 1 } size={ 16 } truncate>
-									{ labels?.name || 'Items' }
-								</Heading>
+								<>
+									<Heading level={ 1 } size={ 16 } truncate>
+										{ labels?.name || 'Items' }
+									</Heading>
+									<RefreshRecords namespace={ namespace } collection={ collection } />
+								</>
 							)
 						}
 					</HStack>

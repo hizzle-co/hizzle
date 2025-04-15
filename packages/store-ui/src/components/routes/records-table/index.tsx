@@ -29,23 +29,19 @@ import { DisplayCell } from './display-cell';
 import { Header } from './header';
 
 /**
- * Renders a records overview table for the matching path.
+ * Returns a prepared query.
  *
- * @returns The records table.
+ * @returns {Record<string, any>} The prepared query.
  */
-export const RecordsTable = () => {
-	// If we're here, the config is already resolved and won't return undefined.
-	const { config: { namespace, collection, props, ignore, hidden, badges } } = useProvidedCollectionConfig() || {};
+export const usePreparedQuery = ( namespace: string, collection: string ): Record<string, any> => {
 
 	// Prepare the state saved in preferences.
-	const { preferences, setPreferences } = usePreferences( 'recordsTablePreferences', `${ namespace }/${ collection }` );
-
-	// Backwards compatibility.
-	const { preferences: viewPreferences } = usePreferences( 'view', `${ namespace }/${ collection }` );
+	const { preferences } = usePreferences( 'recordsTablePreferences', `${ namespace }/${ collection }` );
 
 	// Current query.
 	const query = useQuery();
-	const preparedQuery = useMemo( () => {
+
+	return useMemo( () => {
 		const preparedQuery: Record<string, any> = { ...query };
 
 		if ( !query.orderby && preferences?.sorting?.[ 0 ]?.id ) {
@@ -64,6 +60,26 @@ export const RecordsTable = () => {
 
 		return preparedQuery;
 	}, [ query, preferences ] );
+};
+
+/**
+ * Renders a records overview table for the matching path.
+ *
+ * @returns The records table.
+ */
+export const RecordsTable = () => {
+	// If we're here, the config is already resolved and won't return undefined.
+	const { config: { namespace, collection, props, ignore, hidden, badges } } = useProvidedCollectionConfig() || {};
+
+	// Prepare the state saved in preferences.
+	const { preferences, setPreferences } = usePreferences( 'recordsTablePreferences', `${ namespace }/${ collection }` );
+
+	// Backwards compatibility.
+	const { preferences: viewPreferences } = usePreferences( 'view', `${ namespace }/${ collection }` );
+
+	// Current query.
+	const query = useQuery();
+	const preparedQuery = usePreparedQuery( namespace, collection );
 
 	// Record results for the current query.
 	const results = useCollectionRecords( namespace, collection, preparedQuery );
@@ -96,6 +112,17 @@ export const RecordsTable = () => {
 						path={ `${ namespace }/${ collection }/${ row.original.id }` }
 					/>
 				),
+				meta: {
+					is_primary: prop.is_primary,
+					enum: prop.enum,
+					multiple: prop.multiple,
+					is_dynamic: prop.is_dynamic,
+					is_boolean: prop.is_boolean,
+					is_numeric: prop.is_numeric || prop.is_float,
+					is_date: prop.is_date,
+					is_tokens: prop.is_tokens,
+					suggestions: prop.suggestions,
+				},
 			} );
 		} );
 
