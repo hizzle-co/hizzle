@@ -122,6 +122,7 @@ export function TableProvider<TData>( {
 				enableSorting: false,
 				enableHiding: false,
 				enableGlobalFilter: false,
+				enableColumnFilter: false,
 			},
 			...columns,
 		];

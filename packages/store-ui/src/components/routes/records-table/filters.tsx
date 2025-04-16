@@ -13,6 +13,59 @@ import type { ISetting } from '@hizzlewp/components';
 import { useProvidedCollectionConfig } from "@hizzlewp/store";
 import { useQuery, updateQueryString } from '@hizzlewp/history';
 
+interface ColumnFilter {
+	id: string
+	value: {
+		suffix: '' | '_not' | '_min' | '_max' | '_before' | '_after',
+		value: string
+	}[]
+}
+
+// Convert flat filters object to ColumnFilter[] format
+const flatFiltersToColumnFilters = ( filters: Record<string, string> ): ColumnFilter[] => {
+	const columnFilters: Record<string, ColumnFilter> = {};
+
+	Object.entries( filters ).forEach( ( [ key, value ] ) => {
+		if ( !value ) return;
+
+		// Check if this is a field with a suffix
+		const suffixMatch = key.match( /(.*?)(_not|_min|_max|_before|_after)$/ );
+		const fieldName = suffixMatch ? suffixMatch[ 1 ] : key;
+		const suffix = suffixMatch ?
+			( suffixMatch[ 2 ] as '' | '_not' | '_min' | '_max' | '_before' | '_after' ) :
+			( '' );
+
+		// Create the column filter if it doesn't exist
+		if ( !columnFilters[ fieldName ] ) {
+			columnFilters[ fieldName ] = {
+				id: fieldName,
+				value: []
+			};
+		}
+
+		// Add the value
+		columnFilters[ fieldName ].value.push( {
+			suffix,
+			value
+		} );
+	} );
+
+	return Object.values( columnFilters );
+};
+
+// Convert ColumnFilter[] format to flat filters object
+const columnFiltersToFlatFilters = ( columnFilters: ColumnFilter[] ): Record<string, string> => {
+	const flatFilters: Record<string, string> = {};
+
+	columnFilters.forEach( filter => {
+		filter.value.forEach( value => {
+			flatFilters[ filter.id + value.suffix ] = value.value;
+		} );
+	} );
+
+	return flatFilters;
+};
+
 /**
  * Displays the bulk edit form.
  */
@@ -131,7 +184,17 @@ const TheModal = ( { currentFilters, fields, setOpen } ) => {
 	// A function to apply the filters.
 	const onApplyFilters = ( e ) => {
 		e?.preventDefault();
-		updateQueryString( filters );
+
+		// Convert flat filters to ColumnFilter format
+		const columnFilters = flatFiltersToColumnFilters( filters );
+
+		// If there are no filters, don't set the query param
+		if ( columnFilters.length === 0 ) {
+			updateQueryString( { hizzlewp_filters: null as any } );
+		} else {
+			updateQueryString( { hizzlewp_filters: columnFilters as unknown as string[] } );
+		}
+
 		setOpen( false );
 	}
 
@@ -267,39 +330,35 @@ export const prepareField = ( field ) => {
 /**
  * Returns the filters and the fields.
  */
-export const useFilters = ( { isBulkEditing = false } = {} ) => {
+export const useFilters = () => {
 	const query = useQuery();
-	const fields = useFilterableFields( { isBulkEditing } );
-	return [ fields, useMemo( () => {
+	const fields = useFilterableFields( { isBulkEditing: false } );
+	return useMemo( () => {
+		const filters: ColumnFilter[] = [];
 
-		// Prepare the filters.
-		const filters = {};
+		if ( !Array.isArray( query?.hizzlewp_filters ) ) {
+			return { fields, filters: [], preparedFilters: {} };
+		}
 
-		fields.forEach( ( field ) => {
+		filters.push( ...query.hizzlewp_filters as unknown as ColumnFilter[] );
 
-			// Add variations, _not, _min, _max, _before, _after.
-			[ '', '_not', '_min', '_max', '_before', '_after' ].forEach( ( variation ) => {
-				const name = field.name + variation;
-
-				if ( query[ name ] ) {
-					filters[ name ] = query[ name ];
-				}
-			} );
+		const filteredFilters = filters.filter( ( filter ) => {
+			return filter.id && fields.some( ( field ) => field.name === filter.id ) && Array.isArray( filter.value ) && filter.value.length > 0;
 		} );
 
-		return filters;
-	}, [ query, fields ] ) ];
+		const preparedFilters = columnFiltersToFlatFilters( filteredFilters );
+		return { fields, filters: filteredFilters, preparedFilters };
+	}, [ query, fields ] );
 }
 
 /**
  * Displays a filters edit button.
- *
  */
-export const FiltersButton : React.FC = () => {
+export const FiltersButton: React.FC = () => {
 
 	const [ isOpen, setOpen ] = useState( false );
-	const [ fields, filters ] = useFilters();
-	const numFilters = Object.keys( filters ).length;
+	const { fields, preparedFilters } = useFilters();
+	const numFilters = Object.keys( preparedFilters ).length;
 	const buttonText = numFilters > 0 ? sprintf(
 		// translators: %d: number of filters applied.
 		__( 'Applied Filters (%d)', 'newsletter-optin-box' ),
@@ -320,7 +379,7 @@ export const FiltersButton : React.FC = () => {
 
 					{ isOpen && (
 						<Modal title={ __( 'Filter records', 'newsletter-optin-box' ) } onRequestClose={ () => setOpen( false ) }>
-							<TheModal fields={ fields } currentFilters={ filters } setOpen={ setOpen } />
+							<TheModal fields={ fields } currentFilters={ preparedFilters } setOpen={ setOpen } />
 						</Modal>
 					) }
 				</>
