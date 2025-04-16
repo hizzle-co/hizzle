@@ -11,6 +11,7 @@ import { __, _x, sprintf } from "@wordpress/i18n";
 import { Setting } from '@hizzlewp/components';
 import type { ISetting } from '@hizzlewp/components';
 import { useProvidedCollectionConfig } from "@hizzlewp/store";
+import { useQuery, updateQueryString } from '@hizzlewp/history';
 
 /**
  * Displays the bulk edit form.
@@ -26,13 +27,14 @@ const EditForm = ( { fields, onApplyFilters, filters, setAttributes } ) => {
 				// If field.is_numeric || field.is_float, show _min and _max fields.
 				// If field.is_date, show _before and _after fields.
 				const mainSetting = {
+					name: field.name,
 					...prepareField( field ),
 					default: '',
 					placeholder: __( 'Any', 'newsletter-optin-box' ),
 					canSelectPlaceholder: true,
 				};
 
-				let secondarySetting = null;
+				let secondarySetting: typeof mainSetting | null = null;
 
 				if ( field.is_boolean ) {
 					mainSetting.el = 'select';
@@ -123,13 +125,13 @@ const EditForm = ( { fields, onApplyFilters, filters, setAttributes } ) => {
 /**
  * Displays the bulk edit modal.
  */
-const TheModal = ( { currentFilters, fields, setOpen, setQuery } ) => {
+const TheModal = ( { currentFilters, fields, setOpen } ) => {
 	const [ filters, setFilters ] = useState( { ...currentFilters } );
 
 	// A function to apply the filters.
 	const onApplyFilters = ( e ) => {
 		e?.preventDefault();
-		setQuery( filters );
+		updateQueryString( filters );
 		setOpen( false );
 	}
 
@@ -247,7 +249,7 @@ export const prepareField = ( field ) => {
 	}
 
 	if ( field.is_date ) {
-		prepared.type        = 'datetime-local';
+		prepared.type = 'datetime-local';
 		prepared.placeholder = 'YYYY-MM-DDTHH:MM:SS+ZZ:ZZ';
 	}
 
@@ -262,8 +264,12 @@ export const prepareField = ( field ) => {
 	return prepared;
 }
 
-export const useFilters = ( { query, namespace, collection, isBulkEditing = false } ) => {
-	const fields = useFilterableFields( { namespace, collection, isBulkEditing } );
+/**
+ * Returns the filters and the fields.
+ */
+export const useFilters = ( { isBulkEditing = false } = {} ) => {
+	const query = useQuery();
+	const fields = useFilterableFields( { isBulkEditing } );
 	return [ fields, useMemo( () => {
 
 		// Prepare the filters.
@@ -289,10 +295,10 @@ export const useFilters = ( { query, namespace, collection, isBulkEditing = fals
  * Displays a filters edit button.
  *
  */
-export default function FiltersButton( { setQuery, ...props } ) {
+export const FiltersButton : React.FC = () => {
 
 	const [ isOpen, setOpen ] = useState( false );
-	const [ fields, filters ] = useFilters( props );
+	const [ fields, filters ] = useFilters();
 	const numFilters = Object.keys( filters ).length;
 	const buttonText = numFilters > 0 ? sprintf(
 		// translators: %d: number of filters applied.
@@ -314,12 +320,11 @@ export default function FiltersButton( { setQuery, ...props } ) {
 
 					{ isOpen && (
 						<Modal title={ __( 'Filter records', 'newsletter-optin-box' ) } onRequestClose={ () => setOpen( false ) }>
-							<TheModal fields={ fields } currentFilters={ filters } setOpen={ setOpen } setQuery={ setQuery } />
+							<TheModal fields={ fields } currentFilters={ filters } setOpen={ setOpen } />
 						</Modal>
 					) }
 				</>
 			) }
 		</>
 	);
-
 }

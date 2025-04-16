@@ -9,7 +9,6 @@ import React, { useMemo, useCallback } from "react";
 import {
 	Notice,
 	Spinner,
-	CardHeader,
 } from "@wordpress/components";
 import { useDispatch } from '@wordpress/data';
 
@@ -28,6 +27,7 @@ import { usePreferences } from '@hizzlewp/interface';
  */
 import { DisplayCell } from './display-cell';
 import { Header } from './header';
+import { FiltersButton } from './filters';
 
 /**
  * Returns a prepared query.
@@ -104,6 +104,7 @@ export const RecordsTable = () => {
 				accessorKey: prop.name,
 				header: prop.label,
 				enableSorting: !prop.is_dynamic && !prop.is_meta,
+				enableColumnFilter: !prop.is_dynamic,
 				enableHiding: !prop.is_primary,
 				cell: ( { row } ) => (
 					<DisplayCell
@@ -225,11 +226,7 @@ export const RecordsTable = () => {
 				footerSlot="hizzlewp-collection__footer"
 				searchLabel={ labels?.search_items || 'Search' }
 				bulkActions={ <Header query={ preparedQuery } /> }
-				wrapHeader={ ( header ) => (
-					<CardHeader>
-						{ header }
-					</CardHeader>
-				) }
+				filtersButton={ <FiltersButton /> }
 			/>
 		</ErrorBoundary>
 	);
