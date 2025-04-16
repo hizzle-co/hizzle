@@ -9,6 +9,7 @@ import React, { useMemo, useCallback } from "react";
 import {
 	Notice,
 	Spinner,
+	CardHeader,
 } from "@wordpress/components";
 import { useDispatch } from '@wordpress/data';
 
@@ -18,7 +19,7 @@ import { useDispatch } from '@wordpress/data';
 import { ErrorBoundary } from '@hizzlewp/components';
 import { useCollectionRecords, useProvidedCollectionConfig, store as hizzleStore } from '@hizzlewp/store';
 import { useQuery, updateQueryString } from '@hizzlewp/history';
-import { Table, PER_PAGE_OPTIONS } from '@hizzlewp/records';
+import { Records, PER_PAGE_OPTIONS } from '@hizzlewp/records';
 import type { TableProviderProps } from '@hizzlewp/records/build-types/components/table/context';
 import { usePreferences } from '@hizzlewp/interface';
 
@@ -69,7 +70,7 @@ export const usePreparedQuery = ( namespace: string, collection: string ): Recor
  */
 export const RecordsTable = () => {
 	// If we're here, the config is already resolved and won't return undefined.
-	const { config: { namespace, collection, props, ignore, hidden, badges } } = useProvidedCollectionConfig() || {};
+	const { config: { namespace, collection, props, ignore, hidden, badges, labels } } = useProvidedCollectionConfig() || {};
 
 	// Prepare the state saved in preferences.
 	const { preferences, setPreferences } = usePreferences( 'recordsTablePreferences', `${ namespace }/${ collection }` );
@@ -159,6 +160,7 @@ export const RecordsTable = () => {
 				pageIndex: isShowingAll ? 0 : ( query.paged ? ( Number( query.paged ) - 1 ) : 0 ),
 			},
 			rowSelection: results.selected,
+			globalFilter: query.search || '',
 		} as Partial<TableProviderProps<Record<string, any>>[ 'state' ]>;
 
 		return state;
@@ -198,8 +200,7 @@ export const RecordsTable = () => {
 
 	return (
 		<ErrorBoundary>
-			<Header query={ preparedQuery } />
-			<Table
+			<Records
 				rowCount={ results.totalItems || 0 }
 				data={ results.records || [] }
 				columns={ columns }
@@ -209,10 +210,26 @@ export const RecordsTable = () => {
 				state={ state }
 				onChange={ onChange }
 				enableRowSelection={ true }
-				onRowSelectionChange={ ( rowSelection ) => setSelectedCollectionRecords( namespace, collection, preparedQuery, rowSelection( state?.rowSelection || {} ) ) }
-				onColumnPinningChange={ ( columnPinning ) => onChange( { ...state, columnPinning: columnPinning( state?.columnPinning || {} ) } ) }
+				onRowSelectionChange={
+					( rowSelection ) => setSelectedCollectionRecords( namespace, collection, preparedQuery, rowSelection( state?.rowSelection || {} ) )
+				}
+				onColumnPinningChange={
+					( columnPinning ) => onChange( { ...state, columnPinning: columnPinning( state?.columnPinning || {} ) } )
+				}
+				onGlobalFilterChange={
+					( globalFilter ) => {
+						updateQueryString( { search: globalFilter || '' } );
+					}
+				}
 				getRowId={ ( row ) => row.id }
 				footerSlot="hizzlewp-collection__footer"
+				searchLabel={ labels?.search_items || 'Search' }
+				bulkActions={ <Header query={ preparedQuery } /> }
+				wrapHeader={ ( header ) => (
+					<CardHeader>
+						{ header }
+					</CardHeader>
+				) }
 			/>
 		</ErrorBoundary>
 	);

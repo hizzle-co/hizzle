@@ -19,18 +19,10 @@ import {
 	TableState,
 } from '@tanstack/react-table';
 
-
 /**
  * WordPress dependencies
  */
 import { CheckboxControl } from '@wordpress/components';
-
-/**
- * Interface for the TableContext
- */
-interface TableContextProps<TData> {
-	table: Table<TData>;
-}
 
 /**
  * Interface for the TableProvider props
@@ -69,13 +61,6 @@ export interface TableProviderProps<TData>
 	 * On change of the table state
 	 */
 	onChange?: ( state: Partial<TableState> ) => void;
-
-	/**
-	 * Optional function to render bulk actions UI.
-	 * @param selected - The currently selected items.
-	 * @returns React node to render for bulk actions.
-	 */
-	bulkActions?: ( selected: string[], isAllSelected: boolean, isAllPagesSelected: boolean ) => React.ReactNode;
 }
 
 /**
@@ -98,13 +83,12 @@ export function TableProvider<TData>( {
 	onChange,
 	state = undefined,
 	columns,
-	bulkActions,
 	initialState,
 	...tableOptions
 }: TableProviderProps<TData> ) {
 
 	const tableColumns = useMemo( () => {
-		if ( !bulkActions && !tableOptions.enableRowSelection ) {
+		if ( !tableOptions.enableRowSelection ) {
 			return columns;
 		}
 
@@ -141,7 +125,7 @@ export function TableProvider<TData>( {
 			},
 			...columns,
 		];
-	}, [ columns, bulkActions, tableOptions.enableRowSelection ] );
+	}, [ columns, tableOptions.enableRowSelection ] );
 
 	const table = useReactTable( {
 		...tableOptions,
