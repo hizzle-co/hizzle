@@ -1,17 +1,24 @@
 /**
  * External dependencies
  */
-import { useState, useMemo } from "@wordpress/element";
+import Papa from 'papaparse';
+import React, { useState, useMemo } from "react";
+
+/**
+ * WordPress dependencies.
+ */
 import { ToggleControl, Button, Icon, Modal, Spinner, Flex, FlexItem, __experimentalText as Text, } from "@wordpress/components";
 import { __, sprintf } from "@wordpress/i18n";
-import Papa from 'papaparse';
+
+/**
+ * HizzleWP dependencies.
+ */
+import { ErrorBoundary } from '@hizzlewp/components';
 
 /**
  * Local dependencies.
  */
 import { usePartialRecords, useSchema } from "../../store-data/hooks";
-import { BlockButton, NoMarginNotice } from "../styled-components";
-import ErrorBoundary from "../../../list/components/error-boundary";
 
 /**
  * Fetches records from the API and converts them to CSV.
@@ -85,20 +92,20 @@ const DownloadProgress = ({ fields, back, schema, namespace, collection, selecte
 	if ( 'ERROR' === records.status ) {
 
 		return (
-			<NoMarginNotice status="error" isDismissible={false}>
+			<Notice status="error" isDismissible={false}>
 				{records.error.message || __('An unknown error occurred.', 'newsletter-optin-box')}&nbsp; &nbsp;
 				{backButton}
-			</NoMarginNotice>
+			</Notice>
 		)
 	}
 
 	// If no records, nothing to export.
 	if (!records.data.length) {
 		return (
-			<NoMarginNotice status="info" isDismissible={false}>
+			<Notice status="info" isDismissible={false}>
 				{__('Found no records to export.', 'newsletter-optin-box')}&nbsp; &nbsp;
 				{backButton}
-			</NoMarginNotice>
+			</Notice>
 		)
 	}
 
@@ -115,7 +122,7 @@ const DownloadProgress = ({ fields, back, schema, namespace, collection, selecte
 
 	// Force download.
 	return (
-		<NoMarginNotice status="success" isDismissible={false}>
+		<Notice status="success" isDismissible={false}>
 			{__("Done! Click the button below to download records.", 'newsletter-optin-box')}
 			&nbsp; &nbsp;
 			<Button
@@ -124,7 +131,7 @@ const DownloadProgress = ({ fields, back, schema, namespace, collection, selecte
 				download={ filename }
 				text={ __('Download CSV', 'newsletter-optin-box') }
 			/>
-		</NoMarginNotice>
+		</Notice>
 	);
 }
 
@@ -176,10 +183,10 @@ const DownloadFields = ({ fields, setFields, schema: { schema, ignore }, next } 
 			})}
 
 			<FlexItem>
-				<BlockButton variant="primary" onClick={next}>
+				<Button className="hizzlewp-block-button" variant="primary" onClick={next}>
 					<Icon icon="download" />
 					{__('Download', 'newsletter-optin-box')}
-				</BlockButton>
+				</Button>
 			</FlexItem>
 		</Flex>
 	);

@@ -3,59 +3,6 @@
 @import 'breakpoints';
 @import 'variables';
 
-.hizzle-records__table-wrapper {
-    height: 100%;
-    overflow: auto;
-    box-sizing: border-box;
-    scroll-padding-bottom: $grid-unit-80;
-    /* stylelint-disable-next-line property-no-unknown -- '@container' not globally permitted */
-    container: hizzle-records__table-wrapper / inline-size;
-    display: flex;
-    flex-direction: column;
-    font-size: $default-font-size;
-    line-height: $default-line-height;
-}
-
-.hizzle-records__table-actions,
-.hizzle-records__table-filters {
-    box-sizing: border-box;
-    padding: $grid-unit-20 $grid-unit-60;
-    flex-shrink: 0;
-    position: sticky;
-    left: 0;
-
-    @media not (prefers-reduced-motion) {
-        transition: padding ease-out 0.1s;
-    }
-}
-
-.hizzle-records__table-no-results,
-.hizzle-records__table-loading {
-    padding: 0 $grid-unit-60;
-    flex-grow: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    @media not (prefers-reduced-motion) {
-        transition: padding ease-out 0.1s;
-    }
-}
-
-@container (max-width: 430px) {
-
-    .hizzle-records__table-actions,
-    .hizzle-records__table-filters {
-        padding: $grid-unit-15 $grid-unit-30;
-    }
-
-    .hizzle-records__table-no-results,
-    .hizzle-records__table-loading {
-        padding-left: $grid-unit-30;
-        padding-right: $grid-unit-30;
-    }
-}
-
 .hizzle-records__table-title-field {
     font-size: $default-font-size;
     font-weight: 500;
@@ -317,17 +264,4 @@
 
 .hizzle-records__table-column-primary__media {
     max-width: 60px;
-}
-
-.hizzle-records__table-pagination__page-select {
-    font-size: 11px;
-    font-weight: 500;
-    text-transform: uppercase;
-
-    @media (max-width: 600px) {
-        .components-select-control__input {
-            font-size: 11px !important;
-            font-weight: 500;
-        }
-    }
 }

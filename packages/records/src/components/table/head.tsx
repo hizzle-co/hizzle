@@ -9,11 +9,9 @@ import classnames from 'clsx';
  */
 import { flexRender, Header } from '@tanstack/react-table';
 import {
-	Icon,
 	DropdownMenu,
 	MenuGroup,
 	MenuItem,
-	MenuItemsChoice,
 	Button,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
@@ -23,6 +21,7 @@ import {
 	arrowUp,
 	arrowDown,
 	unseen,
+	check,
 } from '@wordpress/icons';
 
 /**
@@ -58,7 +57,7 @@ const Sort = ( { onClose, header }: MenuProps ) => (
 		{ SORTING_DIRECTIONS.map(
 			( direction ) => (
 				<MenuItem
-					icon={ sortIcons[ direction ] }
+					icon={ header.column.getIsSorted() === direction ? check : sortIcons[ direction ] }
 					key={ direction }
 					onClick={ () => {
 						// Close the menu.
@@ -93,7 +92,7 @@ const MoveOrPin = ( { header, canMoveLeft, canMoveRight, moveLeft, moveRight }: 
 
 	// Show pin if we cannot move the column or if the column is already pinned.
 	const canMove = ( canMoveLeft || canMoveRight ) && !( header.column.getCanPin() && header.column.getIsPinned() );
-console.log( header.column.getIsPinned() )
+
 	return (
 		<MenuGroup label={ canMove ? __( 'Move' ) : __( 'Pin' ) }>
 			{ canMove && (
@@ -119,12 +118,14 @@ console.log( header.column.getIsPinned() )
 					<MenuItem
 						isSelected={ header.column.getIsPinned() === 'left' }
 						onClick={ () => header.column.pin( header.column.getIsPinned() === 'left' ? false : 'left' ) }
+						icon={ header.column.getIsPinned() === 'left' ? check : undefined }
 					>
 						{ __( 'Pin left' ) }
 					</MenuItem>
 					<MenuItem
 						isSelected={ header.column.getIsPinned() === 'right' }
 						onClick={ () => header.column.pin( header.column.getIsPinned() === 'right' ? false : 'right' ) }
+						icon={ header.column.getIsPinned() === 'right' ? check : undefined }
 					>
 						{ __( 'Pin right' ) }
 					</MenuItem>
@@ -154,7 +155,7 @@ const HeaderMenuToggle = memo(
 export const Head = () => {
 	const table = useTable();
 	const { columnOrder: stateColumnOrder, columnPinning } = table.getState();
-console.log( table.getState())
+
 	return (
 		<thead>
 			{ table.getHeaderGroups().map( ( headerGroup ) => {
@@ -163,7 +164,7 @@ console.log( table.getState())
 				const headers = headerGroup.headers;
 
 				// Use the column order if it exists, otherwise use the visible headers.
-				const columnOrder = stateColumnOrder.length > 1 ? stateColumnOrder : headers.map( ( header ) => header.id );
+				const columnOrder = stateColumnOrder.length > 0 ? stateColumnOrder : headers.map( ( header ) => header.id );
 
 				// Whether the columns can be moved.
 				// If there is only one column, it cannot be moved.
@@ -172,8 +173,8 @@ console.log( table.getState())
 				// Can not move before the last left pinned column or after the first right pinned column.
 				const lastLeftPinnedId = columnPinning?.left?.[ columnPinning.left.length - 1 ];
 				const firstRightPinnedId = columnPinning?.right?.[ 0 ];
-				const lastLeftPinnedIndex = lastLeftPinnedId ? headers.findIndex( header => header.column.getIsPinned() === 'left' ) : -1;
-				const firstRightPinnedIndex = firstRightPinnedId ? headers.findIndex( header => header.column.getIsPinned() === 'right' ) : -1;
+				const lastLeftPinnedIndex = lastLeftPinnedId ? headers.findIndex( header => header.id === lastLeftPinnedId ) : -1;
+				const firstRightPinnedIndex = firstRightPinnedId ? headers.findIndex( header => header.id === firstRightPinnedId ) : -1;
 
 				return (
 					<tr

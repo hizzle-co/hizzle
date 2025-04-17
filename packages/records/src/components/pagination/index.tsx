@@ -19,7 +19,7 @@ import { next, previous } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
-import { useTable } from './context';
+import { useTable } from '../context';
 import { PER_PAGE_OPTIONS } from '../../constants';
 
 /**
