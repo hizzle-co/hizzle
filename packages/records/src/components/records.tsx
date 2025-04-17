@@ -36,11 +36,6 @@ export type TableProps<TData = Record<string, unknown>> = Omit<TableProviderProp
 	isLoading?: boolean;
 
 	/**
-	 * Footer slot.
-	 */
-	footerSlot?: string;
-
-	/**
 	 * The label of the search input. Leave blank to disable the search input.
 	 */
 	searchLabel?: string;
@@ -59,7 +54,6 @@ export type TableProps<TData = Record<string, unknown>> = Omit<TableProviderProp
 export const Records: React.FC<TableProps> = ( {
 	emptyMessage,
 	isLoading,
-	footerSlot,
 	searchLabel,
 	bulkActions,
 	filtersButton,
@@ -106,7 +100,7 @@ export const Records: React.FC<TableProps> = ( {
 					</div>
 
 					<ErrorBoundary>
-						<Pagination footerSlot={ footerSlot } />
+						<Pagination />
 					</ErrorBoundary>
 				</VStack>
 			</div>

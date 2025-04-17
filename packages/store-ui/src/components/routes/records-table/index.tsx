@@ -240,7 +240,6 @@ export const RecordsTable = () => {
 					}
 				}
 				getRowId={ ( row ) => row.id }
-				footerSlot="hizzlewp-collection__footer"
 				searchLabel={ labels?.search_items || 'Search' }
 				bulkActions={ <Header query={ preparedQuery } /> }
 				filtersButton={ <FiltersButton /> }

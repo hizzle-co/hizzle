@@ -116,12 +116,12 @@ const PrimaryColumn: React.FC<PrimaryColumnProps> = ( { record, name, viewType, 
 
 		if ( !path ) {
 			return {
-				className: 'hizzle-records__table-title-field',
+				className: 'hizzlewp-records-title-field',
 			};
 		}
 
 		return {
-			className: 'hizzle-records__table-title-field hizzle-records__table-title-field--clickable',
+			className: 'hizzlewp-records-title-field hizzlewp-records-title-field--clickable',
 			role: 'button',
 			tabIndex: 0,
 			onClick: ( event: React.MouseEvent ) => {
@@ -146,7 +146,7 @@ const PrimaryColumn: React.FC<PrimaryColumnProps> = ( { record, name, viewType, 
 	return (
 		<HStack spacing={ 3 } justify="flex-start">
 			{ avatar_url && (
-				<div className="hizzle-records__table-column-primary__media">
+				<div className="hizzlewp-records-view-table-column-primary__media">
 					<img className="hizzlewp-avatar" src={ avatar_url } alt={ value } />
 				</div>
 			) }

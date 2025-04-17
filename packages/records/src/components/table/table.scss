@@ -3,103 +3,13 @@
 @import 'breakpoints';
 @import 'variables';
 
-.hizzle-records__table-title-field {
-    font-size: $default-font-size;
-    font-weight: 500;
-    color: $gray-800;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 100%;
-    --wp-components-color-accent: $gray-800;
-
-    a {
-        text-decoration: none;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        display: block;
-        flex-grow: 0;
-        color: $gray-800;
-
-        &:hover {
-            color: var(--wp-admin-theme-color);
-        }
-
-        @include link-reset();
-    }
-
-    .components-button.is-link {
-        text-decoration: none;
-        font-weight: inherit;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        overflow: hidden;
-        display: block;
-        width: 100%;
-        color: $gray-900;
-
-        &:hover {
-            color: var(--wp-admin-theme-color);
-        }
-    }
-}
-
-.hizzle-records__table-title-field--clickable {
-    cursor: pointer;
-    color: $gray-800;
-
-    &:hover {
-        color: var(--wp-admin-theme-color);
-    }
-
-    @include link-reset();
-}
-
-.hizzle-records__table {
-    width: 100%;
-    text-indent: 0;
-    border-color: inherit;
-    border-collapse: collapse;
-    position: relative;
-    color: #757575;
-    margin-bottom: auto;
-
-    th {
-        text-align: left;
-        color: #1e1e1e;
-        font-weight: normal;
-        font-size: $default-font-size;
-    }
-
-    td,
-    th {
-        padding: $grid-unit-15;
-        white-space: nowrap;
-
-        &.hizzle-records__table__actions-column {
-            text-align: right;
-        }
-
-        &.hizzle-records__table__checkbox-column {
-            padding-right: 0;
-            width: 1%;
-        }
-    }
+table.hizzlewp-records-view-table {
 
     tr {
         border-top: 1px solid #f0f0f0;
 
         .hizzle-records__table-header-button {
             gap: $grid-unit-05;
-        }
-
-        td:first-child:not(.hizzle-records__table__checkbox-column),
-        th:first-child:not(.hizzle-records__table__checkbox-column) {
-            padding-left: $grid-unit-60;
-
-            .hizzle-records__table-header-button {
-                margin-left: - #{$grid-unit-10};
-            }
         }
 
         td:last-child,
@@ -114,76 +24,12 @@
         &.is-hovered {
             background-color: #f8f8f8;
         }
-
-        .components-checkbox-control__input.components-checkbox-control__input {
-            opacity: 0;
-
-            &:checked,
-            &:indeterminate,
-            &:focus {
-                opacity: 1;
-            }
-        }
-
-        .hizzle-records__table-item-actions .components-button:not(.hizzle-records__table-all-actions-button) {
-            opacity: 0;
-        }
-
-        &:focus-within,
-        &.is-hovered,
-        &:hover {
-
-            .components-checkbox-control__input,
-            .hizzle-records__table-item-actions .components-button:not(.hizzle-records__table-all-actions-button) {
-                opacity: 1;
-            }
-        }
-
-        @media (hover: none) {
-
-            // Show checkboxes and quick-actions on devices that do not support hover.
-            .components-checkbox-control__input.components-checkbox-control__input,
-            .hizzle-records__table-item-actions .components-button:not(.hizzle-records__table-all-actions-button) {
-                opacity: 1;
-            }
-        }
-
-        &.is-selected {
-            background-color: rgba(var(--wp-admin-theme-color--rgb), 0.04);
-            color: #757575;
-
-            &,
-            &+tr {
-                border-top: 1px solid rgba(var(--wp-admin-theme-color--rgb), 0.12);
-            }
-
-            &:hover {
-                background-color: rgba(var(--wp-admin-theme-color--rgb), 0.08);
-            }
-        }
     }
 
     thead {
-        position: sticky;
-        inset-block-start: 0;
-        z-index: 100;
-
-        tr {
-            border: 0;
-        }
-
         th {
             background-color: #f8f9fa;
-            padding-top: $grid-unit-10;
-            padding-bottom: $grid-unit-10;
-            padding-left: $grid-unit-15;
-            font-size: 11px;
-            text-transform: uppercase;
-            font-weight: 500;
-
-            &:has(.hizzle-records__table-header-button):not(:first-child) {
-                padding-left: $grid-unit-05;
-            }
+            border-top: 1px solid #f0f0f0;
         }
 
         &:last-child th {
@@ -191,77 +37,12 @@
         }
     }
 
-    tbody {
-        td {
-            vertical-align: top;
-        }
-
-        .hizzle-records__table__cell-content-wrapper {
-            min-height: $grid-unit-40;
-            display: flex;
-            align-items: center;
-        }
-
-        .components-v-stack>.hizzle-records__table__cell-content-wrapper:not(:first-child) {
-            min-height: 0;
-        }
+    tr td.hizzlewp-records-view-table__checkbox-column:first-child,
+    tr th.hizzlewp-records-view-table__checkbox-column:first-child {
+        padding-left: 12px;
     }
 
-    .hizzle-records__table-header-button {
-        padding: $grid-unit-05 $grid-unit-10;
-        font-size: 11px;
-        text-transform: uppercase;
-        font-weight: 500;
-
-        &:not(:hover) {
-            color: #1e1e1e;
-        }
-
-        span {
-            speak: none;
-
-            &:empty {
-                display: none;
-            }
-        }
+    .hizzle-records__table-selection-checkbox {
+        --checkbox-input-size: 24px;
     }
-
-    .hizzle-records__table-header {
-        padding-left: $grid-unit-05;
-    }
-
-    .hizzle-records__table__actions-column {
-        width: 1%;
-    }
-
-    &:has(tr.is-selected) {
-        .components-checkbox-control__input {
-            opacity: 1;
-        }
-    }
-}
-
-@container (max-width: 430px) {
-
-    .hizzle-records__table tr td:first-child,
-    .hizzle-records__table tr th:first-child {
-        padding-left: $grid-unit-30;
-    }
-
-    .hizzle-records__table tr td:last-child,
-    .hizzle-records__table tr th:last-child {
-        padding-right: $grid-unit-30;
-    }
-}
-
-.hizzle-records__table-selection-checkbox {
-    --checkbox-input-size: 24px;
-
-    @media (max-width: 600px) {
-        --checkbox-input-size: 16px;
-    }
-}
-
-.hizzle-records__table-column-primary__media {
-    max-width: 60px;
 }

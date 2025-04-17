@@ -25,7 +25,7 @@ import { PER_PAGE_OPTIONS } from '../../constants';
 /**
  * Pagination component for the table
  */
-export const Pagination = ( { footerSlot }: { footerSlot?: string } ) => {
+export const Pagination = () => {
 	const table = useTable();
 	const pageCount = table.getPageCount();
 	const rowCount = table.getRowCount();
@@ -69,19 +69,11 @@ export const Pagination = ( { footerSlot }: { footerSlot?: string } ) => {
 		};
 	} );
 
-	const Wrap = ( { children }: { children: React.ReactNode } ) => {
-		if ( footerSlot ) {
-			return <Fill name={ footerSlot }>{ children }</Fill>;
-		}
-
-		return children;
-	};
-
 	return (
-		<Wrap>
-			<div className="hizzle-records__table-pagination">
+		<div className="hizzlewp-records-footer">
+			<div className="hizzlewp-records-pagination">
 				<HStack justify="space-between" alignment="center">
-					<div className="hizzle-records__table-pagination-info">
+					<div className="hizzlewp-records__table-pagination-info">
 						<SelectControl
 							value={ pageSize.toString() }
 							options={ pageSizeOptions }
@@ -94,7 +86,7 @@ export const Pagination = ( { footerSlot }: { footerSlot?: string } ) => {
 					</div>
 					<HStack
 						expanded={ false }
-						className="hizzle-records__table-pagination"
+						className="hizzlewp-records__table-pagination"
 						justify="end"
 						spacing={ 6 }
 					>
@@ -102,7 +94,7 @@ export const Pagination = ( { footerSlot }: { footerSlot?: string } ) => {
 							justify="flex-start"
 							expanded={ false }
 							spacing={ 1 }
-							className="hizzle-records__table-pagination__page-select"
+							className="hizzlewp-records-pagination__page-select"
 						>
 							{ createInterpolateElement(
 								sprintf(
@@ -163,6 +155,6 @@ export const Pagination = ( { footerSlot }: { footerSlot?: string } ) => {
 					</HStack>
 				</HStack>
 			</div>
-		</Wrap>
+		</div>
 	);
 };

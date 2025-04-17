@@ -1,5 +1,4 @@
 @use './components/table/table.scss';
-@use './components/pagination/pagination.scss';
 
 /** Copied from https://cdn.jsdelivr.net/npm/@wordpress/dataviews/build-style/style.css */
 
@@ -1233,12 +1232,6 @@ div.hizzlewp-records-view-list {
 
 .hizzlewp-records-view-table-selection-checkbox {
     --checkbox-input-size: 24px;
-}
-
-@media (min-width: 600px) {
-    .hizzlewp-records-view-table-selection-checkbox {
-        --checkbox-input-size: 16px;
-    }
 }
 
 .hizzlewp-records-column-primary__media {

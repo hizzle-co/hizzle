@@ -143,7 +143,7 @@ const HeaderMenuToggle = memo(
 				size="compact"
 				ref={ ref }
 				variant="tertiary"
-				className="hizzle-records__table-header-button"
+				className="hizzlewp-records-view-table-header-button"
 				icon={ undefined }
 			>
 				{ children }
@@ -179,7 +179,7 @@ export const Head = () => {
 				return (
 					<tr
 						key={ headerGroup.id }
-						className="hizzle-records__table__row"
+						className="hizzlewp-records-view-table__row"
 					>
 						{ headerGroup.headers.map( ( header, index ) => {
 
@@ -236,7 +236,13 @@ export const Head = () => {
 									key={ header.id }
 									scope="col"
 									colSpan={ header.colSpan }
-									className={ classnames( 'hizzle-records__table__cell', { 'hizzle-records__table__checkbox-column': header.column.id === 'hizzlewp-selection' } ) }
+									className={ classnames( 'hizzlewp-records-view-table__cell', {
+										'hizzlewp-records-view-table__checkbox-column': header.column.id === 'hizzlewp-selection',
+										'hizzlewp-records-view-table__filtered-by-column': header.column.getCanFilter() && header.column.getIsFiltered(),
+										'hizzlewp-records-view-table__sorted-column': isSorted,
+										'hizzlewp-records-view-table__pinned-column__left': header.column.getIsPinned() === 'left',
+										'hizzlewp-records-view-table__pinned-column__right': header.column.getIsPinned() === 'right',
+									} ) }
 								>
 									{ header.isPlaceholder ? (
 										<>&nbsp;</>
@@ -252,7 +258,7 @@ export const Head = () => {
 													toggleProps={ {
 														as: HeaderMenuToggle,
 														className:
-															'hizzle-records__table-header-button',
+															'hizzlewp-records-view-table-header-button',
 														children: (
 															<>
 																{ flexRender(

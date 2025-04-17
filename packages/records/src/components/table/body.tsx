@@ -35,7 +35,7 @@ const TableRow: React.FC<{ row: Row<any>; primaryField?: string }> = ( { row } )
 	return (
 		<tr
 			key={ row.id }
-			className={ classnames( 'hizzle-records__table__row', { 'is-selected': row.getIsSelected() } ) }
+			className={ classnames( 'hizzlewp-records__table__row', { 'is-selected': row.getIsSelected() } ) }
 			onClick={ row.getCanSelect() ? row.getToggleSelectedHandler() : undefined }
 		>
 			{ row.getVisibleCells().map( ( cell ) => (
@@ -53,11 +53,11 @@ const TableRow: React.FC<{ row: Row<any>; primaryField?: string }> = ( { row } )
  */
 const TableCell: React.FC<{ cell: Cell<any, unknown>; primaryField?: string }> = ( { cell } ) => {
 	return (
-		<td className={ classnames( 'hizzle-records__table__cell', { 'hizzle-records__table__checkbox-column': cell.column.id === 'hizzlewp-selection' } ) }>
+		<td className={ classnames( 'hizzlewp-records-view-table__cell', { 'hizzlewp-records-view-table__checkbox-column': cell.column.id === 'hizzlewp-selection' } ) }>
 			<div
 				className={ classnames(
-					'hizzle-records__table__cell-content-wrapper',
-					`hizzle-records__table__cell-content-wrapper--${ cell.column.id }`,
+					'hizzlewp-records-view-table__cell-content-wrapper',
+					`hizzlewp-records-view-table__cell-content-wrapper--${ cell.column.id }`,
 				) }
 			>
 				{ flexRender(

@@ -103,7 +103,7 @@ export function TableProvider<TData>( {
 							onChange={ table.toggleAllPageRowsSelected }
 							indeterminate={ table.getIsSomeRowsSelected() }
 							aria-label={ table.getIsAllPageRowsSelected() ? 'Deselect all' : 'Select all' }
-							className="hizzle-records__table-selection-checkbox"
+							className="hizzlewp-records-view-table-selection-checkbox"
 							__nextHasNoMarginBottom
 						/>
 					)
@@ -115,7 +115,7 @@ export function TableProvider<TData>( {
 						onChange={ row.toggleSelected }
 						disabled={ !row.getCanSelect() }
 						aria-label={ row.getIsSelected() ? 'Unselect item' : 'Select item' }
-						className="hizzle-records__table-selection-checkbox"
+						className="hizzlewp-records-view-table-selection-checkbox"
 						__nextHasNoMarginBottom
 					/>
 				),

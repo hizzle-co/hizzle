@@ -20,7 +20,7 @@ export const Table: React.FC<React.HTMLAttributes<HTMLTableElement>> = ( { class
 	const table = useTable();
 
 	return (
-		<table className={ clsx( 'hizzle-records__table', className ) } { ...props }>
+		<table className={ clsx( 'hizzlewp-records-view-table', className ) } { ...props }>
 			<Head />
 			{ table.getRowCount() > 0 && <Body /> }
 		</table>
