@@ -22,7 +22,7 @@ interface ColumnFilter {
 }
 
 // Convert flat filters object to ColumnFilter[] format
-const flatFiltersToColumnFilters = ( filters: Record<string, string> ): ColumnFilter[] => {
+export const flatFiltersToColumnFilters = ( filters: Record<string, string> ): ColumnFilter[] => {
 	const columnFilters: Record<string, ColumnFilter> = {};
 
 	Object.entries( filters ).forEach( ( [ key, value ] ) => {
@@ -54,7 +54,7 @@ const flatFiltersToColumnFilters = ( filters: Record<string, string> ): ColumnFi
 };
 
 // Convert ColumnFilter[] format to flat filters object
-const columnFiltersToFlatFilters = ( columnFilters: ColumnFilter[] ): Record<string, string> => {
+export const columnFiltersToFlatFilters = ( columnFilters: ColumnFilter[] ): Record<string, string> => {
 	const flatFilters: Record<string, string> = {};
 
 	columnFilters.forEach( filter => {
@@ -185,14 +185,11 @@ const TheModal = ( { currentFilters, fields, setOpen } ) => {
 	const onApplyFilters = ( e ) => {
 		e?.preventDefault();
 
-		// Convert flat filters to ColumnFilter format
-		const columnFilters = flatFiltersToColumnFilters( filters );
-
 		// If there are no filters, don't set the query param
-		if ( columnFilters.length === 0 ) {
-			updateQueryString( { hizzlewp_filters: null as any } );
+		if ( filters && Object.keys( filters ).length === 0 ) {
+			updateQueryString( { hizzlewp_filters: '' } );
 		} else {
-			updateQueryString( { hizzlewp_filters: columnFilters as unknown as string[] } );
+			updateQueryString( { hizzlewp_filters: JSON.stringify( filters ) } );
 		}
 
 		setOpen( false );
@@ -335,12 +332,29 @@ export const useFilters = () => {
 	const fields = useFilterableFields( { isBulkEditing: false } );
 	return useMemo( () => {
 		const filters: ColumnFilter[] = [];
+		const filtersString = query?.hizzlewp_filters;
 
-		if ( !Array.isArray( query?.hizzlewp_filters ) ) {
+		if ( !filtersString || typeof filtersString !== 'string' ) {
 			return { fields, filters: [], preparedFilters: {} };
 		}
 
-		filters.push( ...query.hizzlewp_filters as unknown as ColumnFilter[] );
+		try {
+			const parsedFilters = JSON.parse( filtersString as string );
+
+			if ( !parsedFilters || 'object' !== typeof parsedFilters ) {
+				return { fields, filters: [], preparedFilters: {} };
+			}
+
+			const columnFilters = flatFiltersToColumnFilters( parsedFilters );
+
+			if ( !Array.isArray( columnFilters ) ) {
+				return { fields, filters: [], preparedFilters: {} };
+			}
+
+			filters.push( ...columnFilters );
+		} catch ( error ) {
+			return { fields, filters: [], preparedFilters: {} };
+		}
 
 		const filteredFilters = filters.filter( ( filter ) => {
 			return filter.id && fields.some( ( field ) => field.name === filter.id ) && Array.isArray( filter.value ) && filter.value.length > 0;

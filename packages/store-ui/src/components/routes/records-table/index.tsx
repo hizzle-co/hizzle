@@ -27,7 +27,7 @@ import { usePreferences } from '@hizzlewp/interface';
  */
 import { DisplayCell } from './display-cell';
 import { Header } from './header';
-import { FiltersButton } from './filters';
+import { FiltersButton, useFilters, columnFiltersToFlatFilters } from './filters';
 
 /**
  * Returns a prepared query.
@@ -42,8 +42,11 @@ export const usePreparedQuery = ( namespace: string, collection: string ): Recor
 	// Current query.
 	const query = useQuery();
 
+	// Current filters.
+	const { preparedFilters } = useFilters();
+
 	return useMemo( () => {
-		const preparedQuery: Record<string, any> = { ...query };
+		const preparedQuery: Record<string, any> = { ...query, ...preparedFilters };
 
 		if ( !query.orderby && preferences?.sorting?.[ 0 ]?.id ) {
 			preparedQuery.orderby = preferences.sorting[ 0 ].id;
@@ -59,8 +62,12 @@ export const usePreparedQuery = ( namespace: string, collection: string ): Recor
 			preparedQuery.per_page = -1;
 		}
 
+		// Remove page and hizzlewp_filters from the query.
+		delete preparedQuery.page;
+		delete preparedQuery.hizzlewp_filters;
+
 		return preparedQuery;
-	}, [ query, preferences ] );
+	}, [ query, preparedFilters, preferences ] );
 };
 
 /**
@@ -116,7 +123,7 @@ export const RecordsTable = () => {
 				),
 				meta: {
 					is_primary: prop.is_primary,
-					enum: prop.enum,
+					options: prop.enum,
 					multiple: prop.multiple,
 					is_dynamic: prop.is_dynamic,
 					is_boolean: prop.is_boolean,
@@ -140,6 +147,9 @@ export const RecordsTable = () => {
 		}, {} );
 	}, [ hidden, viewPreferences ] );
 
+	// Current filters.
+	const { filters } = useFilters();
+
 	// State.
 	const state = useMemo( () => {
 		const querySort = query.orderby;
@@ -162,10 +172,11 @@ export const RecordsTable = () => {
 			},
 			rowSelection: results.selected,
 			globalFilter: query.search || '',
+			columnFilters: filters,
 		} as Partial<TableProviderProps<Record<string, any>>[ 'state' ]>;
 
 		return state;
-	}, [ results.selected, results.totalItems, query, preferences ] );
+	}, [ results.selected, results.totalItems, query, preferences, filters ] );
 
 	// Update state.
 	const onChange = useCallback( ( state: Partial<TableProviderProps<Record<string, any>>[ 'state' ]> ) => {
@@ -220,6 +231,12 @@ export const RecordsTable = () => {
 				onGlobalFilterChange={
 					( globalFilter ) => {
 						updateQueryString( { search: globalFilter || '' } );
+					}
+				}
+				onColumnFiltersChange={
+					( columnFilters ) => {
+						const newValue = Array.isArray( columnFilters ) && columnFilters.length > 0 ? JSON.stringify( columnFiltersToFlatFilters( columnFilters ) ) : '';
+						updateQueryString( { hizzlewp_filters: newValue } );
 					}
 				}
 				getRowId={ ( row ) => row.id }
