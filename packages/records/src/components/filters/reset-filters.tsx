@@ -9,7 +9,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { useTable } from '..';
 
-export const ResetFilter: React.FC = () => {
+export const ResetFilters: React.FC = () => {
     const table = useTable();
     const filters = table.getState().columnFilters;
 
