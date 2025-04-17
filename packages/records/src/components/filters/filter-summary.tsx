@@ -18,6 +18,11 @@ import {
 import { __, sprintf } from '@wordpress/i18n';
 import { closeSmall } from '@wordpress/icons';
 
+/**
+ * Internal dependencies
+ */
+import { EditFilterValue } from './filter-value';
+
 const ENTER = 'Enter';
 const SPACE = ' ';
 
@@ -35,16 +40,22 @@ interface FilterValueProps {
 	column: Column<unknown, unknown>
 	filter: ColumnFilter
 	onRemove: () => void
+	onUpdate: ( filter: string | string[] ) => void
+	suffix?: '' | '_not' | '_min' | '_max' | '_before' | '_after'
 }
 
 const FilterValue: React.FC<FilterValueProps> = ( {
-	value,
+	value: rawValue,
 	label,
 	column,
 	filter,
 	onRemove,
+	onUpdate,
+	suffix = ''
 }: FilterValueProps ) => {
 	const toggleRef = useRef<HTMLDivElement>( null );
+
+	let value = rawValue;
 
 	// Ensure value is an array
 	if ( value && typeof value === 'string' ) {
@@ -133,8 +144,13 @@ const FilterValue: React.FC<FilterValueProps> = ( {
 			) }
 			renderContent={ () => {
 				return (
-					<VStack spacing={ 0 } justify="flex-start">
-						TODO: Add filter content here.
+					<VStack justify="flex-start" style={ { padding: 20, overflow: 'auto' } }>
+						<EditFilterValue
+							value={ rawValue }
+							label={ label }
+							onUpdate={ onUpdate }
+							column={ column }
+						/>
 					</VStack>
 				);
 			} }
@@ -163,6 +179,7 @@ const FilterValues: React.FC<FilterValuesProps> = ( {
 				onRemove={ onRemove }
 				column={ column }
 				filter={ filter }
+				onUpdate={ column.setFilterValue }
 			/>
 		);
 	}
@@ -179,6 +196,7 @@ const FilterValues: React.FC<FilterValuesProps> = ( {
 				onRemove={ onRemove }
 				column={ column }
 				filter={ filter }
+				onUpdate={ column.setFilterValue }
 			/>
 		);
 	}
@@ -188,6 +206,7 @@ const FilterValues: React.FC<FilterValuesProps> = ( {
 			column,
 			filter,
 			value: filterValue,
+			suffix,
 			onRemove: () => {
 				value.splice( index, 1 );
 
@@ -197,6 +216,16 @@ const FilterValues: React.FC<FilterValuesProps> = ( {
 					column.setFilterValue( value );
 				}
 			},
+			onUpdate: ( filter: string | string[] ) => {
+				const newValue = [ ...value ]
+
+				newValue[ index ] = {
+					suffix: suffix,
+					value: filter
+				};
+
+				column.setFilterValue( newValue );
+			}
 		};
 
 		switch ( suffix ) {

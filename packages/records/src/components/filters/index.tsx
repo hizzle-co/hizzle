@@ -36,11 +36,6 @@ export const Filters: React.FC = () => {
 							filters.filter( ( f ) => f.id !== filter.id )
 						);
 					} }
-					onUpdate={ ( filter ) => {
-						table.setColumnFilters(
-							filters.map( ( f ) => f.id === filter.id ? filter : f )
-						);
-					} }
 				/>
 			) ) }
 
