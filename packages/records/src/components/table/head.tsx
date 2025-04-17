@@ -28,7 +28,8 @@ import {
 /**
  * Internal dependencies
  */
-import { useTable } from './context';
+import { useTable } from '../context';
+import { SORTING_DIRECTIONS } from '../../constants';
 
 const sortArrows = {
 	asc: '↑',
@@ -39,8 +40,6 @@ const sortIcons = {
 	asc: arrowUp,
 	desc: arrowDown,
 };
-
-const SORTING_DIRECTIONS = [ 'asc', 'desc' ];
 
 type MenuProps = {
 	/**
@@ -56,7 +55,7 @@ type MenuProps = {
 
 const Sort = ( { onClose, header }: MenuProps ) => (
 	<MenuGroup label="Sort">
-		{ [ 'asc', 'desc' ].map(
+		{ SORTING_DIRECTIONS.map(
 			( direction ) => (
 				<MenuItem
 					icon={ sortIcons[ direction ] }

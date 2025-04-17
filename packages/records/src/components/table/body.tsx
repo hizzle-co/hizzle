@@ -8,7 +8,7 @@ import classnames from 'clsx';
 /**
  * Internal dependencies
  */
-import { useTable } from './context';
+import { useTable } from '../context';
 
 /**
  * The body component for the table.
@@ -66,5 +66,5 @@ const TableCell: React.FC<{ cell: Cell<any, unknown>; primaryField?: string }> =
 				) }
 			</div>
 		</td>
-	)
+	);
 }
