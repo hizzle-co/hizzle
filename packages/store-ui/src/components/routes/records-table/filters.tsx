@@ -187,9 +187,9 @@ const TheModal = ( { currentFilters, fields, setOpen } ) => {
 
 		// If there are no filters, don't set the query param
 		if ( filters && Object.keys( filters ).length === 0 ) {
-			updateQueryString( { hizzlewp_filters: '' } );
+			updateQueryString( { hizzlewp_filters: '', paged: '1' } );
 		} else {
-			updateQueryString( { hizzlewp_filters: JSON.stringify( filters ) } );
+			updateQueryString( { hizzlewp_filters: JSON.stringify( filters ), paged: '1' } );
 		}
 
 		setOpen( false );

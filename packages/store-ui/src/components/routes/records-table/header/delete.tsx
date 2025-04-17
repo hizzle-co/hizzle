@@ -55,7 +55,7 @@ export const BulkDelete = ( { query, isAllSelected, recordsCount } ) => {
 
 		setDeleting( true );
 
-		bulkDeleteCollectionRecords( namespace, collection, query )
+		bulkDeleteCollectionRecords( namespace as string, collection as string, query )
 			.then( ( res ) => {
 				setOpen( false );
 			} )

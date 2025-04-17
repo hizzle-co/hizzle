@@ -385,7 +385,13 @@ export const getCollectionRecords =
 
 getCollectionRecords.shouldInvalidate = ( action, namespace: string, collection: string ) => {
 	return (
-		( [ 'DO_BATCH_COLLECTION_ACTION_FINISH', 'RECEIVE_COLLECTION_RECORDS', 'REMOVE_ITEMS' ].includes( action.type ) ) &&
+		( [
+			'DO_BATCH_COLLECTION_ACTION_FINISH',
+			'DO_BULK_DELETE_COLLECTION_RECORDS_FINISH',
+			'DO_BULK_UPDATE_COLLECTION_RECORDS_FINISH',
+			'RECEIVE_COLLECTION_RECORDS',
+			'REMOVE_ITEMS'
+		].includes( action.type ) ) &&
 		action.invalidateCache &&
 		namespace === action.namespace &&
 		collection === action.collection

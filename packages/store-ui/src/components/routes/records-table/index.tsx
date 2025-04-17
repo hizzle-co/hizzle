@@ -230,13 +230,13 @@ export const RecordsTable = () => {
 				}
 				onGlobalFilterChange={
 					( globalFilter ) => {
-						updateQueryString( { search: globalFilter || '' } );
+						updateQueryString( { search: globalFilter || '', paged: '1' } );
 					}
 				}
 				onColumnFiltersChange={
 					( columnFilters ) => {
 						const newValue = Array.isArray( columnFilters ) && columnFilters.length > 0 ? JSON.stringify( columnFiltersToFlatFilters( columnFilters ) ) : '';
-						updateQueryString( { hizzlewp_filters: newValue } );
+						updateQueryString( { hizzlewp_filters: newValue, paged: '1' } );
 					}
 				}
 				getRowId={ ( row ) => row.id }

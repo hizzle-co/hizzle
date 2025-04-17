@@ -259,8 +259,9 @@ const receiveQueries = withQueryComposables( ( state, action ) => {
 			perPage
 		),
 		meta: action.meta,
-		selected: state?.selected || [],
-		allSelected: state?.allSelected || false,
+		// Reset selected and allSelected when receiving records.
+		selected: {},
+		allSelected: false,
 	};
 } );
 
