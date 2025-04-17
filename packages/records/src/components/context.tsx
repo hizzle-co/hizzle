@@ -144,6 +144,13 @@ export function TableProvider<TData>( {
 
 		// Server-side state management.
 		...( state && {
+			...( tableOptions.onColumnFiltersChange && {
+				onColumnFiltersChange: ( columnFilters ) => {
+					if ( columnFilters ) {
+						tableOptions.onColumnFiltersChange?.( functionOrValue( columnFilters, state.columnFilters || [] ) );
+					}
+				},
+			} ),
 			onColumnOrderChange: ( columnOrder ) => {
 				if ( onChange && columnOrder ) {
 					onChange( { ...state, columnOrder: functionOrValue( columnOrder, state.columnOrder || [] ) } );

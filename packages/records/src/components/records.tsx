@@ -21,7 +21,7 @@ import { ErrorBoundary } from '@hizzlewp/components';
 /**
  * Internal dependencies
  */
-import { TableProvider, Table, TableProviderProps, ActionsPanel, Pagination } from '.';
+import { TableProvider, Table, TableProviderProps, ActionsPanel, Pagination, Filters } from '.';
 
 export type TableProps<TData = Record<string, unknown>> = Omit<TableProviderProps<TData>, 'children'> & {
 
@@ -44,46 +44,66 @@ export type TableProps<TData = Record<string, unknown>> = Omit<TableProviderProp
 	 * The label of the search input. Leave blank to disable the search input.
 	 */
 	searchLabel?: string;
+
+	/**
+	 * Optional bulk actions.
+	 */
+	bulkActions?: React.ReactNode;
+
+	/**
+	 * Optional filters button.
+	 */
+	filtersButton?: React.ReactNode;
 };
 
-export const Records: React.FC<TableProps> = (
-	{ emptyMessage, isLoading, footerSlot, searchLabel, ...props }
-) => {
+export const Records: React.FC<TableProps> = ( {
+	emptyMessage,
+	isLoading,
+	footerSlot,
+	searchLabel,
+	bulkActions,
+	filtersButton,
+	...props
+} ) => {
 	const hasData = props.data?.length > 0;
 	const tableNoticeId = useId();
 
 	// TODO: Add views for grid and list.
 	return (
 		<TableProvider { ...props }>
-			<ErrorBoundary>
-				<ActionsPanel
-					bulkActions={ props.bulkActions }
-					searchLabel={ searchLabel }
-				/>
-			</ErrorBoundary>
-			<div className="hizzle-records__wrapper">
+			<div className="hizzlewp-records-wrapper">
+				<ErrorBoundary>
+					<ActionsPanel
+						bulkActions={ bulkActions }
+						searchLabel={ searchLabel }
+						filtersButton={ filtersButton }
+					/>
+				</ErrorBoundary>
 				<VStack spacing={ 4 }>
-					<ErrorBoundary>
-						<Table aria-busy={ isLoading } aria-describedby={ tableNoticeId } />
-					</ErrorBoundary>
+					<Filters />
+					<div>
+						<ErrorBoundary>
+							<Table aria-busy={ isLoading } aria-describedby={ tableNoticeId } />
+						</ErrorBoundary>
 
-					{ ( !hasData || isLoading ) && (
-						<div
-							className={ clsx( {
-								'hizzle-records__loading': isLoading,
-								'hizzle-records__no-results': !hasData && !isLoading,
-							} ) }
-							id={ tableNoticeId }
-						>
-							<p>{ isLoading ? (
-								<Spinner />
-							) : (
-								<Text weight={ 700 } size={ 17 } variant="muted" truncate>
-									{ emptyMessage || 'No results' }
-								</Text>
-							) }</p>
-						</div>
-					) }
+						{ ( !hasData || isLoading ) && (
+							<div
+								className={ clsx( {
+									'hizzlewp-records-loading': isLoading,
+									'hizzlewp-records-no-results': !hasData && !isLoading,
+								} ) }
+								id={ tableNoticeId }
+							>
+								<p>{ isLoading ? (
+									<Spinner />
+								) : (
+									<Text weight={ 700 } size={ 17 } variant="muted" truncate>
+										{ emptyMessage || 'No results' }
+									</Text>
+								) }</p>
+							</div>
+						) }
+					</div>
 
 					<ErrorBoundary>
 						<Pagination footerSlot={ footerSlot } />

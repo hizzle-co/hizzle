@@ -276,6 +276,10 @@
     box-shadow: 0 0 0 var(--wp-admin-border-width-focus) var(--wp-admin-theme-color);
 }
 
+.hizzlewp-records-filters__summary-filter-text-value {
+    overflow-wrap: anywhere;
+}
+
 .hizzlewp-records-filters__search-widget-filter-combobox-list {
     max-height: 184px;
     padding: 4px;

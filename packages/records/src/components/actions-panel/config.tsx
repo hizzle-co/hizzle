@@ -10,7 +10,7 @@ import {
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import React, { memo } from 'react';
-import { cog, check, chevronRightSmall } from '@wordpress/icons';
+import { moreVertical, check, chevronRightSmall } from '@wordpress/icons';
 
 /**
  * Internal dependencies
@@ -224,7 +224,7 @@ const SortMenu: React.FC = () => {
 export const Config = memo( function Config() {
 	return (
 		<OriginalDropdownMenu
-			icon={ cog }
+			icon={ moreVertical }
 			size="compact"
 			label={ __( 'View options' ) }
 		>

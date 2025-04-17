@@ -6,25 +6,41 @@ import { __experimentalHStack as HStack } from '@wordpress/components';
 /**
  * Internal dependencies
  */
-import { useTable, TableProviderProps } from '..';
 import { Config } from './config';
 import { RecordsSearch } from './search';
 
 /**
  * Actions panel component
  */
-export const ActionsPanel = ( { bulkActions, searchLabel }: { bulkActions: TableProviderProps<any>[ 'bulkActions' ], searchLabel?: string } ) => {
-	const table = useTable();
-
+export const ActionsPanel = ( { bulkActions = null, searchLabel = undefined, filtersButton = null }: { bulkActions?: React.ReactNode, searchLabel?: string, filtersButton?: React.ReactNode } ) => {
 	return (
-		<HStack expanded={ false }>
-			{ bulkActions && bulkActions(
-				table.getSelectedRowModel().rows.map( ( row ) => row.id ),
-				table.getIsAllPageRowsSelected(),
-				table.getIsAllRowsSelected()
+		<HStack
+			alignment="top"
+			justify="space-between"
+			className="hizzlewp-records__view-actions"
+			spacing={ 1 }
+			wrap
+		>
+
+			{ ( searchLabel || filtersButton ) && (
+				<HStack
+					justify="start"
+					expanded={ false }
+					className="hizzlewp-records__search"
+				>
+					{ searchLabel && <RecordsSearch label={ searchLabel } /> }
+					{ filtersButton }
+				</HStack>
 			) }
-			{ searchLabel && <RecordsSearch label={ searchLabel } /> }
-			<Config />
+
+			<HStack
+				spacing={ 1 }
+				expanded={ false }
+				style={ { flexShrink: 0 } }
+			>
+				{ bulkActions }
+				<Config />
+			</HStack>
 		</HStack>
 	);
 };
