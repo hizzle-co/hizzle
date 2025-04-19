@@ -34,10 +34,14 @@ if (baseConfig.module && baseConfig.module.rules) {
 						loader.loader &&
 						loader.loader.includes('sass-loader')
 					) {
+						const variables = [ 'mixins', 'functions', 'colors', 'variables', 'animations', 'breakpoints'];
+						const additionalData = variables.map(variable => `@use "${variable}";`).join('\n');
+
 						return {
 							...loader,
 							options: {
 								...loader.options,
+								additionalData,
 								sassOptions: {
 									...((loader.options &&
 										loader.options.sassOptions) ||

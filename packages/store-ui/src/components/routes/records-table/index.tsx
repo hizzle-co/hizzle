@@ -239,7 +239,7 @@ export const RecordsTable = () => {
 						updateQueryString( { hizzlewp_filters: newValue, paged: '1' } );
 					}
 				}
-				getRowId={ ( row ) => row.id }
+				getRowId={ ( row ) => row.id as string }
 				searchLabel={ labels?.search_items || 'Search' }
 				bulkActions={ <Header query={ preparedQuery } /> }
 				filtersButton={ <FiltersButton /> }
