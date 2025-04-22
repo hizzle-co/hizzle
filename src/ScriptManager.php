@@ -72,6 +72,8 @@ class ScriptManager {
 						filemtime( $folder_path . 'style-index.css' )
 					);
 
+					wp_style_add_data( 'hizzlewp-' . $folder, 'rtl', 'replace' );
+
 					self::$style_handles[] = 'hizzlewp-' . $folder;
 				}
 			}
