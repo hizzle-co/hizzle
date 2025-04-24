@@ -16,7 +16,7 @@ import { useDispatch } from '@wordpress/data';
  * HizzleWP dependencies.
  */
 import { ErrorBoundary } from '@hizzlewp/components';
-import { useCollectionRecords, useProvidedCollectionConfig, store as hizzleStore } from '@hizzlewp/store';
+import { useCollectionRecords, useProvidedCollectionConfig, store as hizzleStore, getRawValue } from '@hizzlewp/store';
 import { useQuery, updateQueryString } from '@hizzlewp/history';
 import { Records, PER_PAGE_OPTIONS } from '@hizzlewp/records';
 import type { TableProviderProps } from '@hizzlewp/records/build-types/components/table/context';
@@ -109,7 +109,7 @@ export const RecordsTable = () => {
 
 			columns.push( {
 				accessorKey: prop.name,
-				header: prop.label,
+				header: prop.js_props?.table_label || prop.label,
 				enableSorting: !prop.is_dynamic && !prop.is_meta,
 				enableColumnFilter: !prop.is_dynamic,
 				enableHiding: !prop.is_primary,
@@ -118,6 +118,8 @@ export const RecordsTable = () => {
 						row={ row.original }
 						header={ prop }
 						isBadge={ Array.isArray( badges ) && badges.includes( prop.name ) }
+						namespace={ namespace }
+						collection={ collection }
 						path={ `${ namespace }/${ collection }/${ row.original.id }` }
 					/>
 				),
@@ -239,7 +241,7 @@ export const RecordsTable = () => {
 						updateQueryString( { hizzlewp_filters: newValue, paged: '1' } );
 					}
 				}
-				getRowId={ ( row ) => row.id as string }
+				getRowId={ ( row ) => getRawValue( row, 'id' ) as string }
 				searchLabel={ labels?.search_items || 'Search' }
 				bulkActions={ <Header query={ preparedQuery } /> }
 				filtersButton={ <FiltersButton /> }
