@@ -58,7 +58,7 @@ export const usePreparedQuery = ( namespace: string, collection: string ): Recor
 		}
 
 		// If per_page is set but not in PER_PAGE_OPTIONS, default to -1 (show all)
-		if ( preparedQuery.per_page && !PER_PAGE_OPTIONS.includes( Number( query.per_page ) ) ) {
+		if ( preparedQuery.per_page && !PER_PAGE_OPTIONS.includes( Number( preparedQuery.per_page ) ) ) {
 			preparedQuery.per_page = -1;
 		}
 
