@@ -16,6 +16,14 @@ import {
 } from '@wordpress/components';
 import type { ButtonProps } from '@wordpress/components/build-types/button/types';
 
+/**
+ * HizzleWP dependencies
+ */
+import { ImageOrIcon } from '@hizzlewp/components';
+
+/**
+ * HizzleWP header props.
+ */
 type HeaderProps = {
 	brand?: {
 		/**
@@ -65,10 +73,10 @@ export const Header = ( {
 					wrap
 				>
 					{ brand?.logo && (
-						<img
-							src={ brand.logo }
+						<ImageOrIcon
+							image={ brand.logo }
 							alt={ brand.name }
-							style={ { width: 'auto', height: '40px' } }
+							width={ 24 }
 						/>
 					) }
 					{ brand?.name && (
