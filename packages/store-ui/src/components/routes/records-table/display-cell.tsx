@@ -1,7 +1,7 @@
 /**
  * External dependencies.
  */
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useCallback } from "react";
 
 /**
  * WordPress dependencies.
@@ -15,14 +15,14 @@ import {
 } from "@wordpress/components";
 import { dateI18n, getSettings } from "@wordpress/date";
 import { getQueryArg, addQueryArgs } from "@wordpress/url";
-import { useState } from "@wordpress/element";
 import { __ } from "@wordpress/i18n";
 
 /**
  * HizzleWP dependencies.
  */
+import { getRawValue } from "@hizzlewp/store";
 import type { RecordProp } from "@hizzlewp/store/build-types/types";
-import { updatePath } from '@hizzlewp/history';
+import { updatePath, updateQueryString } from '@hizzlewp/history';
 
 /**
  * Local dependencies.
@@ -91,12 +91,27 @@ export const normalizeAvatarColors = ( avatarUrl, fallbackText, isGrid = false )
 	return avatarUrl;
 }
 
+function hasCollectionNavigationLink( htmlString ) {
+	if ( typeof htmlString !== 'string' ) {
+		return false;
+	}
+
+	const parser = new DOMParser();
+	const doc = parser.parseFromString( htmlString, 'text/html' );
+	return !!doc.querySelector( 'a[data-navigate-collection]' );
+}
+
 type PrimaryColumnProps = {
 	record: Record<string, any>;
 	name: string;
 	basePath?: string;
 	viewType?: 'table' | 'grid';
 	path?: string;
+	rawValue?: string;
+	value: string;
+	header?: RecordProp;
+	handleClick?: ( e: React.MouseEvent ) => void;
+	isHtml?: boolean;
 }
 
 /**
@@ -107,10 +122,20 @@ type PrimaryColumnProps = {
  * @param {string} props.label The label of the column.
  * @param {string} props.description The description of the column.
  */
-const PrimaryColumn: React.FC<PrimaryColumnProps> = ( { record, name, viewType, path } ) => {
+const PrimaryColumn: React.FC<PrimaryColumnProps> = ( { record, value, rawValue, name, viewType, path, handleClick, isHtml } ) => {
 
-	const value = record[ name ];
-	const avatar_url = viewType !== 'table' ? '' : normalizeAvatarColors( record.avatar_url, value );
+	const avatar_url = viewType !== 'table' ? '' : normalizeAvatarColors( record.avatar_url, rawValue );
+
+	let theValue: React.ReactNode = value;
+	if ( isHtml ) {
+		if ( hasCollectionNavigationLink( value ) ) {
+			// replace all instances of data-navigate-collection with href="#" data-navigate-collection in the value.
+			const theContent = value.replace( /data-navigate-collection/g, 'href="#" data-navigate-collection' );
+			return <div dangerouslySetInnerHTML={ { __html: theContent } } onClick={ handleClick } />;
+		}
+
+		theValue = <div dangerouslySetInnerHTML={ { __html: value } } />;
+	}
 
 	const clickableProps = useMemo( () => {
 
@@ -147,11 +172,11 @@ const PrimaryColumn: React.FC<PrimaryColumnProps> = ( { record, name, viewType, 
 		<HStack spacing={ 3 } justify="flex-start">
 			{ avatar_url && (
 				<div className="hizzlewp-records-view-table-column-primary__media">
-					<img className="hizzlewp-avatar" src={ avatar_url } alt={ value } />
+					<img className="hizzlewp-avatar" src={ avatar_url } alt={ rawValue } />
 				</div>
 			) }
 			<div { ...clickableProps }>
-				{ value }
+				{ theValue }
 			</div>
 		</HStack>
 	);
@@ -197,6 +222,8 @@ type CellProps = {
 	viewType?: 'table' | 'grid';
 	isBadge?: boolean;
 	path?: string;
+	namespace: string;
+	collection: string;
 }
 
 /**
@@ -204,9 +231,29 @@ type CellProps = {
  * @param {Object} props
  * @param {Object} props.row The record object.
  */
-export const DisplayCell: React.FC<CellProps> = ( { row, header, viewType = 'table', isBadge = false, path } ) => {
+export const DisplayCell: React.FC<CellProps> = ( { row, header, viewType = 'table', isBadge = false, namespace, collection } ) => {
 
-	const value = row[ header.name ];
+	const value = row[ header.name ] && row[ header.name ].rendered !== undefined
+		? row[ header.name ].rendered
+		: row[ header.name ];
+	const rawValue = getRawValue( row[ header.name ] );
+	const path = `${ namespace }/${ collection }`;
+	const isHtml = header.js_props?.isHtml || row[ header.name ]?.rendered;
+
+	const handleClick = useCallback( ( e ) => {
+		const link = e?.target?.closest?.( 'a[data-navigate-collection]' );
+		if ( link ) {
+			e.preventDefault();
+			e.stopPropagation();
+			const newPath = link.getAttribute( 'data-navigate-collection' );
+			// Check if path starts with a slash, if not, add it.
+			if ( !newPath.startsWith( '/' ) ) {
+				updatePath( `${ path }/${ newPath }` );
+			} else {
+				updateQueryString( {}, newPath, {} );
+			}
+		}
+	}, [ path ] );
 
 	// Nulls and undefined values are displayed as a dash.
 	if ( value === null || value === undefined || value === '' ) {
@@ -219,7 +266,19 @@ export const DisplayCell: React.FC<CellProps> = ( { row, header, viewType = 'tab
 	}
 
 	if ( header.is_primary && typeof value === 'string' ) {
-		return <PrimaryColumn record={ row } name={ header.name } viewType={ viewType } path={ path } />;
+		return (
+			<PrimaryColumn
+				record={ row }
+				name={ header.name }
+				viewType={ viewType }
+				path={ `${ path }/${ getRawValue( row.id ) }` }
+				rawValue={ rawValue }
+				value={ value }
+				header={ header }
+				handleClick={ handleClick }
+				isHtml={ isHtml }
+			/>
+		);
 	}
 
 	// Avatar URLs are displayed as an avatar.
@@ -272,6 +331,15 @@ export const DisplayCell: React.FC<CellProps> = ( { row, header, viewType = 'tab
 		// If we have an enum, display the label.
 		if ( header.enum && isObject( header.enum ) ) {
 			return <Badge style={ getEnumBadge( value ) }>{ header.enum?.[ value ] || value }</Badge>;
+		}
+
+		if ( isHtml ) {
+			if ( hasCollectionNavigationLink( value ) ) {
+				// replace all instances of data-navigate-collection with href="#" data-navigate-collection in the value.
+				const theContent = value.replace( /data-navigate-collection/g, 'href="#" data-navigate-collection' );
+				return <div dangerouslySetInnerHTML={ { __html: theContent } } onClick={ handleClick } />;
+			}
+			return <div dangerouslySetInnerHTML={ { __html: value } } />;
 		}
 
 		return value;
