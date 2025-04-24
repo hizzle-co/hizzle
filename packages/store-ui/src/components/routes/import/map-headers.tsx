@@ -68,7 +68,7 @@ const MapHeader = ( { options, fieldOptions, fieldLabel, value, setValue, custom
 	const preparedOptions = useOptions( fieldOptions );
 
 	return (
-		<HStack spacing={ 4 } justify="flex-start" wrap>
+		<HStack spacing={ 4 } justify="flex-start" wrap >
 
 			<SelectControl
 				label={ fieldLabel }
@@ -77,6 +77,7 @@ const MapHeader = ( { options, fieldOptions, fieldLabel, value, setValue, custom
 				options={ options }
 				__next40pxDefaultSize
 				__nextHasNoMarginBottom
+				style={ { width: '320px', maxWidth: '100%' } }
 			/>
 
 			{ '-1' === value && (
@@ -92,6 +93,7 @@ const MapHeader = ( { options, fieldOptions, fieldLabel, value, setValue, custom
 							}
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
+							style={ { width: '320px', maxWidth: '100%' } }
 						/>
 					) : (
 						<TextControl
@@ -101,6 +103,7 @@ const MapHeader = ( { options, fieldOptions, fieldLabel, value, setValue, custom
 							onChange={ setCustomValue }
 							__next40pxDefaultSize
 							__nextHasNoMarginBottom
+							style={ { width: '320px', maxWidth: '100%' } }
 						/>
 					) }
 				</>
@@ -334,16 +337,14 @@ export const MapHeaders = ( { file, back, onContinue } ) => {
 				) }
 			</Slot>
 
-			<div>
-				<Button variant="primary" className="hizzlewp-block-button" onClick={ () => onContinue( mappedHeaders, updateRecords ) }>
+			<HStack justify="flex-start" wrap>
+				<Button variant="primary" onClick={ () => onContinue( mappedHeaders, updateRecords ) }>
 					{ __( 'Import', 'newsletter-optin-box' ) }
 				</Button>
-			</div>
-			<div>
-				<Button variant="secondary" className="hizzlewp-block-button" onClick={ back }>
+				<Button variant="secondary" onClick={ back }>
 					{ __( 'Import a different file', 'newsletter-optin-box' ) }
 				</Button>
-			</div>
+			</HStack>
 		</VStack>
 	);
 }

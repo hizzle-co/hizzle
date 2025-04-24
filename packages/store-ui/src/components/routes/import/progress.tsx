@@ -450,7 +450,6 @@ export const Progress = ( { file, headers, back, updateRecords }: ProgressProps 
 				<div>
 					<Button
 						variant="primary"
-						className="hizzlewp-block-button"
 						text={ labels.view_items || 'View Records' }
 						onClick={ () => updatePath( `/${ namespace }/${ collection }` ) }
 						style={ { maxWidth: 200 } }

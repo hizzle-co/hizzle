@@ -19,7 +19,7 @@ import {
 export const SelectFile = ( { onUpload } ) => {
 
     return (
-        <VStack spacing={ 5 }>
+        <VStack spacing={ 5 } style={ { maxWidth: 500 } }>
 
             <Text weight={ 600 } as="h3">
                 { __( 'This tool allows you to import existing records from a CSV file.', 'newsletter-optin-box' ) }
