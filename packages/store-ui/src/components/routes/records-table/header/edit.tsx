@@ -134,7 +134,7 @@ export const BulkEdit = ( { isBulkEditing = true, query, isAllSelected, recordsC
 
 		setSaving( true );
 
-		bulkUpdateCollectionRecords( namespace, collection, query, changes )
+		bulkUpdateCollectionRecords( namespace || '', collection || '', query, changes )
 			.then( () => {
 				setSaved( true );
 				setChanges( {} );
@@ -164,7 +164,6 @@ export const BulkEdit = ( { isBulkEditing = true, query, isAllSelected, recordsC
 				text={ title }
 				label={ !isAllSelected ? __( 'Edit Selected', 'newsletter-optin-box' ) : __( 'Edit all matching records', 'newsletter-optin-box' ) }
 				showTooltip
-				icon="edit"
 			/>
 
 			{ isOpen && (

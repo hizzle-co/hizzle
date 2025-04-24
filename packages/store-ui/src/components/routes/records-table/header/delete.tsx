@@ -83,7 +83,6 @@ export const BulkDelete = ( { query, isAllSelected, recordsCount } ) => {
 			<Button
 				onClick={ () => setOpen( true ) }
 				variant="tertiary"
-				icon="trash"
 				text={ title }
 				isDestructive
 			/>
