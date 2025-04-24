@@ -6,6 +6,11 @@ import { Cell, flexRender, Row } from '@tanstack/react-table';
 import classnames from 'clsx';
 
 /**
+ * HizzleWP dependencies
+ */
+import { ErrorBoundary } from '@hizzlewp/components';
+
+/**
  * Internal dependencies
  */
 import { useTable } from '../context';
@@ -60,10 +65,12 @@ const TableCell: React.FC<{ cell: Cell<any, unknown>; primaryField?: string }> =
 					`hizzlewp-records-view-table__cell-content-wrapper--${ cell.column.id }`,
 				) }
 			>
-				{ flexRender(
-					cell.column.columnDef.cell,
-					cell.getContext()
-				) }
+				<ErrorBoundary>
+					{ flexRender(
+						cell.column.columnDef.cell,
+						cell.getContext()
+					) }
+				</ErrorBoundary>
 			</div>
 		</td>
 	);
