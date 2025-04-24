@@ -76,7 +76,7 @@ export const Header = ( {
 						<ImageOrIcon
 							image={ brand.logo }
 							alt={ brand.name }
-							width={ 24 }
+							width={ 40 }
 						/>
 					) }
 					{ brand?.name && (
