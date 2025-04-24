@@ -14,6 +14,7 @@ import {
 	ifMatchingAction,
 	replaceAction,
 	onSubKey,
+	getRawValue,
 } from '../../../utils';
 import { DEFAULT_ENTITY_KEY, DEFAULT_CONTEXT } from '../../../constants';
 import getQueryParts from '../../get-query-parts';
@@ -125,7 +126,7 @@ const items = ( state: QueriedDataState[ 'items' ] = { view: {}, edit: {} }, act
 				[ context ]: {
 					...state[ context ],
 					...action.records.reduce( ( accumulator, value ) => {
-						const itemId = value?.[ key ];
+						const itemId = getRawValue( value, key );
 
 						accumulator[ itemId ] = conservativeMapItem(
 							state?.[ context ]?.[ itemId ],
@@ -179,7 +180,7 @@ const itemIsComplete = ( state: QueriedDataState[ 'itemIsComplete' ] = { view: {
 				[ context ]: {
 					...state[ context ],
 					...action.records.reduce( ( result, item ) => {
-						const itemId = item?.[ key ];
+						const itemId = getRawValue( item, key );
 
 						// Defer to completeness if already assigned. Technically the
 						// data may be outdated if receiving items for a field subset.
@@ -254,7 +255,7 @@ const receiveQueries = withQueryComposables( ( state, action ) => {
 	return {
 		itemIds: getMergedItemIds(
 			state?.itemIds || [],
-			action.records.map( ( item ) => item?.[ key ] ).filter( Boolean ),
+			action.records.map( ( item ) => getRawValue( item, key ) ).filter( Boolean ),
 			page,
 			perPage
 		),

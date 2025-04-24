@@ -60,7 +60,7 @@ export type ReceiveCollectionRecordsAction = CollectionAction & {
 	/**
 	 * The key of the collection record.
 	 */
-	key?: CollectionRecordKey;
+	key?: string;
 };
 
 export type ToggleAllCollectionRecordsSelectedAction = CollectionAction & {

@@ -15,3 +15,4 @@ export {
 	ALLOWED_RESOURCE_ACTIONS,
 } from './user-permissions';
 export { RECEIVE_INTERMEDIATE_RESULTS } from './receive-intermediate-results';
+export { getRawValue } from './get-raw-value';

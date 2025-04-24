@@ -9,6 +9,7 @@ import fastDeepEqual from 'fast-deep-equal/es6';
 import type { CollectionRecordKey, CollectionRecord } from '../../../types';
 import { DEFAULT_ENTITY_KEY, DEFAULT_CONTEXT } from '../../../constants';
 import type { ReceiveCollectionRecordsAction } from '../../actions';
+import { getRawValue } from '../../../utils';
 
 /**
  * Define action types for better type safety
@@ -40,7 +41,7 @@ export const edits = (
             const nextState = { ...state };
 
             for ( const record of action.records ?? [] ) {
-                const recordId = record?.[ action.key || DEFAULT_ENTITY_KEY ];
+                const recordId = getRawValue( record, action.key || DEFAULT_ENTITY_KEY );
                 const edits = nextState[ recordId ];
                 if ( !edits ) {
                     continue;
@@ -57,7 +58,7 @@ export const edits = (
                             // comparison.
                             !fastDeepEqual(
                                 edits[ key ],
-                                record[ key ]?.raw ?? record[ key ]
+                                getRawValue( record, key )
                             ) &&
                             // Sometimes the server alters the sent value which means
                             // we need to also remove the edits before the api request.
