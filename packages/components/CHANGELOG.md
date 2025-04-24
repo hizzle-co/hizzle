@@ -3,6 +3,59 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.2.7](https://github.com/hizzle-co/hizzle/compare/@hizzlewp/components@1.0.1...@hizzlewp/components@1.2.7) (2025-04-24)
+
+
+
+## 1.1.6 (2025-04-19)
+
+
+### Features
+
+* add AnimatedNumber component for animating numerical transitions with customizable duration ([b89b882](https://github.com/hizzle-co/hizzle/commit/b89b88293a534e14c3132250408beae6af2bd45a))
+
+
+
+## 1.1.5 (2025-04-07)
+
+
+
+## 1.1.4 (2025-03-26)
+
+
+
+## 1.1.3 (2025-03-22)
+
+
+
+## 1.1.2 (2025-03-21)
+
+
+
+## 1.1.1 (2025-03-20)
+
+
+
+# 1.1.0 (2025-03-19)
+
+
+### Bug Fixes
+
+* Don't minize npm releases ([cfdbbdb](https://github.com/hizzle-co/hizzle/commit/cfdbbdbf70ba971cf4b507bffa6f404378991b76))
+
+
+
+## 1.0.1 (2025-03-19)
+
+
+### Features
+
+* Add composer ([9b2c1a9](https://github.com/hizzle-co/hizzle/commit/9b2c1a94a414d9d49a9460661ab0a5056283c387))
+
+
+
+
+
 ## [1.2.6](https://github.com/hizzle-co/hizzle/compare/@hizzlewp/components@1.0.1...@hizzlewp/components@1.2.6) (2025-04-19)
 
 
