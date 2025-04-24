@@ -19,7 +19,7 @@ import { useProvidedCollection, store as hizzleStore } from '@hizzlewp/store';
 /**
  * Local dependencies.
  */
-import ExportButton from "./export";
+import { ExportButton } from "./export";
 import { BulkDelete } from "./delete";
 import { BulkEdit } from "./edit";
 
@@ -96,7 +96,7 @@ export const Header: React.FC<{ query: Record<string, any> }> = ( { query } ) =>
 				<BulkEdit { ...args } isBulkEditing />
 			</ActionItem>
 			<ActionItem>
-				TODO
+				<ExportButton { ...args } />
 			</ActionItem>
 			<ActionItem>
 				<BulkDelete { ...args } />
