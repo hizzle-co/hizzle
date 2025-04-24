@@ -24,11 +24,20 @@ class ScriptManager {
 	private static $style_handles = array();
 
 	/**
+	 * Registered namespaces.
+	 *
+	 * $namespace => $brand_details
+	 *
+	 * @var array
+	 */
+	private static $namespaces = array();
+
+	/**
 	 * Registered collection menus.
 	 *
 	 * @var array
 	 */
-	private static $registered_collections = array();
+	private static $collections = array();
 
 	/**
 	 * Initializes the script manager.
@@ -127,17 +136,27 @@ class ScriptManager {
 	}
 
 	/**
-	 * Collection menu.
+	 * Registers a namespace.
 	 */
-	public static function register_collection_menu( $hook_suffix, $data ) {
-		self::$registered_collections[ $hook_suffix ] = $data;
+	public static function add_namespace( $namespace_name, $brand_details ) {
+		self::$namespaces[ $namespace_name ] = $brand_details;
+	}
+
+	/**
+	 * Registers a collection menu.
+	 */
+	public static function add_collection( $hook_suffix, $namespace_name, $collection_name ) {
+		self::$collections[ $hook_suffix ] = array(
+			'namespace'  => $namespace_name,
+			'collection' => $collection_name,
+		);
 	}
 
 	/**
 	 * Loads the collection.
 	 */
 	public static function load_collection( $hook_suffix ) {
-		if ( ! isset( self::$registered_collections[ $hook_suffix ] ) ) {
+		if ( ! isset( self::$collections[ $hook_suffix ] ) ) {
 			return;
 		}
 
@@ -148,7 +167,12 @@ class ScriptManager {
 			'hizzlewp-store-ui',
 			'hizzleWPStore',
 			array(
-				'data' => self::$registered_collections[ $hook_suffix ],
+				'data' => array_merge(
+					array(
+						'brand' => self::$namespaces[ self::$collections[ $hook_suffix ]['namespace'] ] ?? array(),
+					),
+					self::$collections[ $hook_suffix ]
+				),
 			)
 		);
 
