@@ -14,6 +14,7 @@ import { __experimentalVStack as VStack } from '@wordpress/components';
  */
 import { Interface, Header } from '@hizzlewp/interface';
 import { ErrorBoundary } from '@hizzlewp/components';
+import { updateQueryString, usePath } from '@hizzlewp/history';
 
 /**
  * Local dependancies.
@@ -23,9 +24,31 @@ import { Collection } from './collection';
 
 const TheHeader = ( props ) => {
 
+	const path = usePath();
+	const brand = useMemo( () => {
+
+		if ( !props.brand?.menu ) {
+			return props.brand;
+		}
+
+		const currentPath = props.brand.menu.find( ( item ) => item.updatePath && path && path.startsWith( item.updatePath ) );
+
+		return {
+			...props.brand,
+			menu: props.brand.menu.map( ( { updatePath, href, ...item } ) => (
+				{
+					...item,
+					href: updatePath ? undefined : href,
+					onClick: updatePath ? () => updateQueryString( {}, updatePath, {} ) : undefined,
+					isPressed: currentPath ? currentPath.updatePath === updatePath : item.isPressed,
+				}
+			) ),
+		}
+	}, [ props.brand, path ] );
+
 	return (
 		<ErrorBoundary>
-			<Header { ...props } />
+			<Header { ...props } brand={ brand } />
 		</ErrorBoundary>
 	);
 }
