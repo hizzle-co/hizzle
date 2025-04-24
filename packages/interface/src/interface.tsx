@@ -30,11 +30,11 @@ export const usePreferences = ( key: string, namespace: string = STORE_NAME ) =>
 	};
 };
 
-const WithFullscreenMode = ( { children }: { children: React.ReactNode } ) => {
+const WithFullscreenMode = ( { children, storeName = STORE_NAME }: { children: React.ReactNode, storeName?: string } ) => {
 	const isFullscreenActive = useSelect(
 		( select ) =>
-			!!select( preferencesStore ).get( STORE_NAME, 'fullscreenMode' ),
-		[]
+			!!select( preferencesStore ).get( storeName || STORE_NAME, 'fullscreenMode' ),
+		[ storeName ]
 	);
 
 	const isMobileViewport = useViewportMatch( 'medium', '<' );
@@ -65,13 +65,13 @@ const WithFullscreenMode = ( { children }: { children: React.ReactNode } ) => {
  * @param {string} [props.className]         Additional CSS class names.
  * @return {JSX.Element}              The interface component.
  */
-export const Interface = ( { className = '', ...rest }: { className?: string } & Record<string, any> ) => {
+export const Interface = ( { className = '', storeName = STORE_NAME, ...rest }: { className?: string, storeName?: string } & Record<string, any> ) => {
 	const useClassName = [ 'hizzlewp-app__interface', className ]
 		.filter( Boolean )
 		.join( ' ' );
 
 	return (
-		<WithFullscreenMode>
+		<WithFullscreenMode storeName={ storeName }>
 			<InterfaceSkeleton
 				className={ useClassName }
 				isDistractionFree={ false }
