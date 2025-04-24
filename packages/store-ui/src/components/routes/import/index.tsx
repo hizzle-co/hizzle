@@ -39,20 +39,18 @@ export const Import: React.FC = () => {
     // Display the add record form.
     return (
         <CardBody>
-            <HStack alignment="flex-start" justify="space-between" wrap>
-                <Fill name={ `/${ namespace }/${ collection }/title` }>
-                    <Heading level={ 1 } size={ 16 } truncate>
-                        { labels?.import || 'Import' }
-                    </Heading>
-                </Fill>
-                <ErrorBoundary>
-                    { file ? (
-                        <ImportFile file={ file } back={ () => setFile( null ) } />
-                    ) : (
-                        <SelectFile onUpload={ setFile } />
-                    ) }
-                </ErrorBoundary>
-            </HStack>
+            <Fill name={ `/${ namespace }/${ collection }/title` }>
+                <Heading level={ 1 } size={ 16 } truncate>
+                    { labels?.import || 'Import' }
+                </Heading>
+            </Fill>
+            <ErrorBoundary>
+                { file ? (
+                    <ImportFile file={ file } back={ () => setFile( null ) } />
+                ) : (
+                    <SelectFile onUpload={ setFile } />
+                ) }
+            </ErrorBoundary>
         </CardBody>
     );
 }

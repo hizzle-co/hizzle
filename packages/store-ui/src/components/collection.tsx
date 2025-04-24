@@ -60,14 +60,6 @@ export const Collection = ( { defaultNamespace, defaultCollection }: { defaultNa
 						),
 					},
 					{
-						path: '/:namespace/:collection/export',
-						element: (
-							<ErrorBoundary>
-								TODO
-							</ErrorBoundary>
-						),
-					},
-					{
 						path: '/:namespace/:collection/:recordId',
 						element: (
 							<ErrorBoundary>

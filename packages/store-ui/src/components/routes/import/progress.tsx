@@ -334,7 +334,7 @@ export const Progress = ( { file, headers, back, updateRecords }: ProgressProps 
 	}
 
 	return (
-		<VStack className="hizzlewp-import-progress">
+		<VStack className="hizzlewp-import-progress" spacing={ 4 }>
 
 			{ !done && (
 				<>
