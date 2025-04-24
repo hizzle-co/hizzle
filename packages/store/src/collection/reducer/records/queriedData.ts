@@ -152,10 +152,10 @@ const items = ( state: QueriedDataState[ 'items' ] = { view: {}, edit: {} }, act
 
 /**
  * Reducer tracking item completeness, keyed by ID. A complete item is one for
- * which all fields are known. This is used in supporting `_fields` queries,
+ * which all fields are known. This is used in supporting `__fields` queries,
  * where not all properties associated with an entity are necessarily returned.
  * In such cases, completeness is used as an indication of whether it would be
- * safe to use queried data for a non-`_fields`-limited request.
+ * safe to use queried data for a non-`__fields`-limited request.
  *
  * @param {Object<string,Object<string,boolean>>} state  Current state.
  * @param {Object}                                action Dispatched action.

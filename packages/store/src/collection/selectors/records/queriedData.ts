@@ -55,9 +55,9 @@ export const getCollectionRecord = createSelector(
 		}
 
 		const item = queriedState.items[ context ]?.[ key ];
-		if ( item && query._fields ) {
+		if ( item && query.__fields ) {
 			const filteredItem = {};
-			const fields = getNormalizedCommaSeparable( query._fields ) ?? [];
+			const fields = getNormalizedCommaSeparable( query.__fields ) ?? [];
 			for ( let f = 0; f < fields.length; f++ ) {
 				const field = fields[ f ].split( '.' );
 				let value = item;

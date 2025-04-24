@@ -20,6 +20,26 @@ import {
 import { GetRecordsHttpQuery } from './selectors';
 import { CollectionRecordKey, CollectionConfig } from './types';
 
+const throwWPError = async ( error: Response | unknown ) => {
+	// If error is a Response object, try to extract WP_Error from the body
+	if ( error instanceof Response ) {
+		let errorMessage = error.statusText;
+		try {
+			const errorData = await error.json();
+			if ( errorData && ( errorData.code || errorData.message ) ) {
+				errorMessage = errorData.message || errorData.code;
+			}
+		} catch ( jsonError ) {
+			// If we can't parse the JSON, just continue with the original error
+			console.error( 'Failed to parse error response:', jsonError );
+		}
+
+		throw new Error( errorMessage );
+	}
+
+	throw error;
+}
+
 /**
  * Requests a collection's record tab content from the REST API.
  *
@@ -85,16 +105,16 @@ export const getCollectionRecord =
 			const ID_KEY = entityConfig.key || DEFAULT_ENTITY_KEY;
 
 			try {
-				if ( query !== undefined && query._fields ) {
+				if ( query !== undefined && query.__fields ) {
 					// If requesting specific fields, items and query association to said
 					// records are stored by ID reference. Thus, fields must always include
 					// the ID.
 					query = {
 						...query,
-						_fields: [
+						__fields: [
 							...new Set( [
 								...( getNormalizedCommaSeparable(
-									query._fields
+									query.__fields
 								) || [] ),
 								ID_KEY,
 							] ),
@@ -118,7 +138,7 @@ export const getCollectionRecord =
 					}
 				);
 
-				if ( query !== undefined && query._fields ) {
+				if ( query !== undefined && query.__fields ) {
 					query = { ...query, include: [ key ] };
 
 					// The resolution cache won't consider query as reusable based on the
@@ -167,6 +187,8 @@ export const getCollectionRecord =
 						canUserResolutionsArgs
 					);
 				} );
+			} catch ( error ) {
+				await throwWPError( error );
 			} finally {
 				dispatch.__unstableReleaseStoreLock( lock );
 			}
@@ -222,15 +244,15 @@ export const getCollectionRecords =
 			}
 
 			try {
-				if ( query._fields ) {
+				if ( query.__fields ) {
 					// If requesting specific fields, items and query association to said
 					// records are stored by ID reference. Thus, fields must always include
 					// the ID.
 					query = {
 						...query,
-						_fields: [
+						__fields: [
 							...new Set( [
-								...( getNormalizedCommaSeparable( query._fields ) ||
+								...( getNormalizedCommaSeparable( query.__fields ) ||
 									[] ),
 								ID_KEY,
 							] ),
@@ -308,9 +330,9 @@ export const getCollectionRecords =
 				// If we request fields but the result doesn't contain the fields,
 				// explicitly set these fields as "undefined"
 				// that way we consider the query "fulfilled".
-				if ( query._fields ) {
+				if ( query.__fields ) {
 					records = records.map( ( record ) => {
-						query._fields.split( ',' ).forEach( ( field ) => {
+						query.__fields.split( ',' ).forEach( ( field ) => {
 							if ( !record.hasOwnProperty( field ) ) {
 								record[ field ] = undefined;
 							}
@@ -333,7 +355,7 @@ export const getCollectionRecords =
 					// the `getCollectionRecord` and `canUser` selectors in addition to `getCollectionRecords`.
 					// See https://github.com/WordPress/gutenberg/pull/26575
 					// See https://github.com/WordPress/gutenberg/pull/64504
-					if ( !query?._fields && !query.context ) {
+					if ( !query?.__fields && !query.context ) {
 						const targetHints = records
 							.filter( ( record ) => record?.[ ID_KEY ] )
 							.map( ( record ) => ( {
@@ -378,6 +400,8 @@ export const getCollectionRecords =
 
 					dispatch.__unstableReleaseStoreLock( lock );
 				} );
+			} catch ( error ) {
+				await throwWPError( error );
 			} finally {
 				dispatch.__unstableReleaseStoreLock( lock );
 			}

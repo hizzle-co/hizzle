@@ -84,7 +84,7 @@ export function getQueryParts( query: Record<string, any> ): WPQueriedDataQueryP
 				parts.context = value;
 				break;
 
-			case '_fields':
+			case '__fields':
 				parts.fields = getNormalizedCommaSeparable( value ) ?? [];
 				break;
 			case 'page':
