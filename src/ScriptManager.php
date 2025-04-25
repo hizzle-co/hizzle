@@ -160,6 +160,9 @@ class ScriptManager {
 			return;
 		}
 
+		$namespace  = self::$collections[ $hook_suffix ]['namespace'] ?? '';
+		$collection = self::$collections[ $hook_suffix ]['collection'] ?? '';
+
 		wp_enqueue_script( 'hizzlewp-store-ui' );
 
 		// Localize the script.
@@ -169,7 +172,7 @@ class ScriptManager {
 			array(
 				'data' => array_merge(
 					array(
-						'brand' => self::$namespaces[ self::$collections[ $hook_suffix ]['namespace'] ] ?? array(),
+						'brand' => self::$namespaces[ $namespace ] ?? array(),
 					),
 					self::$collections[ $hook_suffix ]
 				),
@@ -177,26 +180,28 @@ class ScriptManager {
 		);
 
 		// Preload the collection schema.
-		$preload_data = array_reduce(
-			array(
-				sprintf(
-					'/%s/v1/%s/collection_schema',
-					self::$collections[ $hook_suffix ]['namespace'],
-					self::$collections[ $hook_suffix ]['collection']
+		if ( ! empty( $namespace ) && ! empty( $collection ) ) {
+			$preload_data = array_reduce(
+				array(
+					sprintf(
+						'/%s/v1/%s/collection_schema',
+						$namespace,
+						$collection
+					),
 				),
-			),
-			'rest_preload_api_request',
-			array()
-		);
+				'rest_preload_api_request',
+				array()
+			);
 
-		wp_add_inline_script(
-			'wp-api-fetch',
-			sprintf(
-				'wp.apiFetch.use( wp.apiFetch.createPreloadingMiddleware( %s ) );',
-				wp_json_encode( $preload_data )
-			),
-			'after'
-		);
+			wp_add_inline_script(
+				'wp-api-fetch',
+				sprintf(
+					'wp.apiFetch.use( wp.apiFetch.createPreloadingMiddleware( %s ) );',
+					wp_json_encode( $preload_data )
+				),
+				'after'
+			);
+		}
 
 		do_action( 'hizzlewp_collection_loaded', $hook_suffix );
 	}

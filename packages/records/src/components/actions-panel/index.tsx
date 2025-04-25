@@ -13,6 +13,7 @@ import { RecordsSearch } from './search';
  * Actions panel component
  */
 export const ActionsPanel = ( { bulkActions = null, searchLabel = undefined, filtersButton = null }: { bulkActions?: React.ReactNode, searchLabel?: string, filtersButton?: React.ReactNode } ) => {
+	const showingFilters = searchLabel || filtersButton;
 	return (
 		<HStack
 			alignment="top"
@@ -22,7 +23,7 @@ export const ActionsPanel = ( { bulkActions = null, searchLabel = undefined, fil
 			wrap
 		>
 
-			{ ( searchLabel || filtersButton ) && (
+			{ showingFilters && (
 				<HStack
 					justify="start"
 					expanded={ false }
@@ -35,8 +36,9 @@ export const ActionsPanel = ( { bulkActions = null, searchLabel = undefined, fil
 
 			<HStack
 				spacing={ 1 }
-				expanded={ false }
+				expanded={ !showingFilters }
 				style={ { flexShrink: 0 } }
+				justify="end"
 			>
 				{ bulkActions }
 				<Config />

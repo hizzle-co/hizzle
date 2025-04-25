@@ -195,15 +195,9 @@ export const RecordsTable = () => {
 	// Toggle a record's selection.
 	const { setSelectedCollectionRecords } = useDispatch( hizzleStore );
 
-	if ( results.isResolving || !results.hasResolved ) {
-		return (
-			<div className="hizzlewp-records-table-loading">
-				<Spinner />
-			</div>
-		);
-	}
+	const isLoading = results.isResolving || !results.hasResolved;
 
-	if ( results.status === 'ERROR' ) {
+	if ( !isLoading && results.status === 'ERROR' ) {
 		return (
 			<Notice status="error" isDismissible={ false }>
 				{ results.error?.message || 'An unknown error occurred.' }
@@ -217,8 +211,8 @@ export const RecordsTable = () => {
 				rowCount={ results.totalItems || 0 }
 				data={ results.records || [] }
 				columns={ columns }
+				isLoading={ isLoading }
 				enableSorting
-				enableFiltering
 				enablePagination
 				state={ state }
 				onChange={ onChange }

@@ -16,12 +16,40 @@ import { useCollectionRecordTabContent } from '@hizzlewp/store';
 import type { CollectionTab } from "@hizzlewp/store";
 import type { TableProviderProps } from '@hizzlewp/records/build-types/components/table/context';
 import { ErrorBoundary } from "@hizzlewp/components";
-import { Table as RecordsTable } from '@hizzlewp/records';
+import { Records as RecordsTable } from '@hizzlewp/records';
 
 /**
  * Local dependencies
  */
 import getEnumBadge from "../../records-table/enum-colors";
+
+const prepareSearchValue = ( row: Record<string, any>, header: CollectionTab[ 'headers' ][ number ] ) => {
+    const { is_list, item, args, is_boolean, label } = header;
+
+    const value = row[ header.name ];
+
+    if ( is_list ) {
+        if ( !Array.isArray( value ) || 0 === value.length ) {
+            return '';
+        }
+
+        return value.map( ( arrayValue ) => {
+            let value = arrayValue;
+
+            if ( item && args ) {
+                return sprintf( item, ...args.map( arg => arrayValue[ arg ] ) );
+            }
+
+            return value;
+        } ).join( ' ' );
+    }
+
+    if ( is_boolean ) {
+        return value ? label : '';
+    }
+
+    return value;
+}
 
 /**
  * Displays a single cell.
@@ -131,6 +159,7 @@ export const Table = ( { namespace, collection, recordId, tabName, tab }: TableP
     // Available columns.
     const columns: TableProviderProps<Record<string, any>>[ 'columns' ] = useMemo( () => ( tab.headers.map( ( prop ) => ( {
         accessorKey: prop.name,
+        accessorFn: ( row ) => prepareSearchValue( row, prop ),
         header: prop.label,
         enableSorting: false,
         enableHiding: !prop.is_primary,
@@ -156,13 +185,15 @@ export const Table = ( { namespace, collection, recordId, tabName, tab }: TableP
     return (
         <ErrorBoundary>
             <RecordsTable
+                key={`${namespace}-${collection}-${recordId}-${tabName}`}
                 rowCount={ data.data?.length || 0 }
                 data={ data.data || [] }
                 columns={ columns }
                 emptyMessage={ tab.emptyMessage }
                 isLoading={ data.isResolving }
+                searchLabel="Search"
+                enableRowSelection={ false }
                 enableSorting
-                enableFiltering
                 enablePagination
             />
         </ErrorBoundary>
