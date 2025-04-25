@@ -1,6 +1,6 @@
 {
 	"name": "@hizzlewp/records",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"description": "Display records in a table, grid, or list",
 	"author": "picocodes",
 	"license": "GPL-2.0-or-later",
