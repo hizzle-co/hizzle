@@ -176,6 +176,28 @@ class ScriptManager {
 			)
 		);
 
+		// Preload the collection schema.
+		$preload_data = array_reduce(
+			array(
+				sprintf(
+					'/%s/v1/%s/collection_schema',
+					self::$collections[ $hook_suffix ]['namespace'],
+					self::$collections[ $hook_suffix ]['collection']
+				),
+			),
+			'rest_preload_api_request',
+			array()
+		);
+
+		wp_add_inline_script(
+			'wp-api-fetch',
+			sprintf(
+				'wp.apiFetch.use( wp.apiFetch.createPreloadingMiddleware( %s ) );',
+				wp_json_encode( $preload_data )
+			),
+			'after'
+		);
+
 		do_action( 'hizzlewp_collection_loaded', $hook_suffix );
 	}
 

@@ -433,7 +433,7 @@ export const getCollectionConfig =
 		async ( { dispatch } ) => {
 
 			const config = await apiFetch<CollectionConfig>( {
-				path: `/${ namespace }/v1/${ collection }/collection_schema?uniqid=${ Math.random() }`,
+				path: `/${ namespace }/v1/${ collection }/collection_schema`,
 			} );
 
 			if ( !config ) {
