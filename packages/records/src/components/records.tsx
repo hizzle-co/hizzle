@@ -21,7 +21,7 @@ import { ErrorBoundary } from '@hizzlewp/components';
 /**
  * Internal dependencies
  */
-import { TableProvider, Table, TableProviderProps, ActionsPanel, Pagination, Filters } from '.';
+import { TableProvider, useTable, Table, TableProviderProps, ActionsPanel, Pagination, Filters } from '.';
 
 export type TableProps<TData = Record<string, unknown>> = Omit<TableProviderProps<TData>, 'children'> & {
 
@@ -59,7 +59,6 @@ export const Records: React.FC<TableProps> = ( {
 	filtersButton,
 	...props
 } ) => {
-	const hasData = props.data?.length > 0;
 	const tableNoticeId = useId();
 
 	// TODO: Add views for grid and list.
@@ -80,30 +79,47 @@ export const Records: React.FC<TableProps> = ( {
 							<Table aria-busy={ isLoading } aria-describedby={ tableNoticeId } />
 						</ErrorBoundary>
 
-						{ ( !hasData || isLoading ) && (
-							<div
-								className={ clsx( {
-									'hizzlewp-records-loading': isLoading,
-									'hizzlewp-records-no-results': !hasData && !isLoading,
-								} ) }
-								id={ tableNoticeId }
-							>
-								<p>{ isLoading ? (
-									<Spinner />
-								) : (
-									<Text weight={ 700 } size={ 17 } variant="muted" truncate>
-										{ emptyMessage || 'No results' }
-									</Text>
-								) }</p>
-							</div>
-						) }
-					</div>
+						<ErrorBoundary>
+							<EmptyOrLoading
+								isLoading={ isLoading }
+								tableNoticeId={ tableNoticeId }
+								emptyMessage={ emptyMessage }
+							/>
+						</ErrorBoundary>
 
-					<ErrorBoundary>
-						<Pagination />
-					</ErrorBoundary>
+						<ErrorBoundary>
+							<Pagination />
+						</ErrorBoundary>
+					</div>
 				</VStack>
 			</div>
 		</TableProvider>
 	);
+}
+
+const EmptyOrLoading = ( { isLoading, tableNoticeId, emptyMessage }: { isLoading: boolean | undefined, tableNoticeId: string, emptyMessage: string | undefined } ) => {
+	const table = useTable();
+	const hasData = table.getRowModel().rows.length > 0;
+
+	if ( !hasData || isLoading ) {
+		return (
+			<div
+				className={ clsx( {
+					'hizzlewp-records-loading': isLoading,
+					'hizzlewp-records-no-results': !hasData && !isLoading,
+				} ) }
+				id={ tableNoticeId }
+			>
+				<p>{ isLoading ? (
+					<Spinner />
+				) : (
+					<Text weight={ 700 } size={ 17 } variant="muted" truncate>
+						{ emptyMessage || 'No results' }
+					</Text>
+				) }</p>
+			</div>
+		)
+	}
+
+	return null;
 }
