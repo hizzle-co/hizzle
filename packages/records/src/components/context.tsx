@@ -41,12 +41,6 @@ export interface TableProviderProps<TData>
 	enableSorting?: boolean;
 
 	/**
-	 * Whether to enable filtering functionality for the table.
-	 * @default true
-	 */
-	enableFiltering?: boolean;
-
-	/**
 	 * Whether to enable pagination functionality for the table.
 	 * @default true
 	 */
@@ -66,7 +60,7 @@ export interface TableProviderProps<TData>
 /**
  * Create the context
  */
-const TableContext = createContext<Table<any> | undefined>(
+const TableContext = createContext<{ table: Table<any> } | undefined>(
 	undefined
 );
 
@@ -78,10 +72,8 @@ const functionOrValue = ( value: any, oldValue: any ) => typeof value === 'funct
 export function TableProvider<TData>( {
 	children,
 	enableSorting = true,
-	enableFiltering = true,
 	enablePagination = true,
 	onChange,
-	state = undefined,
 	columns,
 	initialState,
 	...tableOptions
@@ -128,11 +120,11 @@ export function TableProvider<TData>( {
 		];
 	}, [ columns, tableOptions.enableRowSelection ] );
 
+	const state = tableOptions.state;
 	const table = useReactTable( {
 		...tableOptions,
 		columns: tableColumns,
 		getCoreRowModel: getCoreRowModel(),
-		state,
 		enableSorting,
 		initialState: {
 			...initialState,
@@ -204,7 +196,7 @@ export function TableProvider<TData>( {
 			...( enableSorting && {
 				getSortedRowModel: getSortedRowModel(),
 			} ),
-			...( enableFiltering && {
+			...( false !== tableOptions.enableFilters && {
 				getFilteredRowModel: getFilteredRowModel(),
 				globalFilterFn: 'includesString',
 			} ),
@@ -212,7 +204,7 @@ export function TableProvider<TData>( {
 	} );
 
 	return (
-		<TableContext.Provider value={ table }>{ children }</TableContext.Provider>
+		<TableContext.Provider value={ { table } }>{ children }</TableContext.Provider>
 	);
 }
 
@@ -226,5 +218,5 @@ export function useTable<TData>() {
 		throw new Error( 'useTable must be used within a TableProvider' );
 	}
 
-	return context as Table<TData>;
+	return context.table as Table<TData>;
 }
