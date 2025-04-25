@@ -17,11 +17,13 @@ import type { CollectionTab } from "@hizzlewp/store";
 import type { TableProviderProps } from '@hizzlewp/records/build-types/components/table/context';
 import { ErrorBoundary } from "@hizzlewp/components";
 import { Records as RecordsTable } from '@hizzlewp/records';
+import { updateQueryString } from "@hizzlewp/history";
 
 /**
  * Local dependencies
  */
 import getEnumBadge from "../../records-table/enum-colors";
+import { hasCollectionNavigationLink } from "../../records-table/display-cell";
 
 const prepareSearchValue = ( row: Record<string, any>, header: CollectionTab[ 'headers' ][ number ] ) => {
     const { is_list, item, args, is_boolean, label } = header;
@@ -60,6 +62,7 @@ const prepareSearchValue = ( row: Record<string, any>, header: CollectionTab[ 'h
 const DisplayCell = ( { row, header, headerKey }: { row: Record<string, any>, header: CollectionTab[ 'headers' ][ number ], headerKey: string } ) => {
 
     const { is_list, item, args, is_primary, url, is_boolean, is_badge } = header;
+    const value = row[ headerKey ];
 
     // If we're displaying a list of values, display a list.
     // For example, in Noptin, we display a list of links that
@@ -74,13 +77,13 @@ const DisplayCell = ( { row, header, headerKey }: { row: Record<string, any>, he
 
     if ( is_list ) {
 
-        if ( !Array.isArray( row[ headerKey ] ) || 0 === row[ headerKey ].length ) {
+        if ( !Array.isArray( value ) || 0 === value.length ) {
             return '—';
         }
 
         return (
             <VStack as="ul" spacing={ 4 } style={ { margin: 0 } }>
-                { row[ headerKey ].map( ( arrayValue, index ) => {
+                { value.map( ( arrayValue, index ) => {
                     let value = arrayValue;
 
                     if ( item && args ) {
@@ -101,7 +104,7 @@ const DisplayCell = ( { row, header, headerKey }: { row: Record<string, any>, he
         if ( !recordUrl ) {
             return (
                 <div className="hizzle-records__table-title-field">
-                    { row[ headerKey ] }
+                    { value }
                 </div>
             );
         }
@@ -115,26 +118,45 @@ const DisplayCell = ( { row, header, headerKey }: { row: Record<string, any>, he
         return (
             <div className="hizzle-records__table-title-field">
                 <Button variant="link" style={ btnStyle } href={ recordUrl } target="_blank">
-                    { row[ headerKey ] }
+                    { value }
                 </Button>
             </div>
         );
     }
 
     if ( is_boolean ) {
-        const theIcon = row[ headerKey ] ? 'yes' : 'no';
+        const theIcon = value ? 'yes' : 'no';
         return <Icon icon={ theIcon } />;
     }
 
-    if ( is_badge && row[ headerKey ] ) {
+    if ( is_badge && value ) {
         return (
-            <span className="hizzlewp-badge" style={ getEnumBadge( row[ headerKey ] ) }>
-                { row[ headerKey ] }
+            <span className="hizzlewp-badge" style={ getEnumBadge( value ) }>
+                { value }
             </span>
         )
     }
 
-    return <div dangerouslySetInnerHTML={ { __html: row[ headerKey ] } } />;
+    if ( 'string' === typeof value && hasCollectionNavigationLink( value ) ) {
+        // replace all instances of data-navigate-collection with href="#" data-navigate-collection in the value.
+        const theContent = value.replace( /data-navigate-collection/g, 'href="#" data-navigate-collection' );
+        return (
+            <div
+                dangerouslySetInnerHTML={ { __html: theContent } }
+                onClick={ ( e ) => {
+                    const link = e?.target?.closest?.( 'a[data-navigate-collection]' );
+                    if ( link ) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const newPath = link.getAttribute( 'data-navigate-collection' );
+                        updateQueryString( {}, newPath, {} );
+                    }
+                } }
+            />
+        );
+    }
+
+    return <div dangerouslySetInnerHTML={ { __html: value } } />;
 }
 
 type TableProps = {
@@ -185,7 +207,7 @@ export const Table = ( { namespace, collection, recordId, tabName, tab }: TableP
     return (
         <ErrorBoundary>
             <RecordsTable
-                key={`${namespace}-${collection}-${recordId}-${tabName}`}
+                key={ `${ namespace }-${ collection }-${ recordId }-${ tabName }` }
                 rowCount={ data.data?.length || 0 }
                 data={ data.data || [] }
                 columns={ columns }

@@ -91,7 +91,7 @@ export const normalizeAvatarColors = ( avatarUrl, fallbackText, isGrid = false )
 	return avatarUrl;
 }
 
-function hasCollectionNavigationLink( htmlString ) {
+export function hasCollectionNavigationLink( htmlString ) {
 	if ( typeof htmlString !== 'string' ) {
 		return false;
 	}
