@@ -120,7 +120,6 @@ export const RecordsTable = () => {
 						isBadge={ Array.isArray( badges ) && badges.includes( prop.name ) }
 						namespace={ namespace }
 						collection={ collection }
-						path={ `${ namespace }/${ collection }/${ row.original.id }` }
 					/>
 				),
 				meta: {
@@ -241,7 +240,7 @@ export const RecordsTable = () => {
 						updateQueryString( { hizzlewp_filters: newValue, paged: '1' } );
 					}
 				}
-				getRowId={ ( row ) => getRawValue( row, 'id' ) as string }
+				getRowId={ ( row ) => getRawValue( row.id ) as string }
 				searchLabel={ labels?.search_items || 'Search' }
 				bulkActions={ <Header query={ preparedQuery } /> }
 				filtersButton={ <FiltersButton /> }
