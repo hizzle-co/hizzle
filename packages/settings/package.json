@@ -1,6 +1,6 @@
 {
 	"name": "@hizzlewp/settings",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"description": "Display a settings page",
 	"author": "picocodes",
 	"license": "GPL-2.0-or-later",
@@ -29,9 +29,9 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@hizzlewp/components": "^1.2.9",
-		"@hizzlewp/history": "^1.0.6",
-		"@hizzlewp/interface": "^1.2.9",
+		"@hizzlewp/components": "^1.2.10",
+		"@hizzlewp/history": "^1.0.7",
+		"@hizzlewp/interface": "^1.2.10",
 		"@wordpress/api-fetch": "^7.20.0",
 		"@wordpress/data": "^10.20.0",
 		"@wordpress/i18n": "^5.20.0",
