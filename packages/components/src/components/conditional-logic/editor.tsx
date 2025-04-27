@@ -23,13 +23,13 @@ import {
 	ConditionalLogicTypeSelector,
 } from '.';
 import type { smartTag as SmartTagType } from '../hooks';
+import type { SelectOption } from '../select';
 
 interface ConditionalLogicEditorProps
 	extends Omit<
 		ConditionalLogicRulesProps,
 		| 'setConditionalLogicAttribute'
 		| 'rules'
-		| 'comparisons'
 		| 'availableSmartTags'
 		| 'className'
 		| 'inModal'
@@ -38,17 +38,12 @@ interface ConditionalLogicEditorProps
 	/**
 	 * Function to handle changes to the conditional logic.
 	 */
-	onChange: (value: any) => void;
+	onChange: ( value: any ) => void;
 
 	/**
 	 * The current conditional logic value.
 	 */
 	value: any;
-
-	/**
-	 * The available comparison operators.
-	 */
-	comparisons: Record<string, any>;
 
 	/**
 	 * Text to display for the toggle control.
@@ -69,6 +64,11 @@ interface ConditionalLogicEditorProps
 	 * Whether to display the editor in a modal.
 	 */
 	inModal: boolean;
+
+	/**
+	 * If options.
+	 */
+	ifOptions?: SelectOption[];
 }
 
 /**
@@ -85,13 +85,14 @@ export const ConditionalLogicEditor: React.FC<ConditionalLogicEditorProps> = (
 		availableSmartTags,
 		className,
 		inModal = false,
+		ifOptions,
 		...extra
 	} = props;
-	const [isOpen, setIsOpen] = useState(false);
+	const [ isOpen, setIsOpen ] = useState( false );
 
-	const theValue = useMemo(() => {
+	const theValue = useMemo( () => {
 		// If value is not an Object, set it to the default.
-		if (typeof value !== 'object') {
+		if ( typeof value !== 'object' ) {
 			return {
 				enabled: false,
 				action: 'allow',
@@ -101,99 +102,100 @@ export const ConditionalLogicEditor: React.FC<ConditionalLogicEditorProps> = (
 		}
 
 		return value;
-	}, [value]);
+	}, [ value ] );
 
 	// Sets conditional logic attribute.
 	const setConditionalLogicAttribute = useCallback(
-		(prop, val) => {
-			onChange({
+		( prop, val ) => {
+			onChange( {
 				...theValue,
-				[prop]: val,
-			});
+				[ prop ]: val,
+			} );
 		},
-		[onChange, theValue]
+		[ onChange, theValue ]
 	);
 
-	if (!availableSmartTags) {
+	if ( !availableSmartTags ) {
 		return null;
 	}
 
 	const el = (
-		<VStack spacing={5}>
+		<VStack spacing={ 5 }>
 			<ConditionalLogicTypeSelector
 				ruleCount={
-					Array.isArray(theValue.rules) ? theValue.rules.length : 0
+					Array.isArray( theValue.rules ) ? theValue.rules.length : 0
 				}
-				type={theValue.type}
-				action={theValue.action}
-				setConditionalLogicAttribute={setConditionalLogicAttribute}
+				type={ theValue.type }
+				action={ theValue.action }
+				setConditionalLogicAttribute={ setConditionalLogicAttribute }
+				ifOptions={ ifOptions }
 			/>
 
 			<ConditionalLogicRules
-				rules={theValue.rules}
-				comparisons={comparisons}
-				availableSmartTags={availableSmartTags}
-				setConditionalLogicAttribute={setConditionalLogicAttribute}
+				rules={ theValue.rules }
+				comparisons={ comparisons }
+				availableSmartTags={ availableSmartTags }
+				setConditionalLogicAttribute={ setConditionalLogicAttribute }
 				closeModal={
 					inModal
 						? () => {
-								setIsOpen(false);
-							}
+							setIsOpen( false );
+						}
 						: undefined
 				}
-				{...extra}
+				{ ...extra }
 			/>
 		</VStack>
 	);
 
 	return (
-		<VStack spacing={5} className={className}>
+		<VStack spacing={ 5 } className={ className }>
 			<ToggleControl
-				checked={theValue.enabled ? true : false}
-				onChange={(val) => setConditionalLogicAttribute('enabled', val)}
+				checked={ theValue.enabled ? true : false }
+				onChange={ ( val ) => setConditionalLogicAttribute( 'enabled', val ) }
 				label={
 					toggleText
 						? toggleText
 						: __(
-								'Optionally enable/disable this trigger depending on specific conditions.',
-								'newsletter-optin-box'
-							)
+							'Optionally enable/disable this trigger depending on specific conditions.',
+							'newsletter-optin-box'
+						)
 				}
 				__nextHasNoMarginBottom
 			/>
 
-			{theValue.enabled && (
+			{ theValue.enabled && (
 				<>
-					{inModal ? (
+					{ inModal ? (
 						<>
-							{isOpen && (
+							{ isOpen && (
 								<Modal
-									title={__(
+									title={ __(
 										'Conditional Logic',
 										'newsletter-optin-box'
-									)}
-									onRequestClose={() => setIsOpen(false)}
+									) }
+									onRequestClose={ () => setIsOpen( false ) }
 									isFullScreen
 								>
-									{el}
+									{ el }
 								</Modal>
-							)}
+							) }
 							<Button
 								variant="secondary"
 								className="hizzlewp-block-button"
-								onClick={() => setIsOpen(true)}
+								onClick={ () => setIsOpen( true ) }
 							>
-								{__(
+								{ __(
 									'Edit Conditional Logic',
 									'newsletter-optin-box'
-								)}
+								) }
 							</Button>
 						</>
 					) : (
-						<>{el}</>
-					)}
+						<>{ el }</>
+					) }
 				</>
-			)}
+			) }
 		</VStack>
 	);
 };

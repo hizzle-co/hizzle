@@ -466,6 +466,7 @@ export function Setting( {
 				comparisons={ setting.comparisons }
 				toggleText={ setting.toggle_text }
 				inModal={ setting.in_modal }
+				ifOptions={ setting.if_options }
 			/>
 		);
 	}
