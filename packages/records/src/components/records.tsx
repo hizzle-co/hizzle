@@ -57,13 +57,14 @@ export const Records: React.FC<TableProps> = ( {
 	searchLabel,
 	bulkActions,
 	filtersButton,
+	data,
 	...props
 } ) => {
 	const tableNoticeId = useId();
 
 	// TODO: Add views for grid and list.
 	return (
-		<TableProvider { ...props }>
+		<TableProvider { ...props } data={ isLoading ? [] : data }>
 			<div className="hizzlewp-records-wrapper">
 				<ErrorBoundary>
 					<ActionsPanel
