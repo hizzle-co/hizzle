@@ -69,13 +69,20 @@ export const getCollectionRecordTabContent =
 			dispatch.receiveCollectionRecordTabContent( namespace, collection, recordId, tabName, content );
 		};
 
-getCollectionRecordTabContent.shouldInvalidate = ( action, namespace: string, collection: string ) => {
+getCollectionRecordTabContent.shouldInvalidate = ( action, namespace: string, collection: string, recordId: CollectionRecordKey ) => {
 	return (
 		( [ 'DO_BATCH_COLLECTION_ACTION_FINISH' ].includes( action.type ) ) &&
 		action.invalidateCache &&
 		namespace === action.namespace &&
 		collection === action.collection
-	);
+	) ||
+		(
+			( [ 'SAVE_COLLECTION_RECORD_FINISH' ].includes( action.type ) ) &&
+			!action.error &&
+			namespace === action.namespace &&
+			collection === action.collection &&
+			recordId === action.recordId
+		);
 };
 
 /**
