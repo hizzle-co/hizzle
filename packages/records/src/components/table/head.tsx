@@ -192,11 +192,23 @@ export const Head = () => {
 							 */
 							const moveLeft = () => {
 								if ( canMoveLeft ) {
-									const newColumnOrder = [ ...columnOrder ];
-									const previousId = newColumnOrder[ index - 1 ];
-									newColumnOrder[ index - 1 ] = newColumnOrder[ index ];
-									newColumnOrder[ index ] = previousId;
-									table.setColumnOrder( newColumnOrder );
+									// Find the actual index in columnOrder
+									const currentColumnId = header.column.id;
+									const currentOrderIndex = columnOrder.indexOf( currentColumnId );
+
+									// Skip past any hidden columns to find the previous visible column
+									let prevOrderIndex = currentOrderIndex - 1;
+									while ( prevOrderIndex >= 0 && !headers.some( h => h.id === columnOrder[ prevOrderIndex ] ) ) {
+										prevOrderIndex--;
+									}
+
+									if ( prevOrderIndex >= 0 ) {
+										const newColumnOrder = [ ...columnOrder ];
+										const previousId = newColumnOrder[ prevOrderIndex ];
+										newColumnOrder[ prevOrderIndex ] = currentColumnId;
+										newColumnOrder[ currentOrderIndex ] = previousId;
+										table.setColumnOrder( newColumnOrder );
+									}
 								}
 							};
 
@@ -205,11 +217,23 @@ export const Head = () => {
 							 */
 							const moveRight = () => {
 								if ( canMoveRight ) {
-									const newColumnOrder = [ ...columnOrder ];
-									const nextId = newColumnOrder[ index + 1 ];
-									newColumnOrder[ index + 1 ] = newColumnOrder[ index ];
-									newColumnOrder[ index ] = nextId;
-									table.setColumnOrder( newColumnOrder );
+									// Find the actual index in columnOrder
+									const currentColumnId = header.column.id;
+									const currentOrderIndex = columnOrder.indexOf( currentColumnId );
+
+									// Skip past any hidden columns to find the next visible column
+									let nextOrderIndex = currentOrderIndex + 1;
+									while ( nextOrderIndex < columnOrder.length && !headers.some( h => h.id === columnOrder[ nextOrderIndex ] ) ) {
+										nextOrderIndex++;
+									}
+
+									if ( nextOrderIndex < columnOrder.length ) {
+										const newColumnOrder = [ ...columnOrder ];
+										const nextId = newColumnOrder[ nextOrderIndex ];
+										newColumnOrder[ nextOrderIndex ] = currentColumnId;
+										newColumnOrder[ currentOrderIndex ] = nextId;
+										table.setColumnOrder( newColumnOrder );
+									}
 								}
 							};
 
