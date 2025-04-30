@@ -162,9 +162,10 @@ export const Head = () => {
 
 				// Get all visible headers.
 				const headers = headerGroup.headers;
+				const headerIds = headers.map( ( header ) => header.id );
 
 				// Use the column order if it exists, otherwise use the visible headers.
-				const columnOrder = stateColumnOrder.length > 0 ? stateColumnOrder : headers.map( ( header ) => header.id );
+				const columnOrder = stateColumnOrder.length > 0 ? stateColumnOrder : headerIds;
 
 				// Whether the columns can be moved.
 				// If there is only one column, it cannot be moved.
@@ -191,24 +192,62 @@ export const Head = () => {
 							 * Swap the current column with the one to its left.
 							 */
 							const moveLeft = () => {
-								if ( canMoveLeft ) {
-									// Find the actual index in columnOrder
-									const currentColumnId = header.column.id;
-									const currentOrderIndex = columnOrder.indexOf( currentColumnId );
 
-									// Skip past any hidden columns to find the previous visible column
-									let prevOrderIndex = currentOrderIndex - 1;
-									while ( prevOrderIndex >= 0 && !headers.some( h => h.id === columnOrder[ prevOrderIndex ] ) ) {
-										prevOrderIndex--;
+								if ( !canMoveLeft ) return;
+
+								// Find the actual index in columnOrder
+								const currentColumnId = header.column.id;
+								const currentOrderIndex = columnOrder.indexOf( currentColumnId );
+
+								// Safety check for invalid current column
+								if ( currentOrderIndex === -1 ) {
+									// If the column is not ordered, use headerIds order.
+									// If the column is not in columnOrder, find its position in headerIds
+									const headerIndex = headerIds.indexOf( currentColumnId );
+									if ( headerIndex === -1 ) return; // Safety check
+
+									// Find the closest previous column in headerIds that exists in columnOrder
+									let prevHeaderIndex = headerIndex - 1;
+									while ( prevHeaderIndex >= 0 ) {
+										const prevHeaderId = headerIds[ prevHeaderIndex ];
+										const prevOrderIndex = columnOrder.indexOf( prevHeaderId );
+
+										if ( prevOrderIndex !== -1 ) {
+											// Found a valid previous column in both headerIds and columnOrder
+											const newColumnOrder = [ ...columnOrder ];
+											newColumnOrder.splice( prevOrderIndex + 1, 0, currentColumnId );
+											table.setColumnOrder( newColumnOrder );
+											break;
+										}
+										prevHeaderIndex--;
 									}
 
-									if ( prevOrderIndex >= 0 ) {
+									// If no valid previous column was found, add to the beginning
+									if ( prevHeaderIndex < 0 ) {
+										const newColumnOrder = [ currentColumnId, ...columnOrder ];
+										table.setColumnOrder( newColumnOrder );
+									}
+
+									return;
+								}
+
+								// Find the previous visible column with a safety counter
+								let prevOrderIndex = currentOrderIndex - 1;
+								let safetyCounter = columnOrder.length;
+
+								while ( prevOrderIndex >= 0 && safetyCounter > 0 ) {
+									// Check if this column is visible and valid
+									if ( headers.some( h => h.id === columnOrder[ prevOrderIndex ] ) ) {
+										// Found a valid previous column
 										const newColumnOrder = [ ...columnOrder ];
 										const previousId = newColumnOrder[ prevOrderIndex ];
 										newColumnOrder[ prevOrderIndex ] = currentColumnId;
 										newColumnOrder[ currentOrderIndex ] = previousId;
 										table.setColumnOrder( newColumnOrder );
+										break;
 									}
+									prevOrderIndex--;
+									safetyCounter--;
 								}
 							};
 
@@ -216,24 +255,59 @@ export const Head = () => {
 							 * Swap the current column with the one to its right.
 							 */
 							const moveRight = () => {
-								if ( canMoveRight ) {
-									// Find the actual index in columnOrder
-									const currentColumnId = header.column.id;
-									const currentOrderIndex = columnOrder.indexOf( currentColumnId );
+								if ( !canMoveRight ) return;
 
-									// Skip past any hidden columns to find the next visible column
-									let nextOrderIndex = currentOrderIndex + 1;
-									while ( nextOrderIndex < columnOrder.length && !headers.some( h => h.id === columnOrder[ nextOrderIndex ] ) ) {
-										nextOrderIndex++;
+								// Find the actual index in columnOrder
+								const currentColumnId = header.column.id;
+								const currentOrderIndex = columnOrder.indexOf( currentColumnId );
+
+								// Safety check for invalid current column
+								if ( currentOrderIndex === -1 ) {
+									// If the column is not ordered, use headerIds order.
+									// If the column is not in columnOrder, find its position in headerIds
+									const headerIndex = headerIds.indexOf( currentColumnId );
+									if ( headerIndex === -1 ) return; // Safety check
+
+									// Find the closest next column in headerIds that exists in columnOrder
+									let nextHeaderIndex = headerIndex + 1;
+									while ( nextHeaderIndex < headerIds.length ) {
+										const nextHeaderId = headerIds[ nextHeaderIndex ];
+										const nextOrderIndex = columnOrder.indexOf( nextHeaderId );
+
+										if ( nextOrderIndex !== -1 ) {
+											// Found a valid next column in both headerIds and columnOrder
+											const newColumnOrder = [ ...columnOrder ];
+											newColumnOrder.splice( nextOrderIndex, 0, currentColumnId );
+											table.setColumnOrder( newColumnOrder );
+											break;
+										}
+										nextHeaderIndex++;
 									}
 
-									if ( nextOrderIndex < columnOrder.length ) {
+									// If no valid next column was found, add to the end
+									if ( nextHeaderIndex >= headerIds.length ) {
+										const newColumnOrder = [ ...columnOrder, currentColumnId ];
+										table.setColumnOrder( newColumnOrder );
+									}
+								}
+
+								// Find the next visible column with a safety counter
+								let nextOrderIndex = currentOrderIndex + 1;
+								let safetyCounter = columnOrder.length;
+
+								while ( nextOrderIndex < columnOrder.length && safetyCounter > 0 ) {
+									// Check if this column is visible and valid
+									if ( headers.some( h => h.id === columnOrder[ nextOrderIndex ] ) ) {
+										// Found a valid next column
 										const newColumnOrder = [ ...columnOrder ];
 										const nextId = newColumnOrder[ nextOrderIndex ];
 										newColumnOrder[ nextOrderIndex ] = currentColumnId;
 										newColumnOrder[ currentOrderIndex ] = nextId;
 										table.setColumnOrder( newColumnOrder );
+										break;
 									}
+									nextOrderIndex++;
+									safetyCounter--;
 								}
 							};
 
