@@ -134,7 +134,7 @@ const Layout = (): React.ReactNode => {
 					</HStack>
 				</ErrorBoundary>
 				<ErrorBoundary>
-					{ actions.length > 0 && (
+					{ actions.length > 0 ? (
 						<HStack
 							as={ NavigableMenu }
 							orientation="horizontal"
@@ -150,6 +150,8 @@ const Layout = (): React.ReactNode => {
 								</ErrorBoundary>
 							) ) }
 						</HStack>
+					) : (
+						<Slot name={ `${ basePath }/actions` } />
 					) }
 				</ErrorBoundary>
 			</HStack>

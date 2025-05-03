@@ -47,6 +47,8 @@ export const ExportButton = ( { query, isAllSelected, recordsCount } ) => {
                 onClick={ () => setOpen( true ) }
                 variant="tertiary"
                 text={ title }
+                label={ !isAllSelected ? __( 'Download Selected', 'newsletter-optin-box' ) : __( 'Download all matching records', 'newsletter-optin-box' ) }
+                showTooltip
             />
 
             { isOpen && (

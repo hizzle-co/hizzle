@@ -84,6 +84,8 @@ export const BulkDelete = ( { query, isAllSelected, recordsCount } ) => {
 				onClick={ () => setOpen( true ) }
 				variant="tertiary"
 				text={ title }
+				label={ !isAllSelected ? __( 'Delete Selected', 'newsletter-optin-box' ) : __( 'Delete all matching records', 'newsletter-optin-box' ) }
+				showTooltip
 				isDestructive
 			/>
 

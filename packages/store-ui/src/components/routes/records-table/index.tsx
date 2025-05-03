@@ -147,7 +147,7 @@ export const RecordsTable = () => {
 			enablePinning: false,
 			cell: ( { row } ) => (
 				<ItemActions
-					item={ row.original }
+					actions={ row.original.hizzlewp_actions }
 					namespace={ namespace }
 					collection={ collection }
 					id={ getRawValue( row.original.id ) }

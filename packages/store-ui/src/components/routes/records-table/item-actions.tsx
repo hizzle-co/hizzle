@@ -1,7 +1,7 @@
 /**
  * External dependencies.
  */
-import React, { useMemo, useEffect } from 'react';
+import React, { useMemo } from 'react';
 
 /**
  * WordPress dependencies
@@ -37,7 +37,7 @@ type Action = Omit<Partial<ButtonProps>, 'onClick'> & {
 };
 
 type ItemActionsProps = {
-	item: any;
+	actions?: Action[];
 	isOverview?: boolean;
 	namespace: string;
 	collection: string;
@@ -45,17 +45,11 @@ type ItemActionsProps = {
 };
 
 const EMPTY_ACTIONS: Action[] = [];
-export const ItemActions = ( { item, isOverview = false, ...props }: ItemActionsProps ) => {
-	const actions: Action[] = item.hizzlewp_actions || EMPTY_ACTIONS;
-
-	// Prepend edit action.
-	useEffect( () => {
-
-	}, [ actions, isOverview ] );
+export const ItemActions = ( { actions, isOverview = false, ...props }: ItemActionsProps ) => {
 
 	const { primaryActions, preparedActions } = useMemo(
 		() => {
-			const preparedActions = [ ...actions ];
+			const preparedActions = [ ...actions || EMPTY_ACTIONS ];
 
 			// Prepend edit action if it doesn't exist.
 			if ( !isOverview && !preparedActions.find( ( action ) => action.id === 'edit' ) ) {
@@ -74,6 +68,7 @@ export const ItemActions = ( { item, isOverview = false, ...props }: ItemActions
 					id: 'delete',
 					type: 'delete',
 					text: __( 'Delete' ),
+					isPrimary: isOverview,
 					icon: 'trash',
 				} );
 			}
@@ -86,9 +81,6 @@ export const ItemActions = ( { item, isOverview = false, ...props }: ItemActions
 		[ actions ]
 	);
 
-	if ( isOverview ) {
-		return <CompactItemActions item={ item } actions={ preparedActions } { ...props } />;
-	}
 
 	return (
 		<HStack
@@ -103,34 +95,45 @@ export const ItemActions = ( { item, isOverview = false, ...props }: ItemActions
 				// Prevents onChangeSelection from triggering.
 				event.stopPropagation();
 			} }
+			expanded={ false }
 		>
 			{ primaryActions.map( ( action ) => (
 				<CompactItemAction
 					key={ action.id }
 					as={ Button }
-					item={ item }
 					action={ action }
 					onClose={ () => { } }
 					{ ...props }
 				/>
 			) ) }
-			<CompactItemActions item={ item } actions={ preparedActions } { ...props } />
+			<CompactItemActions actions={ preparedActions } { ...props } isOverview={ isOverview } />
 		</HStack>
 	);
 }
 
-type CompactItemActionsProps = Omit<ItemActionsProps, 'isCompact'> & {
+type CompactItemActionsProps = ItemActionsProps & {
 	actions: Action[];
 };
 
-const CompactItemActions = ( { item, actions, ...props }: CompactItemActionsProps ) => {
+const CompactItemActions = ( { actions, isOverview, ...props }: CompactItemActionsProps ) => {
+	let buttonProps: Record<string, any> = {
+		className: 'hizzlewp-records-all-actions-button',
+		size: 'compact',
+	}
+
+	if ( isOverview ) {
+		buttonProps = {
+			iconSize: 32,
+			variant: 'tertiary',
+		}
+	}
+
 	return (
 		<DropdownMenu
 			label={ __( 'Actions' ) }
 			icon={ moreVertical }
 			toggleProps={ {
-				className: 'hizzlewp-records-all-actions-button',
-				size: 'compact',
+				...buttonProps,
 				disabled: !actions.length,
 			} }
 			popoverProps={ {
@@ -139,20 +142,20 @@ const CompactItemActions = ( { item, actions, ...props }: CompactItemActionsProp
 		>
 			{ ( { onClose } ) => (
 				<>
-					{ actions.map( ( action ) => <CompactItemAction key={ action.id } item={ item } action={ action } onClose={ onClose } { ...props } /> ) }
+					{ actions.map( ( action ) => <CompactItemAction key={ action.id } action={ action } onClose={ onClose } { ...props } /> ) }
 				</>
 			) }
 		</DropdownMenu>
 	);
 }
 
-type CompactItemActionProps = Omit<ItemActionsProps, 'isCompact'> & {
+type CompactItemActionProps = Omit<ItemActionsProps, 'isOverview'> & {
 	action: Action;
 	onClose?: () => void;
 	as?: React.ElementType;
 };
 
-const CompactItemAction = ( { item, action, onClose, as = undefined, ...props }: CompactItemActionProps ) => {
+const CompactItemAction = ( { action, onClose, as = undefined, ...props }: CompactItemActionProps ) => {
 
 	const { isPrimary, type, ...actionProps } = action;
 
@@ -181,7 +184,7 @@ const CompactItemAction = ( { item, action, onClose, as = undefined, ...props }:
 }
 
 type RenderActionProps = {
-	props: Omit<CompactItemActionProps, 'item' | 'action' | 'onClose' | 'as'>;
+	props: Omit<CompactItemActionProps, 'action' | 'onClose' | 'as'>;
 	Component?: React.ElementType;
 	as?: React.ElementType;
 	id: string;
