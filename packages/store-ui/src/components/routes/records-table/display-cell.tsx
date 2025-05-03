@@ -256,13 +256,8 @@ export const DisplayCell: React.FC<CellProps> = ( { row, header, viewType = 'tab
 	}, [ path ] );
 
 	// Nulls and undefined values are displayed as a dash.
-	if ( value === null || value === undefined || value === '' ) {
-		return isBadge ? '' : <span className="hizzlewp-table__cell--null">&ndash;</span>;
-	}
-
-	// Empty arrays are displayed as a dash.
-	if ( Array.isArray( value ) && value.length === 0 ) {
-		return isBadge ? '' : <span className="noptin-table__cell--null">&ndash;</span>;
+	if ( rawValue === null || rawValue === undefined || rawValue === '' || ( Array.isArray( value ) && value.length === 0 ) ) {
+		return <span className="hizzlewp-view-table__cell--null">&ndash;</span>;
 	}
 
 	if ( header.is_primary && typeof value === 'string' ) {

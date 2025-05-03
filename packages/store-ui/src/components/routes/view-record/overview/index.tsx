@@ -34,7 +34,7 @@ export const RecordOverview: React.FC = () => {
     // Prepare the state.
     // If we're here, we already have a record ID and the record is already loaded.
     const recordId = useProvidedRecordId();
-    const { config: { namespace, collection, labels } } = useProvidedCollectionConfig();
+    const { config: { namespace, collection } } = useProvidedCollectionConfig();
 
     // Display the add record form.
     return (
