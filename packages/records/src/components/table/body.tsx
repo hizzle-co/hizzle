@@ -57,14 +57,20 @@ const TableRow: React.FC<{ row: Row<any>; primaryField?: string }> = ( { row } )
  * @param {Cell<any, unknown>} props.cell - The cell to render.
  */
 const TableCell: React.FC<{ cell: Cell<any, unknown>; primaryField?: string }> = ( { cell } ) => {
+	const tdClass = classnames(
+		'hizzlewp-records-view-table__cell', {
+		'hizzlewp-records-view-table__checkbox-column': cell.column.id === 'hizzlewp-selection',
+		'hizzlewp-records-view-table__actions-column': cell.column.id === 'hizzlewp-actions'
+	} );
+
+	const cellContentWrapperClass = classnames(
+		'hizzlewp-records-view-table__cell-content-wrapper',
+		`hizzlewp-records-view-table__cell-content-wrapper--${ cell.column.id }`
+	);
+
 	return (
-		<td className={ classnames( 'hizzlewp-records-view-table__cell', { 'hizzlewp-records-view-table__checkbox-column': cell.column.id === 'hizzlewp-selection' } ) }>
-			<div
-				className={ classnames(
-					'hizzlewp-records-view-table__cell-content-wrapper',
-					`hizzlewp-records-view-table__cell-content-wrapper--${ cell.column.id }`,
-				) }
-			>
+		<td className={ tdClass }>
+			<div className={ cellContentWrapperClass }>
 				<ErrorBoundary>
 					{ flexRender(
 						cell.column.columnDef.cell,

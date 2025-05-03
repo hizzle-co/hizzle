@@ -336,6 +336,7 @@ export const Head = () => {
 									colSpan={ header.colSpan }
 									className={ classnames( 'hizzlewp-records-view-table__cell', {
 										'hizzlewp-records-view-table__checkbox-column': header.column.id === 'hizzlewp-selection',
+										'hizzlewp-records-view-table__actions-column': header.column.id === 'hizzlewp-actions',
 										'hizzlewp-records-view-table__filtered-by-column': header.column.getCanFilter() && header.column.getIsFiltered(),
 										'hizzlewp-records-view-table__sorted-column': isSorted,
 										'hizzlewp-records-view-table__pinned-column__left': header.column.getIsPinned() === 'left',
@@ -406,13 +407,13 @@ export const Head = () => {
 													) }
 												</DropdownMenu>
 											) : (
-												<>
+												<span className="hizzlewp-records-view-table-header">
 													{ flexRender(
 														header.column.columnDef
 															.header,
 														header.getContext()
 													) }
-												</>
+												</span>
 											) }
 										</>
 									) }

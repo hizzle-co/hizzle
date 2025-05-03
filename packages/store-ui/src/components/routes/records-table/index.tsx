@@ -28,6 +28,7 @@ import { usePreferences } from '@hizzlewp/interface';
 import { DisplayCell } from './display-cell';
 import { Header } from './header';
 import { FiltersButton, useFilters, columnFiltersToFlatFilters } from './filters';
+import { ItemActions } from "./item-actions";
 
 /**
  * Returns a prepared query.
@@ -136,6 +137,24 @@ export const RecordsTable = () => {
 			} );
 		} );
 
+		// Add actions column.
+		columns.push( {
+			id: 'hizzlewp-actions',
+			header: 'Actions',
+			enableSorting: false,
+			enableColumnFilter: false,
+			enableHiding: false,
+			enablePinning: false,
+			cell: ( { row } ) => (
+				<ItemActions
+					item={ row.original }
+					namespace={ namespace }
+					collection={ collection }
+					id={ getRawValue( row.original.id ) }
+				/>
+			),
+		} );
+
 		return { columns, primaryColumn };
 	}, [ props, ignore ] );
 
@@ -234,7 +253,7 @@ export const RecordsTable = () => {
 						updateQueryString( { hizzlewp_filters: newValue, paged: '1' } );
 					}
 				}
-				getRowId={ ( row ) => getRawValue( row.id ) as string }
+				getRowId={ ( row ) => getRawValue( row.id as string ) }
 				searchLabel={ labels?.search_items || 'Search' }
 				bulkActions={ <Header query={ preparedQuery } /> }
 				filtersButton={ <FiltersButton /> }

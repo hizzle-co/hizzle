@@ -127,7 +127,7 @@ export const DeleteModal = ( { confirm = undefined, closeModal, namespace, colle
     return (
         <VStack spacing={ 8 }>
             <Text variant="muted">
-                { confirm || __( 'Are you sure you want to delete this record?', 'newsletter-optin-box' ) }
+                { confirm || __( 'Are you sure you want to delete this item?', 'newsletter-optin-box' ) }
             </Text>
             <HStack justify="flex-start">
                 <Button variant="primary" isDestructive onClick={ onDeleteRecord } isBusy={ isDeleting } __next40pxDefaultSize>
