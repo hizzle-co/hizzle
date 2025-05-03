@@ -49,4 +49,10 @@ table.hizzlewp-records-view-table {
     .hizzle-records__table-selection-checkbox {
         --checkbox-input-size: 24px;
     }
+
+    .hizzlewp-view-table__cell--null {
+        display: block;
+        width: 100%;
+        text-align: center;
+    }
 }
