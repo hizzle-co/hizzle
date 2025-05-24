@@ -12,6 +12,7 @@ import {
 	Flex,
 	useBaseControlProps,
 	BaseControl,
+	__experimentalVStack as VStack,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import type { BaseControlProps } from '@wordpress/components/src/base-control/types';
@@ -29,12 +30,12 @@ import type { ISetting } from '../setting';
 const keyValueRepeaterFields = [
 	{
 		id: 'key',
-		label: __('Key', 'newsletter-optin-box'),
+		label: __( 'Key', 'newsletter-optin-box' ),
 		type: 'text',
 	},
 	{
 		id: 'value',
-		label: __('Value', 'newsletter-optin-box'),
+		label: __( 'Value', 'newsletter-optin-box' ),
 		type: 'text',
 	},
 ];
@@ -48,7 +49,7 @@ interface KeyValueRepeaterProps extends Omit<BaseControlProps, 'children'> {
 	/**
 	 * The onChange handler.
 	 */
-	onChange: (value: KeyValueRepeaterValue[]) => void;
+	onChange: ( value: KeyValueRepeaterValue[] ) => void;
 
 	/**
 	 * The current value.
@@ -70,43 +71,43 @@ interface KeyValueRepeaterProps extends Omit<BaseControlProps, 'children'> {
  * Displays a key value repeater setting.
  *
  */
-export const KeyValueRepeater: React.FC<KeyValueRepeaterProps> = ({
+export const KeyValueRepeater: React.FC<KeyValueRepeaterProps> = ( {
 	setting,
 	availableSmartTags,
 	value,
 	onChange,
 	...attributes
-}) => {
+} ) => {
 	// The base props.
-	const { baseControlProps, controlProps } = useBaseControlProps(attributes);
+	const { baseControlProps, controlProps } = useBaseControlProps( attributes );
 
 	// Ensure the value is an array.
-	if (!Array.isArray(value)) {
+	if ( !Array.isArray( value ) ) {
 		value = [];
 	}
 
 	// Displays a single Item.
 	const Item = useCallback(
-		({ item, index }) => {
+		( { item, index } ) => {
 			return (
 				<Flex className="hizzlewp-repeater-item" wrap>
-					{keyValueRepeaterFields.map((field, fieldIndex) => (
+					{ keyValueRepeaterFields.map( ( field, fieldIndex ) => (
 						<KeyValueRepeaterField
-							key={fieldIndex}
-							availableSmartTags={availableSmartTags}
-							field={field}
+							key={ fieldIndex }
+							availableSmartTags={ availableSmartTags }
+							field={ field }
 							value={
-								item[field.id] === undefined
+								item[ field.id ] === undefined
 									? ''
-									: item[field.id]
+									: item[ field.id ]
 							}
-							onChange={(newValue) => {
-								const newItems = [...value];
-								newItems[index][field.id] = newValue;
-								onChange(newItems);
-							}}
+							onChange={ ( newValue ) => {
+								const newItems = [ ...value ];
+								newItems[ index ][ field.id ] = newValue;
+								onChange( newItems );
+							} }
 						/>
-					))}
+					) ) }
 
 					<FlexItem>
 						<Button
@@ -115,45 +116,47 @@ export const KeyValueRepeater: React.FC<KeyValueRepeaterProps> = ({
 							className="hizzlewp-component__field"
 							label="Delete"
 							showTooltip
-							onClick={() => {
-								const newValue = [...value];
-								newValue.splice(index, 1);
-								onChange(newValue);
-							}}
+							onClick={ () => {
+								const newValue = [ ...value ];
+								newValue.splice( index, 1 );
+								onChange( newValue );
+							} }
 							isDestructive
 						/>
 					</FlexItem>
 				</Flex>
 			);
 		},
-		[value, onChange]
+		[ value, onChange ]
 	);
 
 	// Render the control.
 	return (
-		<BaseControl {...baseControlProps}>
-			<div {...controlProps}>
-				{value.map((item, index) => (
-					<Item key={index} item={item} index={index} />
-				))}
-				<Button
-					onClick={() => {
-						const newValue = [...value];
-						newValue.push(
-							keyValueRepeaterFields.reduce((acc, field) => {
-								acc[field.id] = '';
-								return acc;
-							}, {} as KeyValueRepeaterValue)
-						);
-						onChange(newValue);
-					}}
-					variant="secondary"
-				>
-					{setting.add_field
-						? setting.add_field
-						: __('Add', 'newsletter-optin-box')}
-				</Button>
-			</div>
+		<BaseControl { ...baseControlProps }>
+			<VStack { ...controlProps }>
+				{ value.map( ( item, index ) => (
+					<Item key={ index } item={ item } index={ index } />
+				) ) }
+				<div>
+					<Button
+						onClick={ () => {
+							const newValue = [ ...value ];
+							newValue.push(
+								keyValueRepeaterFields.reduce( ( acc, field ) => {
+									acc[ field.id ] = '';
+									return acc;
+								}, {} as KeyValueRepeaterValue )
+							);
+							onChange( newValue );
+						} }
+						variant="secondary"
+					>
+						{ setting.add_field
+							? setting.add_field
+							: __( 'Add', 'newsletter-optin-box' ) }
+					</Button>
+				</div>
+			</VStack>
 		</BaseControl>
 	);
 };
