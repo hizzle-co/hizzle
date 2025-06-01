@@ -12,6 +12,7 @@ import {
     CardBody,
     CardHeader,
     __experimentalHeading as Heading,
+    Button,
 } from '@wordpress/components';
 
 /**
@@ -29,7 +30,7 @@ import { useSettings } from './settings-provider';
  * Displays a settings group.
  *
  */
-export function SettingsGroup( { id, label, className, settings, conditions, cardProps } ): React.ReactNode {
+export function SettingsGroup( { id, label, help_url, className, settings, conditions, cardProps } ): React.ReactNode {
 
     const { saved } = useSettings();
 
@@ -48,6 +49,16 @@ export function SettingsGroup( { id, label, className, settings, conditions, car
                 <Heading level={ 4 } size={ 16 }>
                     { label }
                 </Heading>
+                { help_url && (
+                    <Button
+                        href={ help_url }
+                        target="_blank"
+                        icon="info"
+                        label="Learn more"
+                        size="compact"
+                        showTooltip
+                    />
+                ) }
             </CardHeader>
 
             <CardBody>
