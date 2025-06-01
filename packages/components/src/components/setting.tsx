@@ -44,6 +44,7 @@ import {
 	RepeaterControl,
 	KeyValueRepeater,
 	RemoteSettings,
+	HorizontalSettings,
 	TimeControl,
 	ConditionalLogicEditor,
 	useOptions,
@@ -160,6 +161,38 @@ type defaultAttributesType = {
 	[ key: string ]: any;
 };
 
+const addSuffix = ( suffix: any ) => {
+	if ( !suffix ) {
+		return undefined;
+	}
+
+	if ( typeof suffix === 'string' || suffix instanceof String ) {
+		return (
+			<InputControlSuffixWrapper>
+				{ suffix }
+			</InputControlSuffixWrapper>
+		);
+	}
+
+	return suffix;
+};
+
+const addPrefix = ( prefix: any ) => {
+	if ( !prefix ) {
+		return undefined;
+	}
+
+	if ( typeof prefix === 'string' || prefix instanceof String ) {
+		return (
+			<InputControlPrefixWrapper>
+				{ prefix }
+			</InputControlPrefixWrapper>
+		);
+	}
+
+	return prefix;
+};
+
 /**
  * Displays a single setting.
  *
@@ -274,6 +307,21 @@ export function Setting( {
 				saved={ saved }
 				prop={ prop }
 				setAttributes={ setAttributes }
+			/>
+		);
+	}
+
+	// Horizontal settings.
+	if ( 'horizontal' === setting.el ) {
+		return (
+			<HorizontalSettings
+				settingKey={ settingKey }
+				setting={ setting }
+				saved={ saved }
+				availableSmartTags={ availableSmartTags }
+				prop={ prop }
+				setAttributes={ setAttributes }
+				settings={ setting.settings || {} }
 			/>
 		);
 	}
@@ -492,6 +540,8 @@ export function Setting( {
 				__next40pxDefaultSize
 				isPressEnterToChange
 				{ ...defaultAttributes }
+				prefix={ addPrefix( defaultAttributes.prefix ) }
+				suffix={ addSuffix( defaultAttributes.suffix ) }
 			/>
 		);
 	}
@@ -526,37 +576,6 @@ export function Setting( {
 
 		// Number.
 		if ( 'number' === setting.type ) {
-			const addSuffix = ( suffix: any ) => {
-				if ( !suffix ) {
-					return undefined;
-				}
-
-				if ( typeof suffix === 'string' || suffix instanceof String ) {
-					return (
-						<InputControlSuffixWrapper>
-							{ suffix }
-						</InputControlSuffixWrapper>
-					);
-				}
-
-				return suffix;
-			};
-
-			const addPrefix = ( prefix: any ) => {
-				if ( !prefix ) {
-					return undefined;
-				}
-
-				if ( typeof prefix === 'string' || prefix instanceof String ) {
-					return (
-						<InputControlPrefixWrapper>
-							{ prefix }
-						</InputControlPrefixWrapper>
-					);
-				}
-
-				return prefix;
-			};
 
 			// Singular / Plural suffix.
 			if ( Array.isArray( defaultAttributes.suffix ) ) {
