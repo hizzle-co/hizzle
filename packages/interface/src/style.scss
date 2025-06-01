@@ -38,6 +38,10 @@
             margin-bottom: 0;
         }
     }
+
+    .hizzlewp-components-unit-control__select--large .components-unit-control__select {
+        max-width: 72px !important;
+    }
 }
 
 @media (min-width:782px) {
