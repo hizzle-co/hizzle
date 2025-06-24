@@ -1,6 +1,6 @@
 {
 	"name": "@hizzlewp/interface",
-	"version": "1.2.12",
+	"version": "1.2.13",
 	"description": "Shared UI Interface for WordPress plugins",
 	"author": "picocodes",
 	"license": "GPL-2.0-or-later",

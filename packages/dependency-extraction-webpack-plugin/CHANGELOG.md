@@ -3,6 +3,78 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.3.13](https://github.com/hizzle-co/hizzle/compare/@hizzlewp/dependency-extraction-webpack-plugin@1.1.0...@hizzlewp/dependency-extraction-webpack-plugin@1.3.13) (2025-06-24)
+
+
+
+## 1.1.12 (2025-06-05)
+
+
+
+## 1.1.11 (2025-05-03)
+
+
+
+## 1.1.10 (2025-04-27)
+
+
+
+## 1.1.9 (2025-04-25)
+
+
+
+## 1.1.8 (2025-04-25)
+
+
+
+## 1.1.7 (2025-04-24)
+
+
+
+## 1.1.6 (2025-04-19)
+
+
+
+## 1.1.5 (2025-04-07)
+
+
+
+## 1.1.4 (2025-03-26)
+
+
+
+## 1.1.3 (2025-03-22)
+
+
+
+## 1.1.2 (2025-03-21)
+
+
+
+## 1.1.1 (2025-03-20)
+
+
+
+# 1.1.0 (2025-03-19)
+
+
+### Bug Fixes
+
+* Don't minize npm releases ([cfdbbdb](https://github.com/hizzle-co/hizzle/commit/cfdbbdbf70ba971cf4b507bffa6f404378991b76))
+
+
+
+## 1.0.1 (2025-03-19)
+
+
+### Features
+
+* Add composer ([9b2c1a9](https://github.com/hizzle-co/hizzle/commit/9b2c1a94a414d9d49a9460661ab0a5056283c387))
+
+
+
+
+
 ## [1.3.12](https://github.com/hizzle-co/hizzle/compare/@hizzlewp/dependency-extraction-webpack-plugin@1.1.0...@hizzlewp/dependency-extraction-webpack-plugin@1.3.12) (2025-06-05)
 
 
