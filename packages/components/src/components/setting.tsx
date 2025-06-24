@@ -549,9 +549,11 @@ export function Setting( {
 
 	// Radio.
 	if ( setting.el === 'radio' ) {
+		const { value: radioValue, ...radioOptions } = defaultAttributes;
 		return (
 			<RadioControl
-				{ ...defaultAttributes }
+				{ ...radioOptions }
+				selected={ radioValue }
 				options={ options }
 			/>
 		);
