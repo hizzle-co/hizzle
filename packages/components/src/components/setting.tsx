@@ -12,6 +12,7 @@ import {
 	__experimentalInputControlPrefixWrapper as InputControlPrefixWrapper,
 	__experimentalInputControlSuffixWrapper as InputControlSuffixWrapper,
 	__experimentalUnitControl as UnitControl,
+	RadioControl,
 	CheckboxControl,
 	FormTokenField,
 	Tip,
@@ -542,6 +543,16 @@ export function Setting( {
 				{ ...defaultAttributes }
 				prefix={ addPrefix( defaultAttributes.prefix ) }
 				suffix={ addSuffix( defaultAttributes.suffix ) }
+			/>
+		);
+	}
+
+	// Radio.
+	if ( setting.el === 'radio' ) {
+		return (
+			<RadioControl
+				{ ...defaultAttributes }
+				options={ options }
 			/>
 		);
 	}
