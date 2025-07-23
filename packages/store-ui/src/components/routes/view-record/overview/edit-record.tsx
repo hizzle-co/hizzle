@@ -28,7 +28,7 @@ export const EditRecord: React.FC = () => {
 	// Prepare the state.
 	// If we're here, we already have a record ID and the record is already loaded.
 	const recordId = useProvidedRecordId();
-	const { config: { namespace, collection, labels, props, hidden, ignore, defaultProps } } = useProvidedCollectionConfig();
+	const { config: { namespace, collection, labels, props, hidden, ignore, defaultProps, settings } } = useProvidedCollectionConfig();
 	const { editedRecord, edit, save, isSaving } = useCollectionRecord( namespace, collection, recordId as number );
 	const { createErrorNotice, createSuccessNotice, removeAllNotices } = useDispatch( noticesStore );
 	const newIgnore = useMemo( () => [ ...ignore, ...Object.keys( defaultProps || {} ) ], [ ignore, defaultProps ] );
@@ -82,6 +82,7 @@ export const EditRecord: React.FC = () => {
 			onSubmit={ onSaveRecord }
 			submitText={ labels?.save_item || 'Save' }
 			schema={ props }
+			extraSettings={ settings }
 			hidden={ hidden }
 			ignore={ newIgnore }
 			loading={ isSaving }

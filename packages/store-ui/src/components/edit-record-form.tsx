@@ -53,12 +53,30 @@ type EditRecordFormProps = {
 	loading: boolean;
 	slotName: string;
 	submitText: string;
+	extraSettings?: Record<string, any>;
 };
 
-export const EditRecordForm = ( { record, onChange, schema, hidden, ignore, onSubmit, loading, slotName, submitText }: EditRecordFormProps ) => {
+export const EditRecordForm = ( { record, onChange, schema, hidden, ignore, onSubmit, loading, slotName, submitText, extraSettings }: EditRecordFormProps ) => {
 
 	// Prepare form fields.
-	const fields = useMemo( () => prepareEditableRecordFields( schema, hidden, ignore ), [ schema, hidden, ignore ] );
+	const fields = useMemo( () => {
+		let prepared = prepareEditableRecordFields( schema, hidden, ignore );
+
+		if ( extraSettings ) {
+			Object.entries( extraSettings ).forEach( ( [ key, { prop_pos, ...setting } ] ) => {
+				setting.name = key;
+
+				if ( ! prop_pos || ! prepared.find( field => field.name === prop_pos ) ) {
+					prepared.push( setting );
+				} else {
+					const index = prepared.findIndex( field => field.name === prop_pos );
+					prepared.splice( index + 1, 0, setting );
+				}
+			} );
+		}
+
+		return prepared;
+	}, [ schema, hidden, ignore, extraSettings ] );
 
 	// Handle the save shortcut.
 	useShortcut( 'hizzlewp/save-record', ( e: React.KeyboardEvent<HTMLFormElement> ) => {

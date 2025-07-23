@@ -37,7 +37,7 @@ import { EditRecordForm } from "../edit-record-form";
 const CreateRecordForm: React.FC = () => {
 
 	// Prepare the state.
-	const { config: { namespace, collection, props, hidden, ignore, defaultProps, labels } } = useProvidedCollectionConfig() || {};
+	const { config: { namespace, collection, props, hidden, ignore, defaultProps, labels, settings } } = useProvidedCollectionConfig() || {};
 	const { saveCollectionRecord } = useDispatch( hizzleStore );
 	const [ loading, setLoading ] = useState( false );
 	const [ record, setRecord ] = useState( {} );
@@ -104,6 +104,7 @@ const CreateRecordForm: React.FC = () => {
 			ignore={ newIgnore }
 			loading={ loading }
 			slotName={ `${ namespace }_${ collection }_record_create_below` }
+			extraSettings={ settings }
 		/>
 	);
 };
