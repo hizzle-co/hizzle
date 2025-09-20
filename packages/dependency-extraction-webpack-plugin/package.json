@@ -32,6 +32,6 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"@wordpress/dependency-extraction-webpack-plugin": "^6.20.0"
+		"@wordpress/dependency-extraction-webpack-plugin": "^6.31.0"
 	}
 }

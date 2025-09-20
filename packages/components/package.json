@@ -29,12 +29,12 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@wordpress/api-fetch": "^7.20.0",
+		"@wordpress/api-fetch": "^7.31.0",
 		"@wordpress/components": "^29.6.0",
-		"@wordpress/url": "^4.20.0"
+		"@wordpress/url": "^4.31.0"
 	},
 	"peerDependencies": {
-		"react": "^18.0.0 || ^19.0.0"
+		"react": "^18.3.1"
 	},
 	"publishConfig": {
 		"access": "public"

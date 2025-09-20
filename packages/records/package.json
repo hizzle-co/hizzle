@@ -29,7 +29,7 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@tanstack/react-table": "^8.21.2"
+		"@tanstack/react-table": "^8.21.3"
 	},
 	"publishConfig": {
 		"access": "public"

@@ -35,13 +35,13 @@
 		"@hizzlewp/records": "^1.1.0",
 		"@hizzlewp/store": "^1.1.0",
 		"@wordpress/components": "^29.7.0",
-		"@wordpress/data": "^10.21.0",
-		"@wordpress/keyboard-shortcuts": "^5.21.0",
+		"@wordpress/data": "^10.31.0",
+		"@wordpress/keyboard-shortcuts": "^5.31.0",
 		"file-saver": "^2.0.5",
-		"papaparse": "^5.5.2"
+		"papaparse": "^5.5.3"
 	},
 	"peerDependencies": {
-		"react": "^18.0.0 || ^19.0.0"
+		"react": "^18.3.1"
 	},
 	"sideEffects": [
 		"src/style.scss"
