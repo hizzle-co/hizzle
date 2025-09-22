@@ -2,7 +2,7 @@
  * External dependencies
  */
 import React, { useState, useMemo, Fragment } from "react";
-import { Button, Modal } from "@wordpress/components";
+import { Button, Modal, __experimentalHStack as HStack } from "@wordpress/components";
 import { __, _x, sprintf } from "@wordpress/i18n";
 
 /**
@@ -12,6 +12,11 @@ import { Setting } from '@hizzlewp/components';
 import type { ISetting } from '@hizzlewp/components';
 import { useProvidedCollectionConfig } from "@hizzlewp/store";
 import { useQuery, updateQueryString } from '@hizzlewp/history';
+
+/**
+ * Internal dependencies
+ */
+import { SavedFiltersDropdown } from './saved-filters';
 
 interface ColumnFilter {
 	id: string
@@ -330,37 +335,53 @@ export const prepareField = ( field ) => {
 export const useFilters = () => {
 	const query = useQuery();
 	const fields = useFilterableFields( { isBulkEditing: false } );
+
 	return useMemo( () => {
 		const filters: ColumnFilter[] = [];
 		const filtersString = query?.hizzlewp_filters;
 
+		// Return empty state if no filters query parameter exists
 		if ( !filtersString || typeof filtersString !== 'string' ) {
 			return { fields, filters: [], preparedFilters: {} };
 		}
 
 		try {
+			// Parse the JSON string from the query parameter
 			const parsedFilters = JSON.parse( filtersString as string );
 
+			// Validate the parsed filters structure
 			if ( !parsedFilters || 'object' !== typeof parsedFilters ) {
 				return { fields, filters: [], preparedFilters: {} };
 			}
 
+			// Convert flat filters object to ColumnFilter format
 			const columnFilters = flatFiltersToColumnFilters( parsedFilters );
 
+			// Ensure we got a valid array back
 			if ( !Array.isArray( columnFilters ) ) {
 				return { fields, filters: [], preparedFilters: {} };
 			}
 
 			filters.push( ...columnFilters );
 		} catch ( error ) {
+			// If JSON parsing fails, return empty state
 			return { fields, filters: [], preparedFilters: {} };
 		}
 
+		// Filter out invalid filters:
+		// - Must have an id
+		// - Must correspond to an available field
+		// - Must have a non-empty value array
 		const filteredFilters = filters.filter( ( filter ) => {
-			return filter.id && fields.some( ( field ) => field.name === filter.id ) && Array.isArray( filter.value ) && filter.value.length > 0;
+			return filter.id &&
+				fields.some( ( field ) => field.name === filter.id ) &&
+				Array.isArray( filter.value ) &&
+				filter.value.length > 0;
 		} );
 
+		// Convert back to flat format for use in components
 		const preparedFilters = columnFiltersToFlatFilters( filteredFilters );
+
 		return { fields, filters: filteredFilters, preparedFilters };
 	}, [ query, fields ] );
 }
@@ -381,7 +402,10 @@ export const FiltersButton: React.FC = () => {
 
 	// Display the button.
 	return (
-		<>
+		<HStack expanded={ false }>
+
+			<SavedFiltersDropdown />
+
 			{ fields.length > 0 && (
 				<>
 					<Button
@@ -398,6 +422,6 @@ export const FiltersButton: React.FC = () => {
 					) }
 				</>
 			) }
-		</>
+		</HStack>
 	);
 }
