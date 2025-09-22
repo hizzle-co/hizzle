@@ -1,7 +1,7 @@
 /**
  * WordPress dependencies
  */
-import { __experimentalHStack as HStack } from '@wordpress/components';
+import { __experimentalHStack as HStack, Slot } from '@wordpress/components';
 
 /**
  * Internal dependencies
@@ -10,7 +10,7 @@ import { FilterSummary, ColumnFilter } from './filter-summary';
 import { ResetFilters } from './reset-filters';
 import { useTable } from '..';
 
-export const Filters: React.FC = () => {
+export const Filters: React.FC<{ slotName: string }> = ( { slotName } ) => {
 	const table = useTable();
 	const filters = table.getState().columnFilters;
 	const columns = table.getAllLeafColumns();
@@ -26,6 +26,7 @@ export const Filters: React.FC = () => {
 			className="hizzlewp-records-filters__container"
 			wrap
 		>
+			<Slot name={ `start/in/filters/${ slotName }` } />
 			{ filters.map( ( filter ) => (
 				<FilterSummary
 					key={ filter.id }
@@ -40,6 +41,7 @@ export const Filters: React.FC = () => {
 			) ) }
 
 			<ResetFilters />
+			<Slot name={ `end/in/filters/${ slotName }` } />
 		</HStack>
 	);
 }
