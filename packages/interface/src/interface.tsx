@@ -16,9 +16,9 @@ import { useViewportMatch } from '@wordpress/compose';
 
 const STORE_NAME = 'hizzlewp/interface';
 
-export const usePreferences = ( key: string, namespace: string = STORE_NAME ) => {
+export const usePreferences = <T = any>( key: string, namespace: string = STORE_NAME ) => {
 	const preferences = useSelect(
-		( select ) => select( preferencesStore ).get( namespace, key ),
+		( select ) => select( preferencesStore ).get( namespace, key ) as T,
 		[ key ]
 	);
 
@@ -26,7 +26,7 @@ export const usePreferences = ( key: string, namespace: string = STORE_NAME ) =>
 
 	return {
 		preferences,
-		setPreferences: ( value: any ) => set( namespace, key, value ),
+		setPreferences: ( value: T ) => set( namespace, key, value ),
 	};
 };
 
