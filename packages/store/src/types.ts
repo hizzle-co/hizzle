@@ -3,6 +3,26 @@ import type { UndoManager } from '@wordpress/undo-manager';
 export type AnyFunction = ( ...args: any[] ) => any;
 
 /**
+ * A saved filter configuration.
+ */
+export type SavedFilter = {
+	/**
+	 * The name of the saved filter.
+	 */
+	name: string;
+
+	/**
+	 * The filters to apply.
+	 */
+	filters: Record<string, string>;
+
+	/**
+	 * When the filter was created (timestamp).
+	 */
+	createdAt: number;
+};
+
+/**
  * A prop / field of a record.
  */
 export type RecordProp = {
@@ -385,6 +405,21 @@ export type CollectionConfig = {
 	 * Badge props for the collection.
 	 */
 	badges?: string[];
+
+	/**
+	 * Default filters for the collection.
+	 */
+	defaultFilters?: {
+		/**
+		 * The name of the default filter set.
+		 */
+		name: string;
+
+		/**
+		 * The filters to apply.
+		 */
+		filters: Record<string, string>;
+	}[];
 
 	/**
 	 * Extra properties for the collection.
