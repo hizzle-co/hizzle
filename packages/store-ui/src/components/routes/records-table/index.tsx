@@ -8,7 +8,7 @@ import React, { useMemo, useCallback } from "react";
  */
 import {
 	Notice,
-	Spinner,
+	Fill,
 } from "@wordpress/components";
 import { useDispatch } from '@wordpress/data';
 
@@ -29,6 +29,7 @@ import { DisplayCell } from './display-cell';
 import { Header } from './header';
 import { FiltersButton, useFilters, columnFiltersToFlatFilters } from './filters';
 import { ItemActions } from "./item-actions";
+import { SavedFiltersManager } from './saved-filters';
 
 /**
  * Returns a prepared query.
@@ -225,39 +226,51 @@ export const RecordsTable = () => {
 	}
 
 	return (
-		<ErrorBoundary>
-			<Records
-				rowCount={ results.totalItems || 0 }
-				data={ results.records || [] }
-				columns={ columns }
-				isLoading={ isLoading }
-				enableSorting
-				enablePagination
-				state={ state }
-				onChange={ onChange }
-				enableRowSelection={ true }
-				onRowSelectionChange={
-					( rowSelection ) => setSelectedCollectionRecords( namespace, collection, preparedQuery, rowSelection( state?.rowSelection || {} ) )
-				}
-				onColumnPinningChange={
-					( columnPinning ) => onChange( { ...state, columnPinning: columnPinning( state?.columnPinning || {} ) } )
-				}
-				onGlobalFilterChange={
-					( globalFilter ) => {
-						updateQueryString( { search: globalFilter || '', paged: '1' } );
+		<>
+			<ErrorBoundary>
+				<Fill name={ `end/in/filters/${ namespace }/${ collection }` }>
+					<SavedFiltersManager query={ query } />
+				</Fill>
+			</ErrorBoundary>
+			<ErrorBoundary>
+				<Records
+					rowCount={ results.totalItems || 0 }
+					data={ results.records || [] }
+					columns={ columns }
+					isLoading={ isLoading }
+					enableSorting
+					enablePagination
+					state={ state }
+					onChange={ onChange }
+					enableRowSelection={ true }
+					onRowSelectionChange={
+						( rowSelection ) => setSelectedCollectionRecords( namespace, collection, preparedQuery, rowSelection( state?.rowSelection || {} ) )
 					}
-				}
-				onColumnFiltersChange={
-					( columnFilters ) => {
-						const newValue = Array.isArray( columnFilters ) && columnFilters.length > 0 ? JSON.stringify( columnFiltersToFlatFilters( columnFilters ) ) : '';
-						updateQueryString( { hizzlewp_filters: newValue, paged: '1' } );
+					onColumnPinningChange={
+						( columnPinning ) => onChange( { ...state, columnPinning: columnPinning( state?.columnPinning || {} ) } )
 					}
-				}
-				getRowId={ ( row ) => getRawValue( row.id as string ) }
-				searchLabel={ labels?.search_items || 'Search' }
-				bulkActions={ <Header query={ preparedQuery } /> }
-				filtersButton={ <FiltersButton /> }
-			/>
-		</ErrorBoundary>
+					onGlobalFilterChange={
+						( globalFilter ) => {
+							updateQueryString( { search: globalFilter || '', paged: '1' } );
+						}
+					}
+					onColumnFiltersChange={
+						( columnFilters ) => {
+							const newValue = Array.isArray( columnFilters ) && columnFilters.length > 0 ? JSON.stringify( columnFiltersToFlatFilters( columnFilters ) ) : '';
+							updateQueryString( { hizzlewp_filters: newValue, paged: '1' } );
+						}
+					}
+					getRowId={ ( row ) => getRawValue( row.id as string ) }
+					searchLabel={ labels?.search_items || 'Search' }
+					bulkActions={ <Header query={ preparedQuery } /> }
+					slotName={ `${ namespace }/${ collection }` }
+					filtersButton={
+						<ErrorBoundary>
+							<FiltersButton />
+						</ErrorBoundary>
+					}
+				/>
+			</ErrorBoundary>
+		</>
 	);
 }

@@ -11,6 +11,7 @@ import {
 	__experimentalVStack as VStack,
 	__experimentalText as Text,
 	Spinner,
+	Slot,
 } from '@wordpress/components';
 
 /**
@@ -49,6 +50,11 @@ export type TableProps<TData = Record<string, unknown>> = Omit<TableProviderProp
 	 * Optional filters button.
 	 */
 	filtersButton?: React.ReactNode;
+
+	/**
+	 * Slot name for extending.
+	 */
+	slotName?: string;
 };
 
 export const Records: React.FC<TableProps> = ( {
@@ -58,9 +64,11 @@ export const Records: React.FC<TableProps> = ( {
 	bulkActions,
 	filtersButton,
 	data,
+	slotName,
 	...props
 } ) => {
 	const tableNoticeId = useId();
+	const theSlotName = slotName || 'hizzlewp/records';
 
 	// TODO: Add views for grid and list.
 	return (
@@ -74,7 +82,8 @@ export const Records: React.FC<TableProps> = ( {
 					/>
 				</ErrorBoundary>
 				<VStack spacing={ 4 }>
-					<Filters />
+					<Slot name={ `before/filters/${ theSlotName }` } />
+					<Filters slotName={ theSlotName } />
 					<div>
 						<ErrorBoundary>
 							<Table aria-busy={ isLoading } aria-describedby={ tableNoticeId } />
