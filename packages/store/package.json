@@ -34,7 +34,7 @@
 		"@wordpress/data-controls": "^4.31.0",
 		"@wordpress/url": "^4.31.0",
 		"equivalent-key-map": "^0.2.2",
-		"uuid": "^11.1.0"
+		"uuid": "^13.0.0"
 	},
 	"peerDependencies": {
 		"react": "^18.3.1 || ^19.0.0"
