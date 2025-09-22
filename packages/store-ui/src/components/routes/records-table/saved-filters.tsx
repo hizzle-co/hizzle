@@ -62,7 +62,7 @@ const useSavedFilters = ( namespace: string, collection: string ) => {
 	return {
 		savedFilters: {
 			...Object
-				.entries( savedFilters.savedFilters )
+				.entries( savedFilters )
 				.reduce(
 					(
 						acc,
@@ -196,7 +196,7 @@ const SaveFilterModal: React.FC<{
  */
 export const SavedFiltersManager: React.FC<{ query: Record<string, any> }> = ( { query } ) => {
 	const preparedQuery = prepareQueryString( addQueryArgs( '', query ) );
-	const { savedFilters, saveFilter, deleteFilter, allFilters, defaultFilters } = useAvailableFilters();
+	const { saveFilter, deleteFilter, allFilters, defaultFilters } = useAvailableFilters();
 	const isQuerySaved = !!allFilters[ preparedQuery ];
 	const isDefaultQuery = !!defaultFilters[ preparedQuery ];
 	const [ isSaveModalOpen, setIsSaveModalOpen ] = useState( false );
@@ -208,7 +208,7 @@ export const SavedFiltersManager: React.FC<{ query: Record<string, any> }> = ( {
 					size="compact"
 					variant="tertiary"
 					onClick={ () => deleteFilter( preparedQuery ) }
-					icon="trash"
+					icon="star-filled"
 					label={ __( 'Remove from saved filters', 'hizzlewp' ) }
 					isDestructive
 					showTooltip
@@ -219,9 +219,8 @@ export const SavedFiltersManager: React.FC<{ query: Record<string, any> }> = ( {
 				<>
 					<Button
 						size="compact"
-						variant="tertiary"
 						onClick={ () => setIsSaveModalOpen( true ) }
-						icon="heart"
+						icon="star-empty"
 						label={ __( 'Add to saved filters', 'hizzlewp' ) }
 						showTooltip
 					/>
@@ -251,7 +250,6 @@ export const SavedFiltersDropdown: React.FC = () => {
 		{
 			label: __( 'Select a view...', 'hizzlewp' ),
 			value: '',
-			disabled: true,
 		},
 		...Object.entries( allFilters ).map( ( [ value, label ] ) => ( { label, value } ) )
 	];
