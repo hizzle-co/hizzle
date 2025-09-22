@@ -409,17 +409,7 @@ export type CollectionConfig = {
 	/**
 	 * Default filters for the collection.
 	 */
-	defaultFilters?: {
-		/**
-		 * The name of the default filter set.
-		 */
-		name: string;
-
-		/**
-		 * The filters to apply.
-		 */
-		filters: Record<string, string>;
-	}[];
+	defaultFilters?: Record<string, Record<string, string>>;
 
 	/**
 	 * Extra properties for the collection.
