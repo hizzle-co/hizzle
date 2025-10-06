@@ -9,8 +9,10 @@ import React, { useMemo, useCallback } from "react";
 import {
 	Notice,
 	Fill,
+	__experimentalText as Text,
 } from "@wordpress/components";
 import { useDispatch } from '@wordpress/data';
+import { __, sprintf } from "@wordpress/i18n";
 
 /**
  * HizzleWP dependencies.
@@ -230,6 +232,23 @@ export const RecordsTable = () => {
 			<ErrorBoundary>
 				<Fill name={ `end/in/filters/${ namespace }/${ collection }` }>
 					<SavedFiltersManager query={ query } />
+				</Fill>
+			</ErrorBoundary>
+			<ErrorBoundary>
+				<Fill name={ `in/pagination/${ namespace }/${ collection }` }>
+					<Text variant="muted" size={ 14 }>
+						{
+							sprintf(
+								/* translators: 1: Number of records, 2: Singular or plural */
+								__( 'Found %1$s %2$s', 'hizzlewp' ),
+								`${ results.totalItems || 0 }`,
+								( results.totalItems === 1 ?
+									labels?.singular_name || 'record' :
+									labels?.name || 'records'
+								).toLowerCase(),
+							)
+						}
+					</Text>
 				</Fill>
 			</ErrorBoundary>
 			<ErrorBoundary>
