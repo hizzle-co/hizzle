@@ -25,7 +25,7 @@
 		"@wordpress/docgen": "^2.32.0",
 		"@wordpress/eslint-plugin": "^22.18.0",
 		"@wordpress/scripts": "^30.25.0",
-		"eslint-plugin-react-hooks": "^5.2.0",
+		"eslint-plugin-react-hooks": "^6.0.0",
 		"execa": "^9.6.0",
 		"lerna": "^8.2.4",
 		"prettier": "^3.6.2",
