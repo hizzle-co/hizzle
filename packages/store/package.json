@@ -29,10 +29,10 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@wordpress/core-data": "^7.31.0",
-		"@wordpress/data": "^10.31.0",
-		"@wordpress/data-controls": "^4.31.0",
-		"@wordpress/url": "^4.31.0",
+		"@wordpress/core-data": "^7.32.0",
+		"@wordpress/data": "^10.32.0",
+		"@wordpress/data-controls": "^4.32.0",
+		"@wordpress/url": "^4.32.0",
 		"equivalent-key-map": "^0.2.2",
 		"uuid": "^13.0.0"
 	},
