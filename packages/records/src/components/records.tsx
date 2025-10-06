@@ -98,7 +98,7 @@ export const Records: React.FC<TableProps> = ( {
 						</ErrorBoundary>
 
 						<ErrorBoundary>
-							<Pagination />
+							<Pagination slotName={ theSlotName } />
 						</ErrorBoundary>
 					</div>
 				</VStack>

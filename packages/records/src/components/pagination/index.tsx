@@ -12,7 +12,7 @@ import {
 	__experimentalHStack as HStack,
 	Button,
 	SelectControl,
-	Fill,
+	Slot,
 } from '@wordpress/components';
 import { next, previous } from '@wordpress/icons';
 
@@ -25,7 +25,7 @@ import { PER_PAGE_OPTIONS } from '../../constants';
 /**
  * Pagination component for the table
  */
-export const Pagination = () => {
+export const Pagination: React.FC<{ slotName: string }> = ( { slotName } ) => {
 	const table = useTable();
 	const pageCount = table.getPageCount();
 	const rowCount = table.getRowCount();
@@ -44,7 +44,7 @@ export const Pagination = () => {
 			label: sprintf(
 				// translators: 1: Number of records per page.
 				_x( '%1$s per page', 'paging' ),
-				value
+				value.toString()
 			),
 		};
 	} );
@@ -84,6 +84,7 @@ export const Pagination = () => {
 							__next40pxDefaultSize
 						/>
 					</div>
+					<Slot name={ `in/pagination/${ slotName }` } />
 					<HStack
 						expanded={ false }
 						className="hizzlewp-records__table-pagination"
@@ -104,7 +105,7 @@ export const Pagination = () => {
 										'paging'
 									),
 									'<CurrentPage />',
-									pageCount
+									pageCount.toString()
 								),
 								{
 									div: <div aria-hidden />,
@@ -130,8 +131,8 @@ export const Pagination = () => {
 							{ sprintf(
 								// translators: Current page number in total number of pages
 								__( 'Page %1$s of %2$s' ),
-								pageIndex + 1,
-								pageCount
+								( pageIndex + 1 ).toString(),
+								pageCount.toString()
 							) }
 							<Button
 								onClick={ () => table.previousPage() }
