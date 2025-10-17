@@ -144,7 +144,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
                                 Oops! Something went wrong.
                             </Text>&nbsp;
                             <Text color="#B91C1C">
-                                This error is being logged.
+                                This error is being logged. Try clearing your browser's cache and reloading the page.
                             </Text>
                         </div>
                         <details style={ { marginTop: '0.5rem', fontSize: '0.875rem' } }>
