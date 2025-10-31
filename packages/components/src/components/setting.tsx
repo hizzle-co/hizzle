@@ -612,6 +612,8 @@ export function Setting( {
 
 			return (
 				<NumberControl
+					isDragEnabled={ false }
+					isShiftStepEnabled={ false }
 					{ ...defaultAttributes }
 					placeholder={ setting.placeholder ? setting.placeholder : '' }
 					__next40pxDefaultSize
