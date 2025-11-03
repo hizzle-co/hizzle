@@ -78,11 +78,6 @@ export interface ISetting {
 	placeholder?: string;
 
 	/**
-	 * Is input to change.
-	 */
-	isInputToChange?: boolean;
-
-	/**
 	 * Conditional logic.
 	 */
 	conditions?: ComparisonCondition[];
@@ -665,7 +660,6 @@ export function Setting( {
 				{ ...defaultAttributes }
 				setting={ setting }
 				availableSmartTags={ theAvailableSmartTags }
-				isPressEnterToChange={ setting.isInputToChange ? false : true }
 			/>
 		);
 	}

@@ -281,7 +281,6 @@ export const prepareField = ( field ) => {
 		el: 'input',
 		type: 'text',
 		name: field.name,
-		isInputToChange: true,
 	};
 
 	// Custom attributes.
