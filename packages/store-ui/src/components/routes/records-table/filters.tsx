@@ -312,9 +312,12 @@ export const prepareField = ( field ) => {
 		prepared.type = 'number';
 	}
 
-	if ( field.is_date ) {
+	if ( field.is_date_time ) {
 		prepared.type = 'datetime-local';
 		prepared.placeholder = 'YYYY-MM-DDTHH:MM:SS+ZZ:ZZ';
+	} else if( field.is_date ) {
+		prepared.type = 'date';
+		prepared.placeholder = 'YYYY-MM-DD';
 	}
 
 	if ( field.is_boolean ) {

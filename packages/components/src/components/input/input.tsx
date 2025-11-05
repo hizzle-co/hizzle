@@ -13,6 +13,7 @@ import {
 	Button,
 	Dropdown,
 	DateTimePicker,
+	DatePicker,
 } from '@wordpress/components';
 import type { InputControlProps } from '@wordpress/components/src/input-control/types';
 import { calendar } from '@wordpress/icons';
@@ -33,7 +34,6 @@ const inputTypes = [
 	'password',
 	'tel',
 	'url',
-	'date',
 ];
 
 interface InputSettingProps extends InputControlProps {
@@ -48,6 +48,20 @@ interface InputSettingProps extends InputControlProps {
 	availableSmartTags?: smartTag[];
 }
 
+const DATE_COMPONENTS = {
+	'datetime-local': {
+		component: DateTimePicker,
+		// Convert to ISO 8601 format.
+		format: 'c',
+		icon: calendar,
+	},
+	date: {
+		component: DatePicker,
+		format: 'Y-m-d',
+		icon: calendar,
+	},
+}
+
 /**
  * Displays an input setting
  *
@@ -57,32 +71,32 @@ interface InputSettingProps extends InputControlProps {
  * @param {Array} props.availableSmartTags The available smart tags.
  * @return {JSX.Element}
  */
-export const InputSetting: React.FC<InputSettingProps> = ({
+export const InputSetting: React.FC<InputSettingProps> = ( {
 	setting,
 	availableSmartTags,
 	isPressEnterToChange = true,
 	...attributes
-}) => {
+} ) => {
 	// On add merge tag...
 	const onMergeTagClick = useCallback(
-		(mergeTag) => {
+		( mergeTag ) => {
 			// Add the merge tag to the value.
-			if (attributes.onChange) {
+			if ( attributes.onChange ) {
 				// @ts-expect-error Event handler is not needed.
 				attributes.onChange(
 					attributes.value
-						? `${attributes.value} ${mergeTag}`.trim()
+						? `${ attributes.value } ${ mergeTag }`.trim()
 						: mergeTag
 				);
 			}
 		},
-		[attributes.value, attributes.onChange]
+		[ attributes.value, attributes.onChange ]
 	);
 
-	const mergeTagSuffix = useMergeTags({
+	const mergeTagSuffix = useMergeTags( {
 		availableSmartTags,
 		onMergeTagClick,
-	});
+	} );
 
 	// Merge tags.
 	if (
@@ -91,50 +105,53 @@ export const InputSetting: React.FC<InputSettingProps> = ({
 	) {
 		attributes.suffix = (
 			<InputControlSuffixWrapper>
-				{attributes.suffix}
+				{ attributes.suffix }
 			</InputControlSuffixWrapper>
 		);
-	} else if (!setting.disabled && mergeTagSuffix && !attributes.suffix) {
+	} else if ( !setting.disabled && mergeTagSuffix && !attributes.suffix ) {
 		attributes.suffix = mergeTagSuffix;
 	}
 
-	if ('datetime-local' === setting.type) {
+	if ( Object.keys( DATE_COMPONENTS ).includes( setting.type ) ) {
+		const date = DATE_COMPONENTS[ setting.type as keyof typeof DATE_COMPONENTS ];
+		const DateComponent = date.component;
+
 		attributes.suffix = (
 			<InputControlSuffixWrapper>
 				<Dropdown
-					popoverProps={{ placement: 'bottom-start' }}
-					renderToggle={({ isOpen, onToggle }) => (
+					popoverProps={ { placement: 'bottom-start' } }
+					renderToggle={ ( { isOpen, onToggle } ) => (
 						<Button
-							onClick={onToggle}
-							aria-expanded={isOpen}
-							icon={calendar}
+							onClick={ onToggle }
+							aria-expanded={ isOpen }
+							icon={ date.icon }
 						/>
-					)}
-					renderContent={() => (
-						<DateTimePicker
-							currentDate={attributes.value}
-							onChange={(newDate: string | null) => {
-								// Convert to ISO 8601 format.
-								if (newDate) {
-									newDate = format('c', newDate);
+					) }
+					renderContent={ () => (
+						<DateComponent
+							currentDate={ attributes.value }
+							onChange={ ( newDate: string | null ) => {
+								if ( newDate && date.format ) {
+									console.log( newDate )
+									newDate = format( date.format, newDate );
 								}
-								if (attributes.onChange) {
+								if ( attributes.onChange ) {
 									// @ts-expect-error Event handler is not needed.
-									attributes.onChange(newDate || '');
+									attributes.onChange( newDate || '' );
 								}
-							}}
+							} }
 						/>
-					)}
+					) }
 				/>
 			</InputControlSuffixWrapper>
 		);
 	}
 
-	if (setting.disabled) {
+	if ( setting.disabled ) {
 		attributes.readOnly = true;
-		attributes.onFocus = (e) => e.target.select();
+		attributes.onFocus = ( e ) => e.target.select();
 
-		if (setting.value) {
+		if ( setting.value ) {
 			attributes.value = setting.value;
 		}
 	}
@@ -146,17 +163,17 @@ export const InputSetting: React.FC<InputSettingProps> = ({
 	) {
 		attributes.prefix = (
 			<InputControlPrefixWrapper>
-				{attributes.prefix}
+				{ attributes.prefix }
 			</InputControlPrefixWrapper>
 		);
 	}
 
 	return (
 		<InputControl
-			{...attributes}
-			type={inputTypes.includes(setting.type) ? setting.type : 'text'}
-			placeholder={setting.placeholder ? setting.placeholder : ''}
-			isPressEnterToChange={isPressEnterToChange}
+			{ ...attributes }
+			type={ inputTypes.includes( setting.type ) ? setting.type : 'text' }
+			placeholder={ setting.placeholder ? setting.placeholder : '' }
+			isPressEnterToChange={ isPressEnterToChange }
 			__next40pxDefaultSize
 		/>
 	);
