@@ -1,6 +1,6 @@
 {
 	"name": "@hizzlewp/store-ui",
-	"version": "1.1.2",
+	"version": "1.2.0",
 	"description": "This package displays data provided by the `@hizzlewp/store` package.",
 	"author": "picocodes",
 	"license": "GPL-2.0-or-later",
@@ -29,11 +29,11 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@hizzlewp/components": "^1.3.2",
-		"@hizzlewp/history": "^1.1.2",
-		"@hizzlewp/interface": "^1.3.2",
-		"@hizzlewp/records": "^1.1.2",
-		"@hizzlewp/store": "^1.1.2",
+		"@hizzlewp/components": "^1.4.0",
+		"@hizzlewp/history": "^1.2.0",
+		"@hizzlewp/interface": "^1.4.0",
+		"@hizzlewp/records": "^1.2.0",
+		"@hizzlewp/store": "^1.2.0",
 		"@wordpress/components": "^30.5.0",
 		"@wordpress/data": "^10.32.0",
 		"@wordpress/keyboard-shortcuts": "^5.32.0",
