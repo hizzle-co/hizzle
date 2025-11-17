@@ -24,7 +24,7 @@
 		"@typescript-eslint/eslint-plugin": "^8.46.4",
 		"@wordpress/docgen": "^2.35.0",
 		"@wordpress/eslint-plugin": "^22.21.0",
-		"@wordpress/scripts": "^30.27.0",
+		"@wordpress/scripts": "^31.0.0",
 		"eslint-plugin-react-hooks": "^6.1.1",
 		"execa": "^9.6.0",
 		"lerna": "^9.0.1",
