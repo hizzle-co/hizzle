@@ -330,6 +330,12 @@ export const Outlet: React.FC<{ path?: string }> = ( { path } ) => {
 		return null;
 	}
 
+	// If no path, this is the first Outlet.
+	// So we render the its element.
+	if ( !path ) {
+		return route.element;
+	}
+
 	// If there is a next outlet, return it.
 	if ( nextOutlet ) {
 		return nextOutlet.element;
@@ -338,11 +344,6 @@ export const Outlet: React.FC<{ path?: string }> = ( { path } ) => {
 	// If we have an index, return it.
 	if ( route.index ) {
 		return route.index;
-	}
-
-	// If no path and no children, return the element to prevent infinite loop
-	if ( !path ) {
-		return route.element;
 	}
 
 	// Return null.
