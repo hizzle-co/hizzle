@@ -16,6 +16,10 @@ Undocumented declaration.
 
 Pagination component for the table
 
+_Type_
+
+-   `React.FC< { slotName: string; } >`
+
 ## PER_PAGE_OPTIONS
 
 Undocumented declaration.

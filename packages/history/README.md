@@ -168,11 +168,24 @@ _Returns_
 
 ## Outlet
 
-The outlet component
+Outlet component for rendering nested routes in the router.
 
-_Type_
+This component is responsible for rendering the appropriate route element based on the current routing context. It handles nested routing by finding and rendering the next appropriate outlet or index route.
 
--   `React.FC< { path?: string; } >`
+_Usage_
+
+```tsx
+// Render the first outlet
+<Outlet />
+
+// Render a specific outlet by path
+<Outlet path="/dashboard" />
+```
+
+_Parameters_
+
+-   _props_ - The component props
+-   _props.path_ - Don't provide for the first <Outlet />. Always provide for other paths otherwise your browser will hang.
 
 ## Router
 
