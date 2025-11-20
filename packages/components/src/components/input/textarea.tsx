@@ -22,7 +22,7 @@ import { useMergeTags, smartTag } from '../hooks';
 /**
  * The textarea setting props.
  */
-interface TextareaSettingProps
+export interface TextareaSettingProps
 	extends TextareaControlProps,
 		Omit<
 			React.TextareaHTMLAttributes<HTMLTextAreaElement>,

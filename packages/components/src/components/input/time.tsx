@@ -19,7 +19,7 @@ import {
 
 import type { BaseControlProps } from '@wordpress/components/src/base-control/types';
 
-interface TimeControlProps extends Omit<BaseControlProps, 'children'> {
+export interface TimeControlProps extends Omit<BaseControlProps, 'children'> {
 	/**
 	 * The value of the time control.
 	 */

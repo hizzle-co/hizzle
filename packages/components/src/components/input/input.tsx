@@ -27,7 +27,7 @@ import { useMergeTags, smartTag } from '../hooks';
 /**
  * Input types.
  */
-const inputTypes = [
+export const inputTypes = [
 	'number',
 	'search',
 	'email',
@@ -36,7 +36,7 @@ const inputTypes = [
 	'url',
 ];
 
-interface InputSettingProps extends InputControlProps {
+export interface InputSettingProps extends InputControlProps {
 	/**
 	 * The setting configuration object.
 	 */

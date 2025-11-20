@@ -15,7 +15,7 @@ import type {
 	ToggleGroupControlOptionProps,
 } from '@wordpress/components/src/toggle-group-control/types';
 
-interface ToggleGroupSettingProps
+export interface ToggleGroupSettingProps
 	extends Omit<ToggleGroupControlProps, 'children'> {
 	options: ToggleGroupControlOptionProps[];
 }

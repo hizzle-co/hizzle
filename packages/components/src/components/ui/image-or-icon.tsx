@@ -8,7 +8,7 @@ import React from 'react';
  */
 import { Icon, IconType, SVG, Path } from '@wordpress/components';
 
-type ImageOrIconProps = {
+export type ImageOrIconProps = {
 	/**
 	 * The image URL, dashicon, or SVG.
 	 */

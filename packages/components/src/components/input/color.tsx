@@ -16,7 +16,7 @@ import {
 } from '@wordpress/components';
 import type { BaseControlProps } from '@wordpress/components/src/base-control/types';
 
-interface ColorSettingProps extends Omit<BaseControlProps, 'children'> {
+export interface ColorSettingProps extends Omit<BaseControlProps, 'children'> {
 	/**
 	 * The value.
 	 */
