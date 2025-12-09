@@ -17,6 +17,10 @@ on:
           - prepatch
           - prerelease
 
+permissions:
+  id-token: write  # Required for OIDC https://docs.npmjs.com/trusted-publishers
+  contents: read
+
 jobs:
   build_and_release:
     runs-on: ubuntu-latest
@@ -31,6 +35,10 @@ jobs:
         with:
           node-version: '24'
           registry-url: 'https://registry.npmjs.org'
+
+      # Ensure npm 11.5.1 or later is installed
+      - name: Update npm
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         run: npm ci
@@ -96,8 +104,6 @@ jobs:
           echo "Packagist update triggered successfully"
 
       - name: Publish packages
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           lerna publish from-package --no-private --yes || true
 
