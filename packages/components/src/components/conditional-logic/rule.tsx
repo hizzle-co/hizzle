@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { useMemo, useCallback } from 'react';
+import React, { useMemo, useCallback, useState } from 'react';
 
 /**
  * WordPress dependencies
@@ -277,8 +277,14 @@ export const ConditionalLogicRule: React.FC<ConditionalLogicRuleProps> = (
 	const skipValue =
 		'is_empty' === rule.condition || 'is_not_empty' === rule.condition;
 
+	// Track whether user wants to use custom value instead of dropdown options.
+	const [ useCustomValue, setUseCustomValue ] = useState( false );
+
+	// Show input control when using custom value or when there are no options.
+	const showInputControl = !hasOptions || useCustomValue;
+
 	return (
-		<HStack justify="flex-start" wrap expanded>
+		<HStack justify="flex-start" alignment="flex-start" wrap expanded>
 			<div style={ { minWidth: 320 } }>
 				<InputControl
 					type="text"
@@ -310,7 +316,7 @@ export const ConditionalLogicRule: React.FC<ConditionalLogicRuleProps> = (
 
 			{ !skipValue && (
 				<div style={ { minWidth: 320 } }>
-					{ hasOptions && (
+					{ hasOptions && !useCustomValue && (
 						<SelectControl
 							label={ __( 'Value', 'newsletter-optin-box' ) }
 							hideLabelFromVision={ true }
@@ -323,7 +329,7 @@ export const ConditionalLogicRule: React.FC<ConditionalLogicRuleProps> = (
 						/>
 					) }
 
-					{ !hasOptions && (
+					{ showInputControl && (
 						<InputControl
 							type={ 'number' === dataType ? 'number' : 'text' }
 							label={ __( 'Value', 'newsletter-optin-box' ) }
@@ -336,6 +342,19 @@ export const ConditionalLogicRule: React.FC<ConditionalLogicRuleProps> = (
 							onChange={ updateValue }
 							suffix={ valueMergeTagSuffix }
 							__next40pxDefaultSize
+						/>
+					) }
+
+					{ hasOptions && (
+						<Button
+							onClick={ () => setUseCustomValue( prev => !prev ) }
+							size="compact"
+							variant="link"
+							text={
+								useCustomValue
+									? __( 'Select from dropdown', 'newsletter-optin-box' )
+									: __( 'Provide a custom value', 'newsletter-optin-box' )
+							}
 						/>
 					) }
 				</div>
