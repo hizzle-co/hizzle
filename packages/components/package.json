@@ -1,6 +1,6 @@
 {
 	"name": "@hizzlewp/components",
-	"version": "1.5.2",
+	"version": "1.5.3",
 	"description": "Reusable React UI components for WordPress plugins",
 	"author": "picocodes",
 	"license": "GPL-2.0-or-later",
