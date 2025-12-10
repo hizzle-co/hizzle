@@ -278,7 +278,8 @@ export const ConditionalLogicRule: React.FC<ConditionalLogicRuleProps> = (
 		'is_empty' === rule.condition || 'is_not_empty' === rule.condition;
 
 	// Track whether user wants to use custom value instead of dropdown options.
-	const [ useCustomValue, setUseCustomValue ] = useState( false );
+	// Defaults to true if rule.value is set and there is no matching option.
+	const [ useCustomValue, setUseCustomValue ] = useState( rule.value && hasOptions && availableOptions.find( ( option ) => option.value === rule.value ) === undefined );
 
 	// Show input control when using custom value or when there are no options.
 	const showInputControl = !hasOptions || useCustomValue;
