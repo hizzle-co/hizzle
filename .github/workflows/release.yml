@@ -19,7 +19,7 @@ on:
 
 permissions:
   id-token: write  # Required for OIDC https://docs.npmjs.com/trusted-publishers
-  contents: read
+  contents: write
 
 jobs:
   build_and_release:
