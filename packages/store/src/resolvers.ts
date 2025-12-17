@@ -270,7 +270,6 @@ export const getCollectionRecords =
 				const path = addQueryArgs( entityConfig.baseURL, {
 					...entityConfig.baseURLParams,
 					uniqid: Math.random(),
-					__next_as_array: true,
 					...query,
 				} );
 
