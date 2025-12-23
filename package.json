@@ -23,7 +23,7 @@
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "^8.46.4",
 		"@wordpress/docgen": "^2.35.0",
-		"@wordpress/eslint-plugin": "^22.21.0",
+		"@wordpress/eslint-plugin": "^23.0.0",
 		"@wordpress/scripts": "^31.0.0",
 		"execa": "^9.6.0",
 		"lerna": "^9.0.1",
