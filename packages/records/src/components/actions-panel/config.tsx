@@ -31,8 +31,9 @@ const PageSizeMenu: React.FC = () => {
 		};
 	} );
 
-	// Only show the "Show all" option if there are more rows than the largest per_page option.
-	if ( rowCount > PER_PAGE_OPTIONS[ PER_PAGE_OPTIONS.length - 1 ] ) {
+	// Only show the "Show all" option if there are more rows than the largest per_page option
+	// and the total count is 1000 or less to avoid performance issues.
+	if ( rowCount > PER_PAGE_OPTIONS[ PER_PAGE_OPTIONS.length - 1 ] && rowCount <= 1000 ) {
 		pageSizeOptions.push( {
 			value: rowCount.toString(),
 			label: __( 'Show all' ),
