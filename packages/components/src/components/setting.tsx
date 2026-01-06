@@ -137,7 +137,7 @@ type defaultAttributesType = {
 	/**
 	 * The label.
 	 */
-	label: string;
+	label: string | React.ReactNode;
 
 	/**
 	 * The help text.
@@ -349,7 +349,11 @@ export function Setting( {
 		? setting.customAttributes
 		: {};
 	const defaultAttributes: defaultAttributesType = {
-		label: setting.label,
+		label: typeof setting.label === 'string' ? (
+			<span dangerouslySetInnerHTML={ { __html: setting.label } } />
+		) : (
+			setting.label
+		),
 		value: hasValue ? value : '',
 		onChange: updateSetting,
 		className,
@@ -406,7 +410,7 @@ export function Setting( {
 
 	// Toggle group.
 	if ( setting.el === 'toggle_group' ) {
-		return <ToggleGroupSetting { ...defaultAttributes } options={ options } />;
+		return <ToggleGroupSetting { ...defaultAttributes } label={ defaultAttributes.label as string } options={ options } />;
 	}
 
 	// Display select control.
@@ -414,7 +418,7 @@ export function Setting( {
 		// Multi select.
 		if ( setting.multiple ) {
 			return (
-				<MultiSelectSetting { ...defaultAttributes } options={ options } />
+				<MultiSelectSetting { ...defaultAttributes } label={ defaultAttributes.label as string } options={ options } />
 			);
 		}
 
@@ -474,6 +478,7 @@ export function Setting( {
 		return (
 			<FormTokenField
 				{ ...defaultAttributes }
+				label={ defaultAttributes.label as string }
 				value={
 					Array.isArray( defaultAttributes.value )
 						? defaultAttributes.value
@@ -537,7 +542,6 @@ export function Setting( {
 				isPressEnterToChange
 				{ ...defaultAttributes }
 				prefix={ addPrefix( defaultAttributes.prefix ) }
-				suffix={ addSuffix( defaultAttributes.suffix ) }
 			/>
 		);
 	}
@@ -576,6 +580,7 @@ export function Setting( {
 			return (
 				<CheckboxControl
 					{ ...defaultAttributes }
+					 label={ defaultAttributes.label as string }
 					checked={ hasValue ? !!value : false }
 					__nextHasNoMarginBottom
 				/>

@@ -270,13 +270,13 @@ export const RecordsTable = () => {
 					}
 					onGlobalFilterChange={
 						( globalFilter ) => {
-							updateQueryString( { search: globalFilter || '', paged: '1' } );
+							updateQueryString( { search: globalFilter || '', paged: '' } );
 						}
 					}
 					onColumnFiltersChange={
 						( columnFilters ) => {
 							const newValue = Array.isArray( columnFilters ) && columnFilters.length > 0 ? JSON.stringify( columnFiltersToFlatFilters( columnFilters ) ) : '';
-							updateQueryString( { hizzlewp_filters: newValue, paged: '1' } );
+							updateQueryString( { hizzlewp_filters: newValue, paged: '' } );
 						}
 					}
 					getRowId={ ( row ) => getRawValue( row.id as string ) }
