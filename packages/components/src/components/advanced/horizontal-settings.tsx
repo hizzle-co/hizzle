@@ -31,7 +31,7 @@ export const HorizontalSettings: React.FC<Props> = ( {
 
 	// Render each setting from the fetched data
 	return (
-		<WPHStack alignment="flex-start" justify="flex-start" wrap>
+		<WPHStack alignment={ setting.alignment || 'flex-start' } justify={ setting.justify || 'flex-start' } wrap>
 			{ Object.keys( settings ).map( ( settingKey ) => (
 				<Setting
 					key={ settingKey }
