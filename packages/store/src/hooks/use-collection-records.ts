@@ -59,18 +59,16 @@ const EMPTY_ARRAY = [];
 /**
  * Resolves the specified collection records.
  *
- * @since 6.1.0 Introduced in WordPress core.
- *
  * @param    namespace   Namespace of the entity, e.g. `noptin`.
  * @param    collection  Collection of the entity, e.g. `subscribers`.
  * @param    queryArgs   Optional HTTP query description for how to fetch the data, passed to the requested API endpoint.
  * @param    options     Optional hook options.
  * @example
  * ```js
- * import { useRecords } from '@hizzlewp/store';
+ * import { useCollectionRecords } from '@hizzlewp/store';
  *
  * function SubscribersList() {
- *   const { records, isResolving, error } = useRecords( 'noptin', 'subscribers' );
+ *   const { records, isResolving, error } = useCollectionRecords( 'noptin', 'subscribers' );
  *
  *   if ( isResolving ) {
  *     return 'Loading...';
