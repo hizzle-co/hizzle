@@ -58,6 +58,20 @@ export const Pagination: React.FC<{ slotName: string }> = ( { slotName } ) => {
 		} );
 	}
 
+	// If the current pageSize is not in the options (e.g., user had "Show all" selected
+	// but dataset grew beyond 1000), add it to prevent UI issues with the SelectControl.
+	const pageSizeInOptions = pageSizeOptions.some( ( option ) => option.value === pageSize.toString() );
+	if ( !pageSizeInOptions && pageSize > PER_PAGE_OPTIONS[ PER_PAGE_OPTIONS.length - 1 ] ) {
+		pageSizeOptions.push( {
+			value: pageSize.toString(),
+			label: sprintf(
+				// translators: 1: Number of records being shown.
+				__( 'All (%1$s records)' ),
+				pageSize.toString()
+			),
+		} );
+	}
+
 	const pageSelectOptions = table.getPageOptions().map( ( i ) => {
 		const page = i + 1;
 		return {
