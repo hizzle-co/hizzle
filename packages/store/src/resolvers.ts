@@ -311,7 +311,7 @@ export const getCollectionRecords =
 
 					do {
 						const response = await apiFetch<Response>( {
-							path: addQueryArgs( path, { page, per_page: 100 } ),
+							path: addQueryArgs( path, { page, per_page: 1000 } ),
 							parse: false,
 						} );
 						const pageRecords = await response.json() as Record<string, any>[];
@@ -342,10 +342,12 @@ export const getCollectionRecords =
 								'getCollectionRecord',
 								getResolutionsArgs( pageRecords, rawQuery )
 							);
-							dispatch.finishResolution(
-								'getCollectionRecords',
-								[ namespace, collection, rawQuery ]
-							);
+							if ( page === 1 ) {
+								dispatch.finishResolution(
+									'getCollectionRecords',
+									[ namespace, collection, rawQuery ]
+								);
+							}
 						} );
 						page++;
 					} while ( page <= totalPages );
