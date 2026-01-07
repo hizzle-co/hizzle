@@ -166,7 +166,7 @@ export function TableProvider<TData>( {
 							...(
 								state.pagination?.pageIndex ? {
 									pagination: {
-										pageSize: state.pagination?.pageSize || 10,
+										pageSize: state.pagination?.pageSize || 25,
 										pageIndex: 0,
 									},
 								} : {}
