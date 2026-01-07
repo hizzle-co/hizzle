@@ -49,14 +49,6 @@ export const Pagination: React.FC<{ slotName: string }> = ( { slotName } ) => {
 		};
 	} );
 
-	// Only show the "Show all" option if there are more rows than the largest per_page option.
-	if ( rowCount > PER_PAGE_OPTIONS[ PER_PAGE_OPTIONS.length - 1 ] ) {
-		pageSizeOptions.push( {
-			value: rowCount.toString(),
-			label: __( 'Show all' ),
-		} );
-	}
-
 	const pageSelectOptions = table.getPageOptions().map( ( i ) => {
 		const page = i + 1;
 		return {
