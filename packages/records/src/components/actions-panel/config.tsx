@@ -20,9 +20,7 @@ import { SORTING_DIRECTIONS, SORTING_ICONS, SORTING_LABELS, PER_PAGE_OPTIONS } f
 
 const PageSizeMenu: React.FC = () => {
 	const table = useTable();
-	const rowCount = table.getRowCount();
 	const pageSize = table.getState().pagination.pageSize;
-	const isShowingAll = pageSize && !PER_PAGE_OPTIONS.includes( Number( pageSize ) );
 
 	const pageSizeOptions = PER_PAGE_OPTIONS.map( ( value ) => {
 		return {
@@ -30,14 +28,6 @@ const PageSizeMenu: React.FC = () => {
 			label: value.toString(),
 		};
 	} );
-
-	// Only show the "Show all" option if there are more rows than the largest per_page option.
-	if ( rowCount > PER_PAGE_OPTIONS[ PER_PAGE_OPTIONS.length - 1 ] ) {
-		pageSizeOptions.push( {
-			value: rowCount.toString(),
-			label: __( 'Show all' ),
-		} );
-	}
 
 	return (
 		<OriginalDropdownMenu
@@ -51,14 +41,7 @@ const PageSizeMenu: React.FC = () => {
 				children: (
 					<HStack>
 						<span>{ __( 'Items per page' ) }</span>
-						{ pageSize && (
-							<Text
-								variant="muted"
-								aria-hidden="true"
-							>
-								{ isShowingAll ? __( 'All' ) : pageSize }
-							</Text>
-						) }
+						{ pageSize }
 					</HStack>
 				),
 			} }
