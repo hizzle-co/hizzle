@@ -242,12 +242,27 @@ export const getCollectionRecords =
 				{ exclusive: false }
 			);
 
+			// Keep a copy of the original query for later use in getResolutionsArgs.
+			// The query object may be modified below (for example, when _fields is
+			// specified), but we want to use the original query when marking
+			// resolutions as finished.
+			const rawQuery = { ...query };
 			const ID_KEY = entityConfig.key || DEFAULT_ENTITY_KEY;
 
-			function getResolutionsArgs( records ) {
+			function getResolutionsArgs( records, recordsQuery ) {
+				const queryArgs = Object.fromEntries(
+					Object.entries( recordsQuery ).filter( ( [ k, v ] ) => {
+						return [ 'context', '__fields' ].includes( k ) && !!v;
+					} )
+				);
 				return records
 					.filter( ( record ) => record?.[ ID_KEY ] )
-					.map( ( record ) => [ namespace, collection, record[ ID_KEY ] ] );
+					.map( ( record ) => [
+						namespace,
+						collection,
+						record[ ID_KEY ],
+						Object.keys( queryArgs ).length > 0 ? queryArgs : undefined,
+					] );
 			}
 
 			try {
@@ -299,11 +314,20 @@ export const getCollectionRecords =
 							path: addQueryArgs( path, { page, per_page: 100 } ),
 							parse: false,
 						} );
-						const pageRecords = Object.values( await response.json() ) as Record<string, any>[];
+						const pageRecords = await response.json() as Record<string, any>[];
 
 						totalPages = parseInt(
 							response.headers.get( 'X-WP-TotalPages' ) as string
 						);
+
+						if ( !meta ) {
+							meta = {
+								totalItems: parseInt(
+									response.headers.get( 'X-WP-Total' ) as string
+								),
+								totalPages: 1,
+							};
+						}
 
 						records.push( ...pageRecords );
 						registry.batch( () => {
@@ -312,19 +336,19 @@ export const getCollectionRecords =
 								collection,
 								records,
 								query,
+								meta,
 							);
 							dispatch.finishResolutions(
 								'getCollectionRecord',
-								getResolutionsArgs( pageRecords )
+								getResolutionsArgs( pageRecords, rawQuery )
+							);
+							dispatch.finishResolution(
+								'getCollectionRecords',
+								[ namespace, collection, rawQuery ]
 							);
 						} );
 						page++;
 					} while ( page <= totalPages );
-
-					meta = {
-						totalItems: records.length,
-						totalPages: 1,
-					};
 				} else {
 					records = Object.values( await apiFetch( { path } ) );
 					meta = {
@@ -357,52 +381,52 @@ export const getCollectionRecords =
 						meta,
 					);
 
-					// When requesting all fields, the list of results can be used to resolve
-					// the `getCollectionRecord` and `canUser` selectors in addition to `getCollectionRecords`.
-					// See https://github.com/WordPress/gutenberg/pull/26575
-					// See https://github.com/WordPress/gutenberg/pull/64504
-					if ( !query?.__fields && !query.context ) {
-						const targetHints = records
-							.filter( ( record ) => record?.[ ID_KEY ] )
-							.map( ( record ) => ( {
-								links: record?._links,
-								id: record[ ID_KEY ],
-								permissions: getUserPermissionsFromAllowHeader(
-									record?._links?.self?.[ 0 ].targetHints.allow
-								),
-							} ) );
+					const targetHints = records
+						.filter(
+							( record ) =>
+								!!record?.[ ID_KEY ] &&
+								!!record?._links?.self?.[ 0 ]?.targetHints?.allow
+						)
+						.map( ( record ) => ( {
+							id: record[ ID_KEY ],
+							permissions: getUserPermissionsFromAllowHeader(
+								record._links.self[ 0 ].targetHints.allow
+							),
+						} ) );
 
-						const canUserResolutionsArgs: [ string, { namespace: string; collection: string; id: string } ][] = [];
-						const receiveUserPermissionArgs: Record<string, boolean> = {};
-						for ( const targetHint of targetHints ) {
-							for ( const action of ALLOWED_RESOURCE_ACTIONS ) {
-								canUserResolutionsArgs.push( [
-									action,
-									{ namespace, collection, id: targetHint.id },
-								] );
+					const canUserResolutionsArgs: [ string, { namespace: string; collection: string; id: string } ][] = [];
+					const receiveUserPermissionArgs: Record<string, boolean> = {};
+					for ( const targetHint of targetHints ) {
+						for ( const action of ALLOWED_RESOURCE_ACTIONS ) {
+							canUserResolutionsArgs.push( [
+								action,
+								{ namespace, collection, id: targetHint.id },
+							] );
 
-								receiveUserPermissionArgs[
-									getUserPermissionCacheKey( action, {
-										namespace,
-										collection,
-										id: targetHint.id,
-									} )
-								] = targetHint.permissions[ action ];
-							}
+							receiveUserPermissionArgs[
+								getUserPermissionCacheKey( action, {
+									namespace,
+									collection,
+									id: targetHint.id,
+								} )
+							] = targetHint.permissions[ action ];
 						}
+					}
 
+					if ( targetHints.length > 0 ) {
 						dispatch.receiveUserPermissions(
 							receiveUserPermissionArgs
-						);
-						dispatch.finishResolutions(
-							'getCollectionRecord',
-							getResolutionsArgs( records )
 						);
 						dispatch.finishResolutions(
 							'canUser',
 							canUserResolutionsArgs
 						);
 					}
+
+					dispatch.finishResolutions(
+						'getCollectionRecord',
+						getResolutionsArgs( records, rawQuery )
+					);
 
 					dispatch.__unstableReleaseStoreLock( lock );
 				} );
