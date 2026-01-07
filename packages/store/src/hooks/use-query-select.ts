@@ -38,8 +38,6 @@ interface QuerySelectResponse<Data> {
  * Like useSelect, but the selectors return objects containing
  * both the original data AND the resolution info.
  *
- * @since 6.1.0 Introduced in WordPress core.
- *
  * @param {Function} mapQuerySelect see useSelect
  * @param {Array}    deps           see useSelect
  *
@@ -109,7 +107,7 @@ type DataWithSelectors<Data> = {
  * @return {EnrichedSelectors} Enriched selectors
  */
 const enrichSelectors = memoize( ( ( selectors ) => {
-	const resolvers: Record<string, (...args: unknown[]) => DataWithSelectors<any>> = {};
+	const resolvers: Record<string, ( ...args: unknown[] ) => DataWithSelectors<any>> = {};
 
 	for ( const selectorName in selectors ) {
 		if ( META_SELECTORS.includes( selectorName ) ) {
