@@ -41,7 +41,14 @@ const PageSizeMenu: React.FC = () => {
 				children: (
 					<HStack>
 						<span>{ __( 'Items per page' ) }</span>
-						{ pageSize }
+						{ pageSize && (
+							<Text
+								variant="muted"
+								aria-hidden="true"
+							>
+								{ pageSize }
+							</Text>
+						) }
 					</HStack>
 				),
 			} }
