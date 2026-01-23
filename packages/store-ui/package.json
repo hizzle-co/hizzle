@@ -34,7 +34,7 @@
 		"@hizzlewp/interface": "^1.5.5",
 		"@hizzlewp/records": "^1.3.5",
 		"@hizzlewp/store": "^1.3.5",
-		"@wordpress/components": "^31.0.0",
+		"@wordpress/components": "^32.0.0",
 		"@wordpress/data": "^10.37.0",
 		"@wordpress/keyboard-shortcuts": "^5.37.0",
 		"file-saver": "^2.0.5",
