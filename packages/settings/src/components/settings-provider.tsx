@@ -107,7 +107,7 @@ export const useSettings = () => useContext( SettingsContext );
 /**
  * Provider component for settings.
  */
-interface SettingsProviderProps {
+export interface SettingsProviderProps {
 	/**
 	 * The available setting fields grouped by the tab key.
 	 */
