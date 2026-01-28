@@ -1,6 +1,6 @@
 {
 	"name": "@hizzlewp/store",
-	"version": "1.3.5",
+	"version": "1.3.6",
 	"description": "Store utilities for WordPress plugins. Works with hizzle/store composer package.",
 	"author": "picocodes",
 	"license": "GPL-2.0-or-later",
