@@ -14,7 +14,7 @@ import { CollectionRecordKey, ThunkArgs } from '../../../types';
  */
 export const undo =
 	() =>
-		( { select, dispatch } ) => {
+		( { select, dispatch }: ThunkArgs ) => {
 			const undoRecord = select.getUndoManager().undo();
 			if ( !undoRecord ) {
 				return;
@@ -31,7 +31,7 @@ export const undo =
  */
 export const redo =
 	() =>
-		( { select, dispatch } ) => {
+		( { select, dispatch }: ThunkArgs ) => {
 			const redoRecord = select.getUndoManager().redo();
 			if ( !redoRecord ) {
 				return;
@@ -49,7 +49,7 @@ export const redo =
  */
 export const createUndoLevel =
 	() =>
-		( { select } ) => {
+		( { select }: ThunkArgs ) => {
 			select.getUndoManager().addRecord();
 		};
 
@@ -68,7 +68,7 @@ export const createUndoLevel =
  */
 export const editCollectionRecord =
 	( namespace: string, collection: string, recordId: CollectionRecordKey, edits: object, options: { undoIgnore?: boolean, isCached?: boolean } = {} ) =>
-		( { select, dispatch } : ThunkArgs ) => {
+		( { select, dispatch }: ThunkArgs ) => {
 			const collectionConfig = select.getCollectionConfig( namespace, collection );
 			if ( !collectionConfig ) {
 				throw new Error(

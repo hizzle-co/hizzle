@@ -3,12 +3,11 @@
  */
 import { combineReducers } from '@wordpress/data';
 import { compose } from '@wordpress/compose';
-import type { HistoryChange } from '@wordpress/undo-manager';
 
 /**
  * Internal dependencies
  */
-import type { CollectionConfig, State } from '../../../types';
+import type { CollectionConfig, State, HistoryChange } from '../../../types';
 import { ifMatchingAction, replaceAction } from '../../../utils';
 import { DEFAULT_ENTITY_KEY } from '../../../constants';
 import { edits } from './edits';

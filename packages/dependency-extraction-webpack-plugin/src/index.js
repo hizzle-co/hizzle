@@ -46,6 +46,10 @@ class DependencyExtractionWebpackPlugin extends WPDependencyExtractionWebpackPlu
 	externalizeWpDeps( data, callback ) {
 		const request = data.request;
 
+		if ( '@wordpress/is-shallow-equal' === request ) {
+			//return undefined;
+		}
+
 		let externalRequest;
 
 		// Handle via options.requestToExternal first

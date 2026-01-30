@@ -2,12 +2,12 @@
  * WordPress dependencies
  */
 import { combineReducers } from '@wordpress/data';
-import { createUndoManager } from '@wordpress/undo-manager';
 
 /**
  * Internal dependencies
  */
 import { collectionsReducer } from './collection/reducer';
+import { createUndoManager } from './undo-manager';
 import type { State } from './types';
 
 export function undoManager( state: State['undoManager'] = createUndoManager() ): State['undoManager'] {
