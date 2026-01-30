@@ -21,13 +21,13 @@
 		"release": "gh workflow run release.yml -f"
 	},
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^8.52.0",
-		"@wordpress/docgen": "^2.37.0",
-		"@wordpress/eslint-plugin": "^24.0.0",
-		"@wordpress/scripts": "^31.2.0",
+		"@typescript-eslint/eslint-plugin": "^8.54.0",
+		"@wordpress/docgen": "^2.39.0",
+		"@wordpress/eslint-plugin": "^24.1.0",
+		"@wordpress/scripts": "^31.4.0",
 		"execa": "^9.6.1",
 		"lerna": "^9.0.3",
-		"prettier": "^3.7.4",
+		"prettier": "^3.8.1",
 		"typescript": "^5.9.3",
 		"webpack": "^5.104.1",
 		"webpack-cli": "^6.0.1",
