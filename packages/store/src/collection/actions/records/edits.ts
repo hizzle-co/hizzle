@@ -6,7 +6,7 @@ import fastDeepEqual from 'fast-deep-equal/es6';
 /**
  * Internal dependencies
  */
-import { CollectionRecordKey } from '../../../types';
+import { CollectionRecordKey, ThunkArgs } from '../../../types';
 
 /**
  * Action triggered to undo the last edit to
@@ -68,7 +68,7 @@ export const createUndoLevel =
  */
 export const editCollectionRecord =
 	( namespace: string, collection: string, recordId: CollectionRecordKey, edits: object, options: { undoIgnore?: boolean, isCached?: boolean } = {} ) =>
-		( { select, dispatch } ) => {
+		( { select, dispatch } : ThunkArgs ) => {
 			const collectionConfig = select.getCollectionConfig( namespace, collection );
 			if ( !collectionConfig ) {
 				throw new Error(
@@ -90,8 +90,8 @@ export const editCollectionRecord =
 				// Clear edits when they are equal to their persisted counterparts
 				// so that the property is not considered dirty.
 				edits: Object.keys( edits ).reduce( ( acc, key ) => {
-					const recordValue = record[ key ];
-					const editedRecordValue = editedRecord[ key ];
+					const recordValue = record?.[ key ];
+					const editedRecordValue = editedRecord?.[ key ];
 					const value = mergedEdits[ key ]
 						? { ...editedRecordValue, ...edits[ key ] }
 						: edits[ key ];
@@ -109,7 +109,7 @@ export const editCollectionRecord =
 							changes: Object.keys( edits ).reduce(
 								( acc, key ) => {
 									acc[ key ] = {
-										from: editedRecord[ key ],
+										from: editedRecord?.[ key ],
 										to: edits[ key ],
 									};
 									return acc;
