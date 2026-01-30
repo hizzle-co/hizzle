@@ -1,4 +1,6 @@
 import type { UndoManager } from '@wordpress/undo-manager';
+import type { DispatchReturn, CurriedSelectorsOf } from '@wordpress/data';
+import { store } from '.';
 
 export type AnyFunction = ( ...args: any[] ) => any;
 
@@ -593,3 +595,10 @@ export interface State {
 	 */
 	editsReference: Record<string, any>;
 }
+
+export type StoreConfig = typeof store;
+
+export type ThunkArgs = {
+	select: CurriedSelectorsOf<StoreConfig>;
+	dispatch: DispatchReturn<StoreConfig>;
+};
