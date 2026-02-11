@@ -106,6 +106,7 @@ export const Records: React.FC<TableProps> = ( {
 		</TableProvider>
 	);
 }
+Records.displayName = 'Records';
 
 const EmptyOrLoading = ( { isLoading, tableNoticeId, emptyMessage }: { isLoading: boolean | undefined, tableNoticeId: string, emptyMessage: string | undefined } ) => {
 	const table = useTable();
