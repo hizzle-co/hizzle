@@ -18,11 +18,12 @@ import { Body } from './body';
  */
 export const Table: React.FC<React.HTMLAttributes<HTMLTableElement>> = ( { className, ...props } ) => {
 	const table = useTable();
+	const hasData = table.getRowModel().rows.length > 0;
 
 	return (
 		<table className={ clsx( 'hizzlewp-records-view-table', className ) } { ...props }>
 			<Head />
-			{ table.getRowCount() > 0 && <Body /> }
+			{ hasData && <Body /> }
 		</table>
 	);
 }

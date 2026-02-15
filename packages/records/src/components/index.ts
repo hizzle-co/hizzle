@@ -1,6 +1,6 @@
 export * from './context';
-export { Records } from './records';
-export { Table } from './table';
-export { ActionsPanel } from './actions-panel';
-export { Pagination } from './pagination';
-export { Filters } from './filters';
+export * from './records';
+export * from './table';
+export * from './actions-panel';
+export * from './pagination';
+export * from './filters';

@@ -207,6 +207,7 @@ export function TableProvider<TData>( {
 		<TableContext.Provider value={ { table } }>{ children }</TableContext.Provider>
 	);
 }
+TableProvider.displayName = 'RecordsTableProvider';
 
 /**
  * Hook to use the table context
