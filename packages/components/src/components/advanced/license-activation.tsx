@@ -265,7 +265,7 @@ const LicenseExpiry = ( { license }: { license: LicenseDetails } ) => {
 interface LicenseActivationProps {
     currentLicenseKey: string;
     homeURL: string;
-    prefix: string;
+    prefix?: string;
     hostName: string;
     plugin?: string;
     help?: React.ReactNode;
@@ -295,6 +295,16 @@ export const LicenseActivation = ( {
     const [ isOpen, setIsOpen ] = useState<boolean>( false );
     const [ error, setError ] = useState<string | null>( null );
     const [ successMessage, setSuccessMessage ] = useState<string | null>( null );
+
+    // Set default prefix if not provided
+    if ( !prefix ) {
+        prefix = hostName.replace( /\./g, '_' );
+
+        // Backwards compatibility
+        if ( prefix === 'my_noptin_com' ) {
+            prefix = 'noptin';
+        }
+    }
 
     // Checks the license key remotely.
     useEffect( () => {
@@ -398,7 +408,7 @@ export const LicenseActivation = ( {
     };
 
     // If we don't have a license key yet, or we're in the process of activating, or there's an error, show the input form.
-    if ( !checkedLicenseKey?.trim() || isActivating || error ) {
+    if ( !checkedLicenseKey || isActivating || error ) {
         return (
             <VStack spacing={ 4 }>
                 {/** Shown on successful deactivation */ }
@@ -411,6 +421,7 @@ export const LicenseActivation = ( {
                 <InputControl
                     type="text"
                     value={ licenseKey || '' }
+                    onChange={ setLicenseKey }
                     label={ label }
                     placeholder={ `Enter your ${ hostName } license key to activate` }
                     suffix={ (
