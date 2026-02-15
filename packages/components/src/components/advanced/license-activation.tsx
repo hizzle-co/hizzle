@@ -192,7 +192,7 @@ export const getLicenseKeyDetails = async ( hostName: string, licenseKey: string
 
 export const activateLicenseKey = async ( prefix: string, hostName: string, licenseKey: string, homeURL: string, plugin?: string ) => {
     // Activate via API.
-    const response = await apiFetch<Record<string, any>>( {
+    const data = await apiFetch<{ message: string; success: true; data: any; }>( {
         path: `/${ prefix }/v1/license/activate`,
         method: 'POST',
         data: {
@@ -200,12 +200,6 @@ export const activateLicenseKey = async ( prefix: string, hostName: string, lice
             plugin: plugin || '',
         },
     } );
-
-    const data = await response.json();
-
-    if ( !response.ok || ( data.code && data.message ) ) {
-        throw new Error( data.message || 'Failed to activate license key' );
-    }
 
     // Delete checks cache.
     const url = getLicenseCheckURL( hostName, licenseKey, homeURL, plugin );
@@ -220,27 +214,18 @@ export const activateLicenseKey = async ( prefix: string, hostName: string, lice
 
 export const deactivateLicenseKey = async ( prefix: string, hostName: string, licenseKey: string, homeURL: string, plugin?: string ) => {
     // Deactivate via API.
-    const response = await apiFetch<Record<string, any>>( {
+    const data = await apiFetch<{ message: string; success: true; }>( {
         path: addQueryArgs( `/${ prefix }/v1/license/deactivate`, {
             plugin: plugin || '',
         } ),
         method: 'DELETE',
     } );
 
-    const data = await response.json();
-
-    if ( !response.ok || ( data.code && data.message ) ) {
-        throw new Error( data.message || 'Failed to deactivate license key' );
-    }
-
     // Delete checks cache.
     const url = getLicenseCheckURL( hostName, licenseKey, homeURL, plugin );
     delete LICENSE_DETAILS[ url ];
 
-    return data as {
-        message: string;
-        success: true;
-    }
+    return data;
 };
 
 const LicenseExpiry = ( { license }: { license: LicenseDetails } ) => {
@@ -268,7 +253,10 @@ const LicenseExpiry = ( { license }: { license: LicenseDetails } ) => {
             </Text>
             &nbsp;
             <Text variant="muted">
-                { format( getSettings().formats.date || 'Y-m-d', license.date_expires ) }
+                { license.date_expires ?
+                    format( getSettings().formats.date || 'Y-m-d', license.date_expires ) :
+                    <>&ndash;</>
+                }
             </Text>
         </span>
     )
@@ -281,7 +269,7 @@ interface LicenseActivationProps {
     hostName: string;
     plugin?: string;
     help?: React.ReactNode;
-    label?: string;
+    label?: React.ReactNode;
     purchaseURL?: string;
 }
 
@@ -310,6 +298,8 @@ export const LicenseActivation = ( {
 
     // Checks the license key remotely.
     useEffect( () => {
+        let isMounted = true;
+
         if ( checkedLicenseKey ) {
             setIsCheckingLicenseKey( true );
             getLicenseKeyDetails(
@@ -319,6 +309,8 @@ export const LicenseActivation = ( {
                 plugin
             )
                 .then( ( response ) => {
+                    if ( !isMounted ) return;
+
                     if ( response.ok ) {
                         setLicenseInfo( response.license );
                     } else {
@@ -327,12 +319,20 @@ export const LicenseActivation = ( {
                 } )
                 .catch( ( e ) => {
                     console.error( e );
-                    setError( e?.message || 'Failed to check license key' );
+                    if ( isMounted ) {
+                        setError( e?.message || 'Failed to check license key' );
+                    }
                 } ).finally( () => {
-                    setIsCheckingLicenseKey( false );
+                    if ( isMounted ) {
+                        setIsCheckingLicenseKey( false );
+                    }
                 } );
         }
-    }, [ homeURL, plugin, hostName, checkedLicenseKey, setLicenseInfo, setIsCheckingLicenseKey ] );
+
+        return () => {
+            isMounted = false;
+        };
+    }, [ homeURL, plugin, hostName, checkedLicenseKey ] );
 
     /**
      * Reset error when license key changes.
@@ -386,9 +386,10 @@ export const LicenseActivation = ( {
                 plugin
             );
 
-            setSuccessMessage( result.message || 'License activated successfully.' );
+            setSuccessMessage( result.message || 'License deactivated successfully.' );
             setCheckedLicenseKey( '' );
             setLicenseKey( '' );
+            setLicenseInfo( null );
         } catch ( e: any ) {
             setError( e?.message || 'Failed to deactivate license key' );
         } finally {
@@ -510,7 +511,10 @@ export const LicenseActivation = ( {
                             </Text>
                             &nbsp;
                             <Text variant="muted">
-                                { format( getSettings().formats.date || 'Y-m-d', licenseInfo.date_created ) }
+                                { licenseInfo.date_created ?
+                                    format( getSettings().formats.date || 'Y-m-d', licenseInfo.date_created ) :
+                                    <>&ndash;</>
+                                }
                             </Text>
                         </Item>
                         <Item>

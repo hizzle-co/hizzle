@@ -51,7 +51,14 @@ import {
 	useOptions,
 	ComparisonCondition,
 	checkConditions,
+	LicenseActivation,
 } from '.';
+
+declare global {
+	interface Window {
+		hizzleWPHomeURL: string;
+	}
+}
 
 export interface ISetting {
 	/** The element to render */
@@ -520,6 +527,19 @@ export function Setting( {
 		);
 	}
 
+	// License activation.
+	if ( setting.el === 'license_activation' ) {
+		return (
+			<LicenseActivation
+				{ ...defaultAttributes }
+				currentLicenseKey={ setting.license_key }
+				homeURL={ window.hizzleWPHomeURL }
+				prefix={ setting.prefix }
+				hostName={ setting.hostName }
+			/>
+		);
+	}
+
 	// Time input field.
 	if ( setting.el === 'time' ) {
 		return <TimeControl { ...defaultAttributes } />;
@@ -580,7 +600,7 @@ export function Setting( {
 			return (
 				<CheckboxControl
 					{ ...defaultAttributes }
-					 label={ defaultAttributes.label as string }
+					label={ defaultAttributes.label as string }
 					checked={ hasValue ? !!value : false }
 					__nextHasNoMarginBottom
 				/>

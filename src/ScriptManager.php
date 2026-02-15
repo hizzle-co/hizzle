@@ -147,6 +147,15 @@ class ScriptManager {
 				),
 				'after'
 			);
+
+			wp_add_inline_script(
+				'wp-api-fetch',
+				sprintf(
+					'window.hizzleWPHomeURL="%s"',
+					esc_url( home_url() )
+				),
+				'before'
+			);
 		}
 	}
 
