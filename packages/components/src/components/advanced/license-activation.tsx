@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 /**
  * WordPress dependencies
@@ -14,10 +14,12 @@ import {
     __experimentalInputControl as InputControl,
     __experimentalHStack as HStack,
     __experimentalVStack as VStack,
-    __experimentalItemGroup as ItemGroup,
-    __experimentalItem as Item,
     Modal,
     Icon,
+    CardHeader,
+    Card,
+    CardBody,
+    CardFooter,
 } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
@@ -240,25 +242,53 @@ const LicenseExpiry = ( { license }: { license: LicenseDetails } ) => {
 
     if ( !license.date_expires ) {
         return (
-            <Text color="#008000" weight={ 600 }>
-                <strong>Lifetime License</strong>
-            </Text>
+            <HStack expanded={ false } spacing={ 1 }>
+                <Icon icon="star-filled" size={ 12 } style={ { color: '#008000' } } />
+                <Text color="#008000" weight={ 600 } size={ 12 }>
+                    <strong>Lifetime License</strong>
+                </Text>
+            </HStack>
         );
     }
 
+    let color = '#008000';
+    const expiresIn = ( new Date( license.date_expires ).getTime() - Date.now() ) / ( 1000 * 60 * 60 * 24 );
+
+    if ( expiresIn <= 30 ) {
+        color = '#d97706';
+    }
+
+    if ( expiresIn <= 7 ) {
+        color = '#a00';
+    }
+
     return (
-        <span>
-            <Text weight={ 600 }>
-                Expires on:
-            </Text>
-            &nbsp;
-            <Text variant="muted">
-                { license.date_expires ?
-                    format( getSettings().formats.date || 'Y-m-d', license.date_expires ) :
-                    <>&ndash;</>
-                }
-            </Text>
-        </span>
+        <Text weight={ 600 } color={ color }>
+            Expires on { format( getSettings().formats.date || 'Y-m-d', license.date_expires ) }
+        </Text>
+    )
+}
+
+const LicenseStatus = ( { license }: { license: LicenseDetails } ) => {
+
+    const isActive = license.is_active && !license.has_expired;
+    const style: React.CSSProperties = {
+        padding: '0.125rem 0.625rem',
+        borderRadius: '9999px',
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+        backgroundColor: isActive ? '#d1fae5' : '#fee2e2',
+    }
+
+    return (
+        <Text
+            color={ isActive ? '#065f46' : '#991b1b' }
+            weight={ 600 }
+            size={ 12 }
+            style={ style }
+        >
+            { isActive ? 'Active' : 'Inactive' }
+        </Text >
     )
 }
 
@@ -271,6 +301,7 @@ interface LicenseActivationProps {
     help?: React.ReactNode;
     label?: React.ReactNode;
     purchaseURL?: string;
+    manageURL?: string;
 }
 
 export const LicenseActivation = ( {
@@ -282,6 +313,7 @@ export const LicenseActivation = ( {
     help,
     label,
     purchaseURL,
+    manageURL,
 }: LicenseActivationProps ) => {
     // License key state management
     const [ licenseKey, setLicenseKey ] = useState<string | undefined>( currentLicenseKey );
@@ -469,78 +501,73 @@ export const LicenseActivation = ( {
                 </HStack>
             ) : (
                 <>
-                    <ItemGroup style={ { maxWidth: 360 } } isBordered isSeparated>
-                        { licenseInfo.product_name && (
-                            <Item>
-                                <Text weight={ 600 }>
-                                    Plan:
-                                </Text>
-                                &nbsp;
-                                <Text variant="muted">
-                                    { licenseInfo.product_name || 'Paid Plan' }
-                                </Text>
-                            </Item>
-                        ) }
-                        <Item>
-                            <Text weight={ 600 }>
-                                Email:
-                            </Text>
-                            &nbsp;
-                            <Text variant="muted">
-                                { licenseInfo.email || <>&ndash;</> }
-                            </Text>
-                        </Item>
-                        <Item>
-                            <Text weight={ 600 }>
-                                License Key:
-                            </Text>
-                            &nbsp;
-                            <Text color="#008000">
-                                { licenseInfo.license_key_ast || <>&ndash;</> }
-                            </Text>
-                        </Item>
-                        <Item>
-                            <Text weight={ 600 }>
-                                Active on this site:
-                            </Text>
-                            &nbsp;
-                            <Icon
-                                icon={ licenseInfo.is_active_on_site ? 'yes-alt' : 'no-alt' }
-                                style={ { color: licenseInfo.is_active_on_site ? '#008000' : '#a00' } }
-                            />
-                        </Item>
-                        { ( licenseInfo.is_active && !licenseInfo.has_expired ) && (
-                            <Item>
-                                <Text weight={ 600 }>
-                                    Activations:
-                                </Text>
-                                &nbsp;
-                                <Text variant="muted">
-                                    { licenseInfo.the_activations }
-                                </Text>
-                            </Item>
-                        ) }
-                        <Item>
-                            <Text weight={ 600 }>
-                                Created:
-                            </Text>
-                            &nbsp;
-                            <Text variant="muted">
-                                { licenseInfo.date_created ?
-                                    format( getSettings().formats.date || 'Y-m-d', licenseInfo.date_created ) :
-                                    <>&ndash;</>
-                                }
-                            </Text>
-                        </Item>
-                        <Item>
+                    <Card>
+                        <CardHeader style={ { backgroundColor: '#f8fafc', borderBottom: '1px solid #f1f5f9' } }>
+                            <LicenseStatus license={ licenseInfo } />
                             <LicenseExpiry license={ licenseInfo } />
-                        </Item>
-                        <Item onClick={ () => setIsOpen( true ) }>
-                            <Text color="#a00">
-                                Deactivate
-                            </Text>
-                        </Item>
-                    </ItemGroup>
+                        </CardHeader>
+                        <CardBody as={ VStack } spacing={ 5 }>
+                            <VStack spacing={ 1 }>
+                                <Text size={ 12 } weight={ 700 } color="#94a3b8" style={ { marginBottom: '0.25rem', textTransform: 'uppercase', letterSpacing: '0.05em' } } isBlock>
+                                    License Key
+                                </Text>
+                                <HStack style={ {
+                                    padding: '0.75rem',
+                                    border: '1px solid #e2e8f0',
+                                    borderRadius: '0.5rem',
+                                    boxShadow: 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)'
+                                } }>
+                                    <Text as="code" weight={ 500 } color="#94a3b8" style={ { flex: 1 } }>
+                                        { licenseInfo.license_key_ast || '••••••••••••' }
+                                    </Text>
+                                    { manageURL && (
+                                        <Button
+                                            icon="visibility"
+                                            variant="tertiary"
+                                            size="compact"
+                                            href={ manageURL }
+                                            target="_blank"
+                                            style={ { color: '#94a3b8' } }
+                                        />
+                                    ) }
+                                </HStack>
+                            </VStack>
+                            { licenseInfo.product_name && (
+                                <HStack justify="space-between" style={ { fontSize: '0.875rem' } }>
+                                    <Text style={ { color: '#64748b' } }>Plan</Text>
+                                    <Text style={ { fontWeight: 500, color: '#334155' } }>{ licenseInfo.product_name }</Text>
+                                </HStack>
+                            ) }
+
+                            <HStack justify="space-between" style={ { fontSize: '0.875rem' } }>
+                                <Text style={ { color: '#64748b' } }>Email Address</Text>
+                                <Text style={ { fontWeight: 500, color: '#334155' } }>{ licenseInfo.email || '–' }</Text>
+                            </HStack>
+
+                            { licenseInfo.is_active && !licenseInfo.has_expired && (
+                                <VStack spacing={ 2 }>
+                                    <HStack justify="space-between" style={ { fontSize: '0.875rem' } }>
+                                        <Text style={ { color: '#64748b' } }>Activations</Text>
+                                        <Text style={ { fontWeight: 700, color: '#334155' } }>{ licenseInfo.the_activations }</Text>
+                                    </HStack>
+                                </VStack>
+                            ) }
+                        </CardBody>
+                        <CardFooter style={ { backgroundColor: '#f8fafc', borderTop: '1px solid #f1f5f9' } }>
+                            { licenseInfo.date_created && (
+                                <Text color="#94a3b8">
+                                    Created on { format( getSettings().formats.date || 'Y-m-d', licenseInfo.date_created ) }
+                                </Text>
+                            ) }
+                            <Button
+                                variant="tertiary"
+                                isDestructive
+                                onClick={ () => setIsOpen( true ) }
+                            >
+                                Deactivate Site
+                            </Button>
+                        </CardFooter>
+                    </Card>
                     { ( !licenseInfo.is_active || licenseInfo.has_expired ) && (
                         <div>
                             <Text color="#a00">
