@@ -536,6 +536,9 @@ export function Setting( {
 				homeURL={ window.hizzleWPHomeURL }
 				hostName={ setting.hostName }
 				plugin={ setting.plugin }
+				manageURL={ setting.manageURL }
+				purchaseURL={ setting.purchaseURL }
+				prefix={ setting.prefix }
 			/>
 		);
 	}

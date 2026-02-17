@@ -435,6 +435,7 @@ export const LicenseActivation = ( {
         } catch ( e: any ) {
             setError( e?.message || 'Failed to deactivate license key' );
         } finally {
+            setIsOpen( false );
             setIsDeactivating( false );
         }
     };
