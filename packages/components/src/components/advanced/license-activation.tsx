@@ -407,13 +407,17 @@ export const LicenseActivation = ( {
         }
     };
 
+    const onRemoveSuccessMessage = () => {
+        setSuccessMessage( null );
+    }
+
     // If we don't have a license key yet, or we're in the process of activating, or there's an error, show the input form.
     if ( !checkedLicenseKey || isActivating || error ) {
         return (
             <VStack spacing={ 4 }>
                 {/** Shown on successful deactivation */ }
                 { successMessage && (
-                    <Notice status="success" isDismissible={ true }>
+                    <Notice status="success" isDismissible={ true } onRemove={ onRemoveSuccessMessage }>
                         { successMessage }
                     </Notice>
                 ) }
@@ -453,7 +457,7 @@ export const LicenseActivation = ( {
         <VStack>
             {/** Shown on successful activation */ }
             { successMessage && (
-                <Notice status="success" isDismissible={ true }>
+                <Notice status="success" isDismissible={ true } onRemove={ onRemoveSuccessMessage }>
                     { successMessage }
                 </Notice>
             ) }

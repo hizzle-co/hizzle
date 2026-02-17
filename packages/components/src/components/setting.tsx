@@ -535,6 +535,7 @@ export function Setting( {
 				currentLicenseKey={ setting.license_key }
 				homeURL={ window.hizzleWPHomeURL }
 				hostName={ setting.hostName }
+				plugin={ setting.plugin }
 			/>
 		);
 	}
