@@ -1,6 +1,6 @@
 {
 	"name": "@hizzlewp/dependency-extraction-webpack-plugin",
-	"version": "1.6.7",
+	"version": "1.6.8",
 	"description": "Custom Webpack plugin to map @hizzlewp imports to window.hizzlewp",
 	"author": "picocodes",
 	"license": "GPL-2.0-or-later",
