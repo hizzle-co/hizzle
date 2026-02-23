@@ -26,7 +26,7 @@ import { useCollectionRecords, useProvidedCollectionConfig } from '@hizzlewp/sto
  */
 export const Download = ( { fields, back, query, recordsCount } ) => {
 
-    const shouldBackgroundExport = ( recordsCount || 0 ) > 1000;
+    const shouldBackgroundExport = ( recordsCount || 0 ) > 500;
 
     const { config: { namespace, collection, props } } = useProvidedCollectionConfig();
 
