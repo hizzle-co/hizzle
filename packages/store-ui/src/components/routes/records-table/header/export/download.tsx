@@ -24,7 +24,9 @@ import { useCollectionRecords, useProvidedCollectionConfig } from '@hizzlewp/sto
  * @param {Function} args.back The callback to call when clicking on the back button.
  * @param {Array} args.schema The schema of the collection.
  */
-export const Download = ( { fields, back, query } ) => {
+export const Download = ( { fields, back, query, recordsCount } ) => {
+
+    const shouldBackgroundExport = ( recordsCount || 0 ) > 1000;
 
     const { config: { namespace, collection, props } } = useProvidedCollectionConfig();
 
@@ -32,8 +34,9 @@ export const Download = ( { fields, back, query } ) => {
     const exportArgs = {
         ...query,
         __fields: fields.join( ',' ),
-        per_page: -1,
+        per_page: shouldBackgroundExport ? 1 : -1,
         context: 'edit',
+        background_export: shouldBackgroundExport,
     }
 
     const records = useCollectionRecords( namespace, collection, exportArgs );
@@ -86,7 +89,10 @@ export const Download = ( { fields, back, query } ) => {
         return (
             <Text size={ 16 } as="p">
                 <Spinner style={ { marginLeft: 0 } } />
-                { __( 'Preparing records...', 'newsletter-optin-box' ) }
+                { shouldBackgroundExport
+                    ? __( 'Queuing export...', 'newsletter-optin-box' )
+                    : __( 'Preparing records...', 'newsletter-optin-box' )
+                }
             </Text>
         );
     }
@@ -100,6 +106,17 @@ export const Download = ( { fields, back, query } ) => {
                 { backButton }
             </Notice>
         )
+    }
+
+    // If background export, show notice after request succeeds.
+    if ( shouldBackgroundExport ) {
+        return (
+            <Notice status="success" isDismissible={ false }>
+                { __( "We are generating your export in the background. We'll email you when it's ready.", 'newsletter-optin-box' ) }
+                &nbsp; &nbsp;
+                { backButton }
+            </Notice>
+        );
     }
 
     // If no records, nothing to export.

@@ -55,7 +55,7 @@ export const ExportButton = ( { query, isAllSelected, recordsCount } ) => {
                 <Modal title={ modalTitle } onRequestClose={ () => setOpen( false ) }>
                     <div className="hizzle-records-export-modal__body">
                         <ErrorBoundary>
-                            <ExportModal query={ query } />
+                            <ExportModal query={ query } recordsCount={ recordsCount } />
                         </ErrorBoundary>
                     </div>
                 </Modal>
