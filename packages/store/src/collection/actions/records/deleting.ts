@@ -196,22 +196,21 @@ export const bulkDeleteCollectionRecords =
                     const include = Array.isArray( query?.include ) ? query.include : null;
 
                     if ( include && include.length > BULK_DELETE_INCLUDE_BATCH_SIZE ) {
-                        const { include: _include, ...baseQuery } = query;
-                        const responses = [];
+                        const baseQuery = { ...query };
+                        delete baseQuery.include;
+                        let lastBatchResponse;
 
                         for ( let i = 0; i < include.length; i += BULK_DELETE_INCLUDE_BATCH_SIZE ) {
-                            responses.push(
-                                await fetchHandler( {
-                                    path: addQueryArgs( collectionConfig.baseURL, {
-                                        ...baseQuery,
-                                        include: include.slice( i, i + BULK_DELETE_INCLUDE_BATCH_SIZE ),
-                                    } ),
-                                    method: 'DELETE',
-                                } )
-                            );
+                            lastBatchResponse = await fetchHandler( {
+                                path: addQueryArgs( collectionConfig.baseURL, {
+                                    ...baseQuery,
+                                    include: include.slice( i, i + BULK_DELETE_INCLUDE_BATCH_SIZE ),
+                                } ),
+                                method: 'DELETE',
+                            } );
                         }
 
-                        response = responses;
+                        response = lastBatchResponse;
                     } else {
 
                         response = await fetchHandler( {
