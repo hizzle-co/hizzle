@@ -11,6 +11,8 @@ import { CollectionRecordKey } from '../../../types';
 import { STORE_NAME } from '../../../constants';
 import type { CollectionAction } from '..';
 
+const BULK_DELETE_INCLUDE_BATCH_SIZE = 100;
+
 export type RemoveItemsAction = CollectionAction & {
     /**
      * The type of the action.
@@ -191,11 +193,32 @@ export const bulkDeleteCollectionRecords =
                 let error;
                 let hasError = false;
                 try {
+                    const include = Array.isArray( query?.include ) ? query.include : null;
 
-                    response = await fetchHandler( {
-                        path: addQueryArgs( collectionConfig.baseURL, query ),
-                        method: 'DELETE',
-                    } );
+                    if ( include && include.length > BULK_DELETE_INCLUDE_BATCH_SIZE ) {
+                        const { include: _include, ...baseQuery } = query;
+                        const responses = [];
+
+                        for ( let i = 0; i < include.length; i += BULK_DELETE_INCLUDE_BATCH_SIZE ) {
+                            responses.push(
+                                await fetchHandler( {
+                                    path: addQueryArgs( collectionConfig.baseURL, {
+                                        ...baseQuery,
+                                        include: include.slice( i, i + BULK_DELETE_INCLUDE_BATCH_SIZE ),
+                                    } ),
+                                    method: 'DELETE',
+                                } )
+                            );
+                        }
+
+                        response = responses;
+                    } else {
+
+                        response = await fetchHandler( {
+                            path: addQueryArgs( collectionConfig.baseURL, query ),
+                            method: 'DELETE',
+                        } );
+                    }
                 } catch ( _error ) {
                     hasError = true;
                     error = _error;
