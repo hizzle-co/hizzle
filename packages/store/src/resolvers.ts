@@ -282,10 +282,21 @@ export const getCollectionRecords =
 					};
 				}
 
+				// Update query to treat include as a comma-separated string, so as to reduce request size.
+				const includeArgs: Record<string, string> = {};
+				if ( query.include && Array.isArray( query.include ) ) {
+					includeArgs.include = query.include.join();
+				}
+
+				if ( query.exclude && Array.isArray( query.exclude ) ) {
+					includeArgs.exclude = query.exclude.join();
+				}
+
 				const path = addQueryArgs( entityConfig.baseURL, {
 					...entityConfig.baseURLParams,
 					uniqid: Math.random(),
 					...query,
+					...includeArgs,
 				} );
 
 				let records: Record<string, any>[] = [],
