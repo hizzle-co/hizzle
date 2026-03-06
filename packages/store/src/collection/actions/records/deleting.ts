@@ -204,7 +204,7 @@ export const bulkDeleteCollectionRecords =
                             lastBatchResponse = await fetchHandler( {
                                 path: addQueryArgs( collectionConfig.baseURL, {
                                     ...baseQuery,
-                                    include: include.slice( i, i + BULK_DELETE_INCLUDE_BATCH_SIZE ),
+                                    include: include.slice( i, i + BULK_DELETE_INCLUDE_BATCH_SIZE ).join(),
                                 } ),
                                 method: 'DELETE',
                             } );
