@@ -341,7 +341,7 @@ export function Setting( {
 	const hasValue = value !== undefined && value !== '' && value !== null;
 
 	// Classname for the field.
-	const className = `hizzlewp-component__field-${ settingKey }`;
+	const className = `hizzlewp-component__field-${ settingKey.replaceAll( '.', '--' ) }${ setting.disabled ? ' hizzlewp-component__field--is-disabled' : '' }`;
 
 	// Help text.
 	const help =
