@@ -24,6 +24,29 @@ import {
 } from '.';
 import type { smartTag as SmartTagType } from '../hooks';
 import type { SelectOption } from '../select';
+import type { ConditionalLogicRule } from '.';
+
+export type ConditionalLogicValue = {
+	/**
+	 * Whether conditional logic is enabled.
+	 */
+	enabled: boolean;
+
+	/**
+	 * The type of conditional logic, either "any" or "all".
+	 */
+	type: 'any' | 'all';
+
+	/**
+	 * The action to take when conditions are met, either "allow" or "prevent".
+	 */
+	action: 'allow' | 'prevent';
+
+	/**
+	 * The conditional logic rules.
+	 */
+	rules: ConditionalLogicRule[];
+};
 
 interface ConditionalLogicEditorProps
 	extends Omit<
@@ -38,12 +61,12 @@ interface ConditionalLogicEditorProps
 	/**
 	 * Function to handle changes to the conditional logic.
 	 */
-	onChange: ( value: any ) => void;
+	onChange: ( value: ConditionalLogicValue ) => void;
 
 	/**
 	 * The current conditional logic value.
 	 */
-	value: any;
+	value: ConditionalLogicValue;
 
 	/**
 	 * Text to display for the toggle control.
@@ -98,7 +121,7 @@ export const ConditionalLogicEditor: React.FC<ConditionalLogicEditorProps> = (
 				action: 'allow',
 				rules: [],
 				type: 'all',
-			};
+			} as ConditionalLogicValue;
 		}
 
 		return value;
@@ -110,7 +133,7 @@ export const ConditionalLogicEditor: React.FC<ConditionalLogicEditorProps> = (
 			onChange( {
 				...theValue,
 				[ prop ]: val,
-			} );
+			} as ConditionalLogicValue );
 		},
 		[ onChange, theValue ]
 	);
