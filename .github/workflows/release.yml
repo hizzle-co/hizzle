@@ -108,7 +108,7 @@ jobs:
           lerna publish from-package --no-private --yes || true
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         id: release
         with:
           tag_name: ${{ env.new_version }}
