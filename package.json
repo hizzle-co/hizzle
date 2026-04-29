@@ -28,7 +28,6 @@
 		"execa": "^9.6.1",
 		"lerna": "^9.0.5",
 		"prettier": "^3.8.1",
-		"typescript": "^5.9.3",
 		"webpack": "^5.105.4",
 		"webpack-cli": "^7.0.0",
 		"webpack-node-externals": "^3.0.0"
