@@ -29,7 +29,7 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@wordpress/base-styles": "^6.17.0",
+		"@wordpress/base-styles": "^7.0.0",
 		"@wordpress/compose": "^7.41.0",
 		"@wordpress/data": "^10.41.0",
 		"@wordpress/interface": "^9.26.0"
