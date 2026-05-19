@@ -32,6 +32,7 @@ export const Badge: React.FC<{ text: string }> = ( { text } ) => {
         height: '24px',
         lineHeight: '24px',
         padding: '3px 9px',
+        boxSizing: 'content-box',
         display: 'inline-block',
         ...getColorStyles( text ),
     };
