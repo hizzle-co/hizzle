@@ -22,7 +22,14 @@ type EditCollectionRecordAction = {
     edits: Partial<CollectionRecord>;
 };
 
-type Action = EditCollectionRecordAction | ReceiveCollectionRecordsAction | { type: 'other' };
+type ClearCollectionRecordEditsAction = {
+    type: 'CLEAR_COLLECTION_RECORD_EDITS';
+    namespace: string;
+    collection: string;
+    recordId: CollectionRecordKey;
+};
+
+type Action = EditCollectionRecordAction | ClearCollectionRecordEditsAction | ReceiveCollectionRecordsAction | { type: 'other' };
 
 export const edits = (
     state: Record<CollectionRecordKey, Partial<CollectionRecord>> = {},
@@ -101,6 +108,10 @@ export const edits = (
                 ...state,
                 [ action.recordId ]: nextEdits,
             };
+
+        case 'CLEAR_COLLECTION_RECORD_EDITS':
+            const { [ action.recordId ]: _, ...remainingEdits } = state;
+            return remainingEdits;
     }
 
     return state;

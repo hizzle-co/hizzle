@@ -23,7 +23,12 @@ import { store as noticesStore } from '@wordpress/notices';
  */
 import { ErrorBoundary } from '@hizzlewp/components';
 import { updatePath } from '@hizzlewp/history';
-import { store as hizzleStore, useProvidedCollectionConfig } from '@hizzlewp/store';
+import {
+	store as hizzleStore,
+	useProvidedCollectionConfig,
+	useCollectionRecord,
+	NEW_RECORD_KEY,
+} from '@hizzlewp/store';
 
 /**
  * Local dependancies.
@@ -38,11 +43,13 @@ const CreateRecordForm: React.FC = () => {
 
 	// Prepare the state.
 	const { config: { namespace, collection, props, hidden, ignore, defaultProps, labels, settings } } = useProvidedCollectionConfig() || {};
-	const { saveCollectionRecord } = useDispatch( hizzleStore );
+	const { editedRecord, edit, isSaving } = useCollectionRecord( namespace, collection, NEW_RECORD_KEY );
+	const { saveCollectionRecord, clearCollectionRecordEdits } = useDispatch( hizzleStore );
 	const [ loading, setLoading ] = useState( false );
-	const [ record, setRecord ] = useState( {} );
 	const newIgnore = useMemo( () => [ ...ignore, ...Object.keys( defaultProps || {} ) ], [ ignore, defaultProps ] );
 	const { createErrorNotice, createSuccessNotice, removeAllNotices } = useDispatch( noticesStore );
+
+	const isSubmitting = isSaving || loading;
 
 	// A function to create a new record.
 	const handleSubmit = useCallback( ( e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement> ) => {
@@ -50,15 +57,15 @@ const CreateRecordForm: React.FC = () => {
 		e?.preventDefault();
 
 		// Save once.
-		if ( loading ) {
+		if ( isSubmitting ) {
 			return;
 		}
 
 		removeAllNotices();
 		setLoading( true );
 
-		saveCollectionRecord( namespace, collection, { ...record, ...defaultProps }, { throwOnError: true } )
-			.then( ( { id } ) => {
+		saveCollectionRecord( namespace, collection, { ...( editedRecord || {} ), ...defaultProps }, { throwOnError: true } )
+			.then( ( savedRecord ) => {
 				createSuccessNotice(
 					__( 'Record saved successfully.', 'newsletter-optin-box' ),
 					{
@@ -67,7 +74,10 @@ const CreateRecordForm: React.FC = () => {
 					}
 				);
 
-				updatePath( `/${ namespace }/${ collection }/${ id }` );
+				// Clear the draft record from the store now that it has been saved.
+				clearCollectionRecordEdits( namespace, collection, NEW_RECORD_KEY );
+
+				updatePath( `/${ namespace }/${ collection }/${ savedRecord?.id }` );
 			} )
 			.catch( ( error ) => {
 				createErrorNotice(
@@ -90,19 +100,19 @@ const CreateRecordForm: React.FC = () => {
 			.finally( () => {
 				setLoading( false );
 			} );
-	}, [ record, defaultProps, namespace, collection, saveCollectionRecord, createErrorNotice, createSuccessNotice, removeAllNotices ] );
+	}, [ editedRecord, defaultProps, namespace, collection, isSubmitting, saveCollectionRecord, clearCollectionRecordEdits, createErrorNotice, createSuccessNotice, removeAllNotices ] );
 
 	// Display the add record form.
 	return (
 		<EditRecordForm
-			record={ record }
-			onChange={ ( newProps ) => setRecord( { ...record, ...newProps } ) }
+			record={ editedRecord || {} }
+			onChange={ edit }
 			onSubmit={ handleSubmit }
 			submitText={ labels?.save_item || 'Save' }
 			schema={ props }
 			hidden={ hidden }
 			ignore={ newIgnore }
-			loading={ loading }
+			loading={ isSubmitting }
 			slotName={ `${ namespace }_${ collection }_record_create_below` }
 			extraSettings={ settings }
 		/>
