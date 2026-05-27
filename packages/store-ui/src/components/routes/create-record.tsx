@@ -92,7 +92,7 @@ const CreateRecordForm: React.FC = () => {
 		} finally {
 			setLoading( false );
 		}
-	}, [ save, defaultProps, namespace, collection, isSubmitting, createErrorNotice, createSuccessNotice, removeAllNotices ] );
+	}, [ save, defaultProps, namespace, collection, isSaving, loading, createErrorNotice, createSuccessNotice, removeAllNotices ] );
 
 	// Display the add record form.
 	return (

@@ -175,9 +175,9 @@ export const saveEditedCollectionRecord =
             let record: Record<string, any>;
             if ( isNew ) {
                 // For new records, omit the temporary key so the server treats this as a CREATE.
-                record = { ...edits, ...( extraData || {} ) };
+                record = { ...edits, ...extraData };
             } else {
-                record = { [ entityIdKey ]: recordId, ...edits, ...( extraData || {} ) };
+                record = { [ entityIdKey ]: recordId, ...edits, ...extraData };
             }
 
             if ( isNew ) {

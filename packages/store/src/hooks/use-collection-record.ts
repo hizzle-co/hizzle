@@ -27,7 +27,17 @@ export interface RecordResolution<RecordType> {
 	/** Apply local (in-browser) edits to the edited collection record */
 	edit: ( diff: Partial<RecordType>, editOptions?: { undoIgnore?: boolean } ) => void;
 
-	/** Persist the edits to the server */
+	/**
+	 * Persist the edits to the server.
+	 *
+	 * For new records (identified by a non-numeric key such as `NEW_RECORD_KEY`),
+	 * the ID is omitted from the POST body so the server creates a fresh record.
+	 * Draft edits are automatically removed from the store upon success.
+	 *
+	 * @param saveOptions.extraData Additional data to merge into the save payload
+	 *                              without storing it in the edits (e.g. defaultProps).
+	 * @return The saved record returned by the server, or `undefined` on failure.
+	 */
 	save: ( saveOptions?: { throwOnError?: boolean, fetchHandler?: typeof apiFetch, extraData?: Record<string, any> } ) => Promise<RecordType | undefined>;
 
 	/**
