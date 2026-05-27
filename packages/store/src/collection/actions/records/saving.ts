@@ -192,7 +192,6 @@ export const saveEditedCollectionRecord =
 
                 let updatedRecord: Record<string, any> | undefined;
                 let thrownError: Error | undefined;
-                let hasError = false;
 
                 try {
                     updatedRecord = await dispatch.saveCollectionRecord(
@@ -204,7 +203,6 @@ export const saveEditedCollectionRecord =
                     // Clear the draft edits now that the record is persisted.
                     dispatch.clearCollectionRecordEdits( namespace, collection, recordId );
                 } catch ( err ) {
-                    hasError = true;
                     thrownError = err as Error;
                 }
 
@@ -216,7 +214,7 @@ export const saveEditedCollectionRecord =
                     error: thrownError,
                 } );
 
-                if ( hasError && saveOptions.throwOnError !== false ) {
+                if ( thrownError && saveOptions.throwOnError !== false ) {
                     throw thrownError;
                 }
 

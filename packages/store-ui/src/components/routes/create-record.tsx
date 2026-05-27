@@ -24,7 +24,6 @@ import { store as noticesStore } from '@wordpress/notices';
 import { ErrorBoundary } from '@hizzlewp/components';
 import { updatePath } from '@hizzlewp/history';
 import {
-	store as hizzleStore,
 	useProvidedCollectionConfig,
 	useCollectionRecord,
 	NEW_RECORD_KEY,
@@ -43,8 +42,7 @@ const CreateRecordForm: React.FC = () => {
 
 	// Prepare the state.
 	const { config: { namespace, collection, props, hidden, ignore, defaultProps, labels, settings } } = useProvidedCollectionConfig() || {};
-	const { editedRecord, edit, isSaving } = useCollectionRecord( namespace, collection, NEW_RECORD_KEY );
-	const { saveCollectionRecord, clearCollectionRecordEdits } = useDispatch( hizzleStore );
+	const { editedRecord, edit, isSaving, save } = useCollectionRecord( namespace, collection, NEW_RECORD_KEY );
 	const [ loading, setLoading ] = useState( false );
 	const newIgnore = useMemo( () => [ ...ignore, ...Object.keys( defaultProps || {} ) ], [ ignore, defaultProps ] );
 	const { createErrorNotice, createSuccessNotice, removeAllNotices } = useDispatch( noticesStore );
@@ -52,7 +50,7 @@ const CreateRecordForm: React.FC = () => {
 	const isSubmitting = isSaving || loading;
 
 	// A function to create a new record.
-	const handleSubmit = useCallback( ( e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement> ) => {
+	const handleSubmit = useCallback( async ( e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement> ) => {
 
 		e?.preventDefault();
 
@@ -64,43 +62,37 @@ const CreateRecordForm: React.FC = () => {
 		removeAllNotices();
 		setLoading( true );
 
-		saveCollectionRecord( namespace, collection, { ...( editedRecord || {} ), ...defaultProps }, { throwOnError: true } )
-			.then( ( savedRecord ) => {
-				createSuccessNotice(
-					__( 'Record saved successfully.', 'newsletter-optin-box' ),
-					{
-						isDismissible: true,
-						type: 'snackbar',
-					}
-				);
-
-				// Clear the draft record from the store now that it has been saved.
-				clearCollectionRecordEdits( namespace, collection, NEW_RECORD_KEY );
-
-				updatePath( `/${ namespace }/${ collection }/${ savedRecord?.id }` );
-			} )
-			.catch( ( error ) => {
-				createErrorNotice(
-					error.message,
-					{
-						isDismissible: true,
-						type: 'default',
-					}
-				);
-
-				// Scroll to the top of the page after saving
-				const mainContent = document.getElementById( 'hizzlewp-collection__main-content' );
-				if ( mainContent ) {
-					mainContent.parentElement?.scrollTo( {
-						top: 0,
-						behavior: 'smooth'
-					} );
+		try {
+			const savedRecord = await save( { extraData: defaultProps } );
+			createSuccessNotice(
+				__( 'Record saved successfully.', 'newsletter-optin-box' ),
+				{
+					isDismissible: true,
+					type: 'snackbar',
 				}
-			} )
-			.finally( () => {
-				setLoading( false );
-			} );
-	}, [ editedRecord, defaultProps, namespace, collection, isSubmitting, saveCollectionRecord, clearCollectionRecordEdits, createErrorNotice, createSuccessNotice, removeAllNotices ] );
+			);
+			updatePath( `/${ namespace }/${ collection }/${ savedRecord?.id }` );
+		} catch ( error ) {
+			createErrorNotice(
+				error.message,
+				{
+					isDismissible: true,
+					type: 'default',
+				}
+			);
+
+			// Scroll to the top of the page after saving
+			const mainContent = document.getElementById( 'hizzlewp-collection__main-content' );
+			if ( mainContent ) {
+				mainContent.parentElement?.scrollTo( {
+					top: 0,
+					behavior: 'smooth'
+				} );
+			}
+		} finally {
+			setLoading( false );
+		}
+	}, [ save, defaultProps, namespace, collection, isSubmitting, createErrorNotice, createSuccessNotice, removeAllNotices ] );
 
 	// Display the add record form.
 	return (
