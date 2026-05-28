@@ -168,6 +168,22 @@ _Parameters_
 -   _options.throwOnError_ `boolean`: If false, this action suppresses all the exceptions. Defaults to false.
 -   _options.fetchHandler_ `Function`: The fetch handler to use. Defaults to apiFetch.
 
+### clearCollectionRecordEdits
+
+Returns an action object that clears all edits for a collection record.
+
+This is typically used after a new (unsaved) record has been successfully persisted to the server, so its draft edits are no longer needed.
+
+_Parameters_
+
+-   _namespace_ `string`: Namespace of the collection.
+-   _collection_ `string`: Collection name.
+-   _recordId_ `number|string`: Record ID whose edits should be cleared.
+
+_Returns_
+
+-   `Object`: Action object.
+
 ### createUndoLevel
 
 Forces the creation of a new undo level.

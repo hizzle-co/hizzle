@@ -29,7 +29,7 @@ _Parameters_
 -   _props.content_ `[React.ReactNode]`: Content component.
 -   _props.footer_ `[React.ReactNode]`: Footer component.
 -   _props.actions_ `[React.ReactNode]`: Action components.
--   _props.editorNotices_ `[React.ReactNode]`: Editor notices component.
+-   _props.editorNotices_ `[React.ReactNode|true]`: Editor notices component.
 -   _props.isDistractionFree_ `[boolean]`: Whether the interface is in distraction free mode.
 -   _props.labels_ `[Object]`: Interface labels.
 -   _props.className_ `[string]`: Additional CSS class names.
@@ -37,6 +37,14 @@ _Parameters_
 _Returns_
 
 -   `JSX.Element`: The interface component.
+
+## InterfaceNotices
+
+Undocumented declaration.
+
+## InterfaceSnackbars
+
+Undocumented declaration.
 
 ## PinnedItems
 
