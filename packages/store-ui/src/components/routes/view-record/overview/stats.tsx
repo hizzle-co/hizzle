@@ -4,7 +4,7 @@
 import {
     Flex,
     FlexItem,
-    __experimentalHStack as HStack,
+    __experimentalGrid as Grid,
     __experimentalText as Text,
 } from "@wordpress/components";
 import React from "react";
@@ -47,7 +47,7 @@ export const StatCard = ( { value, label, status = 'default' } ) => {
  * @param {Array} props.cards
  */
 export const Stats = ( { cards } ) => (
-    <HStack spacing={ 2 } justify="flex-end" wrap>
+    <Grid gap={ 2 } templateColumns="repeat(auto-fit, minmax(110px, 1fr))">
         { cards.map( ( { title, value, status } ) => (
             <FlexItem key={ title }>
                 <StatCard
@@ -57,5 +57,5 @@ export const Stats = ( { cards } ) => (
                 />
             </FlexItem>
         ) ) }
-    </HStack>
+    </Grid>
 );
