@@ -10,3 +10,4 @@ import './style.scss';
 export * from './interface';
 export * from './footer';
 export * from './header';
+export * from './notices';
