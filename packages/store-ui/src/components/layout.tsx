@@ -20,7 +20,6 @@ import { usePath, getHistory } from '@hizzlewp/history';
 /**
  * Local dependancies.
  */
-import { EditorNotices, EditorSnackbars } from './notices';
 import { Collection } from './collection';
 
 /**
@@ -109,12 +108,6 @@ export default function Layout( { defaultNamespace, defaultCollection, ...props 
 		return (
 			<VStack id="hizzlewp-collection__main-content" spacing={ 4 } style={ { padding: 20 } }>
 				<ErrorBoundary>
-					<EditorSnackbars />
-				</ErrorBoundary>
-				<ErrorBoundary>
-					<EditorNotices />
-				</ErrorBoundary>
-				<ErrorBoundary>
 					<Collection defaultNamespace={ defaultNamespace } defaultCollection={ defaultCollection } />
 				</ErrorBoundary>
 			</VStack>
@@ -125,6 +118,7 @@ export default function Layout( { defaultNamespace, defaultCollection, ...props 
 		<Interface
 			className="hizzlewp-settings__interface"
 			header={ <TheHeader { ...props } /> }
+			editorNotices={ true }
 			content={ theContent }
 		/>
 	);
