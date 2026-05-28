@@ -1,20 +1,37 @@
-@use './components/routes/view-record/overview/style.scss';
+﻿@use './components/routes/view-record/overview/style.scss';
+
+:root {
+	--hizzle-radius-sm: 6px;
+	--hizzle-radius-md: 8px;
+	--hizzle-radius-lg: 12px;
+	--hizzle-shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.06);
+	--hizzle-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+	--hizzle-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+	--hizzle-transition: 150ms ease;
+}
 
 .hizzlewp-upsell-card {
-	background-color: #cbeeff;
-	padding: 1rem;
-	border-radius: 4px;
+	background: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
+	padding: 1.25rem 1.5rem;
+	border-radius: var(--hizzle-radius-lg);
+	border: 1px solid #bfdbfe;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
+	align-items: flex-start;
 	justify-content: center;
 	min-height: 100px;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+	box-shadow: var(--hizzle-shadow-sm);
 	margin-bottom: 1rem;
+	transition: box-shadow var(--hizzle-transition);
+
+	&:hover {
+		box-shadow: var(--hizzle-shadow-md);
+	}
 
 	& p {
-		font-size: 14px;
-		color: #001012;
+		font-size: 13.5px;
+		color: #1e3a5f;
+		line-height: 1.6;
 	}
 
 	& .components-button {
@@ -26,7 +43,14 @@
 	width: 100%;
 	justify-content: center;
 	font-size: 14px;
-	height: 50px;
+	height: 48px;
+	border-radius: var(--hizzle-radius-md) !important;
+	transition: opacity var(--hizzle-transition), box-shadow var(--hizzle-transition);
+
+	&:hover {
+		opacity: 0.92;
+		box-shadow: var(--hizzle-shadow-sm);
+	}
 }
 
 .hizzlewp-avatar {
@@ -36,7 +60,7 @@
 	max-height: 32px;
 	overflow: hidden;
 	border-radius: 50%;
-	box-shadow: 2px 2px 2px rgb(0 0 0 / 5%);
+	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
 }
 
 .hizzlewp-badge {
@@ -52,15 +76,16 @@
 .hizzle-store-ui__header-menu {
 	& .components-button {
 		border-radius: 0;
+		transition: background-color var(--hizzle-transition), color var(--hizzle-transition);
 
 		+.components-button {
 			margin-left: -1px;
 		}
 
 		&.is-secondary {
-			--wp-components-color-accent: #ddd;
+			--wp-components-color-accent: #e0e0e0;
 			color: #1e1e1e;
-			background-color: rgba(var(--wp-admin-theme-color--rgb), .04);
+			background-color: rgba(var(--wp-admin-theme-color--rgb), 0.04);
 		}
 	}
 }
