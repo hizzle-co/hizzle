@@ -126,3 +126,26 @@ export const editCollectionRecord =
 				...edit,
 			} );
 		};
+
+/**
+ * Returns an action object that clears all edits for a collection record.
+ *
+ * This is typically used after a new (unsaved) record has been successfully
+ * persisted to the server, so its draft edits are no longer needed.
+ *
+ * @param {string}        namespace  Namespace of the collection.
+ * @param {string}        collection Collection name.
+ * @param {number|string} recordId   Record ID whose edits should be cleared.
+ *
+ * @return {Object} Action object.
+ */
+export const clearCollectionRecordEdits =
+	( namespace: string, collection: string, recordId: CollectionRecordKey ) =>
+		( { dispatch }: ThunkArgs ) => {
+			dispatch( {
+				type: 'CLEAR_COLLECTION_RECORD_EDITS',
+				namespace,
+				collection,
+				recordId,
+			} );
+		};

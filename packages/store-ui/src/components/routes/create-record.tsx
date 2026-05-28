@@ -23,7 +23,11 @@ import { store as noticesStore } from '@wordpress/notices';
  */
 import { ErrorBoundary } from '@hizzlewp/components';
 import { updatePath } from '@hizzlewp/history';
-import { store as hizzleStore, useProvidedCollectionConfig } from '@hizzlewp/store';
+import {
+	useProvidedCollectionConfig,
+	useCollectionRecord,
+	NEW_RECORD_KEY,
+} from '@hizzlewp/store';
 
 /**
  * Local dependancies.
@@ -38,71 +42,69 @@ const CreateRecordForm: React.FC = () => {
 
 	// Prepare the state.
 	const { config: { namespace, collection, props, hidden, ignore, defaultProps, labels, settings } } = useProvidedCollectionConfig() || {};
-	const { saveCollectionRecord } = useDispatch( hizzleStore );
+	const { editedRecord, edit, isSaving, save } = useCollectionRecord( namespace, collection, NEW_RECORD_KEY );
 	const [ loading, setLoading ] = useState( false );
-	const [ record, setRecord ] = useState( {} );
 	const newIgnore = useMemo( () => [ ...ignore, ...Object.keys( defaultProps || {} ) ], [ ignore, defaultProps ] );
 	const { createErrorNotice, createSuccessNotice, removeAllNotices } = useDispatch( noticesStore );
 
+	const isSubmitting = isSaving || loading;
+
 	// A function to create a new record.
-	const handleSubmit = useCallback( ( e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement> ) => {
+	const handleSubmit = useCallback( async ( e?: React.FormEvent<HTMLFormElement> | React.MouseEvent<HTMLButtonElement> | React.MouseEvent<HTMLAnchorElement> ) => {
 
 		e?.preventDefault();
 
 		// Save once.
-		if ( loading ) {
+		if ( isSubmitting ) {
 			return;
 		}
 
 		removeAllNotices();
 		setLoading( true );
 
-		saveCollectionRecord( namespace, collection, { ...record, ...defaultProps }, { throwOnError: true } )
-			.then( ( { id } ) => {
-				createSuccessNotice(
-					__( 'Record saved successfully.', 'newsletter-optin-box' ),
-					{
-						isDismissible: true,
-						type: 'snackbar',
-					}
-				);
-
-				updatePath( `/${ namespace }/${ collection }/${ id }` );
-			} )
-			.catch( ( error ) => {
-				createErrorNotice(
-					error.message,
-					{
-						isDismissible: true,
-						type: 'default',
-					}
-				);
-
-				// Scroll to the top of the page after saving
-				const mainContent = document.getElementById( 'hizzlewp-collection__main-content' );
-				if ( mainContent ) {
-					mainContent.parentElement?.scrollTo( {
-						top: 0,
-						behavior: 'smooth'
-					} );
+		try {
+			const savedRecord = await save( { extraData: defaultProps } );
+			createSuccessNotice(
+				__( 'Record saved successfully.', 'newsletter-optin-box' ),
+				{
+					isDismissible: true,
+					type: 'snackbar',
 				}
-			} )
-			.finally( () => {
-				setLoading( false );
-			} );
-	}, [ record, defaultProps, namespace, collection, saveCollectionRecord, createErrorNotice, createSuccessNotice, removeAllNotices ] );
+			);
+			updatePath( `/${ namespace }/${ collection }/${ savedRecord?.id }` );
+		} catch ( error ) {
+			createErrorNotice(
+				error.message,
+				{
+					isDismissible: true,
+					type: 'default',
+				}
+			);
+
+			// Scroll to the top of the page after saving
+			const mainContent = document.getElementById( 'hizzlewp-collection__main-content' );
+			if ( mainContent ) {
+				mainContent.parentElement?.scrollTo( {
+					top: 0,
+					behavior: 'smooth'
+				} );
+			}
+		} finally {
+			setLoading( false );
+		}
+	}, [ save, defaultProps, namespace, collection, isSaving, loading, createErrorNotice, createSuccessNotice, removeAllNotices ] );
 
 	// Display the add record form.
 	return (
 		<EditRecordForm
-			record={ record }
-			onChange={ ( newProps ) => setRecord( { ...record, ...newProps } ) }
+			record={ editedRecord || {} }
+			onChange={ edit }
 			onSubmit={ handleSubmit }
 			submitText={ labels?.save_item || 'Save' }
 			schema={ props }
 			hidden={ hidden }
 			ignore={ newIgnore }
-			loading={ loading }
+			loading={ isSubmitting }
 			slotName={ `${ namespace }_${ collection }_record_create_below` }
 			extraSettings={ settings }
 		/>

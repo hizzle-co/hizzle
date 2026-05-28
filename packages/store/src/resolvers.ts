@@ -16,6 +16,7 @@ import {
 	getUserPermissionsFromAllowHeader,
 	ALLOWED_RESOURCE_ACTIONS,
 	RECEIVE_INTERMEDIATE_RESULTS,
+	isNewCollectionRecordKey,
 } from './utils';
 import { GetRecordsHttpQuery } from './selectors';
 import { CollectionRecordKey, CollectionConfig } from './types';
@@ -98,6 +99,12 @@ getCollectionRecordTabContent.shouldInvalidate = ( action, namespace: string, co
 export const getCollectionRecord =
 	( namespace: string, collection: string, key: CollectionRecordKey = '', query: GetRecordsHttpQuery = {} ) =>
 		async ( { select, dispatch, registry, resolveSelect } ) => {
+			// New (unsaved) record keys do not correspond to a server resource.
+			// Skip the network request so the resolution is immediately fulfilled.
+			if ( isNewCollectionRecordKey( key ) ) {
+				return;
+			}
+
 			const entityConfig = await resolveSelect.getCollectionConfig( namespace, collection );
 			if ( !entityConfig ) {
 				return;

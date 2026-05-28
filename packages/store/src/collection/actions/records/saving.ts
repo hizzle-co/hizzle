@@ -14,7 +14,7 @@ import apiFetch from '@wordpress/api-fetch';
 import { CollectionRecordKey } from '../../../types';
 import { DEFAULT_ENTITY_KEY, STORE_NAME } from '../../../constants';
 import type { CollectionAction } from '..';
-import { getNestedValue, setNestedValue } from '../../../utils';
+import { getNestedValue, setNestedValue, isNewCollectionRecordKey } from '../../../utils';
 
 export type SaveCollectionRecordAction = CollectionAction & {
     /**
@@ -151,9 +151,11 @@ export const saveCollectionRecord =
  * @param {Object=} options  Saving options.
  */
 export const saveEditedCollectionRecord =
-    ( namespace: string, collection: string, recordId: CollectionRecordKey, options: { throwOnError?: boolean, fetchHandler?: typeof apiFetch } = {} ) =>
+    ( namespace: string, collection: string, recordId: CollectionRecordKey, options: { throwOnError?: boolean, fetchHandler?: typeof apiFetch, extraData?: Record<string, any> } = {} ) =>
         async ( { select, dispatch, resolveSelect } ) => {
-            if ( !select.hasEditsForCollectionRecord( namespace, collection, recordId ) ) {
+            const isNew = isNewCollectionRecordKey( recordId );
+
+            if ( !isNew && !select.hasEditsForCollectionRecord( namespace, collection, recordId ) ) {
                 return;
             }
             const collectionConfig = await resolveSelect.getCollectionConfig( namespace, collection );
@@ -162,13 +164,64 @@ export const saveEditedCollectionRecord =
             }
             const entityIdKey = collectionConfig.key || DEFAULT_ENTITY_KEY;
 
+            const { extraData, ...saveOptions } = options;
+
             const edits = select.getCollectionRecordNonTransientEdits(
                 namespace,
                 collection,
                 recordId
             );
-            const record = { [ entityIdKey ]: recordId, ...edits };
-            return await dispatch.saveCollectionRecord( namespace, collection, record, options );
+
+            let record: Record<string, any>;
+            if ( isNew ) {
+                // For new records, omit the temporary key so the server treats this as a CREATE.
+                record = { ...edits, ...extraData };
+            } else {
+                record = { [ entityIdKey ]: recordId, ...edits, ...extraData };
+            }
+
+            if ( isNew ) {
+                // Track the saving state under the temporary new-record key so that
+                // `isSavingCollectionRecord( ..., recordId )` returns the correct value.
+                dispatch( {
+                    type: 'SAVE_COLLECTION_RECORD_START',
+                    namespace,
+                    collection,
+                    recordId,
+                } );
+
+                let updatedRecord: Record<string, any> | undefined;
+                let thrownError: Error | undefined;
+
+                try {
+                    updatedRecord = await dispatch.saveCollectionRecord(
+                        namespace,
+                        collection,
+                        record,
+                        { ...saveOptions, throwOnError: true }
+                    );
+                    // Clear the draft edits now that the record is persisted.
+                    dispatch.clearCollectionRecordEdits( namespace, collection, recordId );
+                } catch ( err ) {
+                    thrownError = err as Error;
+                }
+
+                dispatch( {
+                    type: 'SAVE_COLLECTION_RECORD_FINISH',
+                    namespace,
+                    collection,
+                    recordId,
+                    error: thrownError,
+                } );
+
+                if ( thrownError && saveOptions.throwOnError !== false ) {
+                    throw thrownError;
+                }
+
+                return updatedRecord;
+            }
+
+            return await dispatch.saveCollectionRecord( namespace, collection, record, saveOptions );
         };
 
 /**

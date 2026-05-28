@@ -12,6 +12,7 @@ import { store as hizzleStore } from '..';
 import type { Status } from './constants';
 import { CollectionRecordKey, CollectionRecord } from '../types';
 import apiFetch from '@wordpress/api-fetch';
+import { isNewCollectionRecordKey } from '../utils';
 
 export interface RecordResolution<RecordType> {
 	/** The requested collection record or null if not resolved */
@@ -26,8 +27,18 @@ export interface RecordResolution<RecordType> {
 	/** Apply local (in-browser) edits to the edited collection record */
 	edit: ( diff: Partial<RecordType>, editOptions?: { undoIgnore?: boolean } ) => void;
 
-	/** Persist the edits to the server */
-	save: ( saveOptions?: { throwOnError?: boolean, fetchHandler?: typeof apiFetch } ) => Promise<void>;
+	/**
+	 * Persist the edits to the server.
+	 *
+	 * For new records (identified by a non-numeric key such as `NEW_RECORD_KEY`),
+	 * the ID is omitted from the POST body so the server creates a fresh record.
+	 * Draft edits are automatically removed from the store upon success.
+	 *
+	 * @param saveOptions.extraData Additional data to merge into the save payload
+	 *                              without storing it in the edits (e.g. defaultProps).
+	 * @return The saved record returned by the server, or `undefined` on failure.
+	 */
+	save: ( saveOptions?: { throwOnError?: boolean, fetchHandler?: typeof apiFetch, extraData?: Record<string, any> } ) => Promise<RecordType | undefined>;
 
 	/**
 	 * Is the record being saved?
@@ -177,11 +188,13 @@ export const useCollectionRecord = <RecordType extends CollectionRecord>(
 ): RecordResolution<RecordType> => {
 	const { editCollectionRecord, saveEditedCollectionRecord } = useDispatch( hizzleStore );
 
+	const isNew = isNewCollectionRecordKey( recordId );
+
 	const mutations = useMemo(
 		(): Pick<RecordResolution<RecordType>, 'edit' | 'save'> => ( {
 			edit: ( edits: Partial<RecordType>, editOptions: { undoIgnore?: boolean } = {} ) =>
 				editCollectionRecord( namespace, collection, recordId, edits, editOptions ),
-			save: ( saveOptions: { throwOnError?: boolean, fetchHandler?: typeof apiFetch } = {} ) =>
+			save: ( saveOptions: { throwOnError?: boolean, fetchHandler?: typeof apiFetch, extraData?: Record<string, any> } = {} ) =>
 				saveEditedCollectionRecord( namespace, collection, recordId, {
 					throwOnError: true,
 					...saveOptions,
@@ -235,7 +248,9 @@ export const useCollectionRecord = <RecordType extends CollectionRecord>(
 
 	const { data: record, ...querySelectRest } = useQuerySelect<RecordType>(
 		( query ) => {
-			if ( !options.enabled ) {
+			// New (unsaved) records don't exist on the server – skip the fetch and
+			// return a resolved-with-null state immediately.
+			if ( !options.enabled || isNew ) {
 				return {
 					data: null,
 				};
@@ -246,7 +261,7 @@ export const useCollectionRecord = <RecordType extends CollectionRecord>(
 				recordId
 			);
 		},
-		[ namespace, collection, recordId, options.enabled ]
+		[ namespace, collection, recordId, options.enabled, isNew ]
 	);
 
 	return {
