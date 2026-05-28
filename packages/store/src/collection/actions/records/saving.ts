@@ -51,7 +51,8 @@ export const saveCollectionRecord =
         data: Record<string, any>,
         {
             throwOnError = true,
-            fetchHandler = apiFetch
+            fetchHandler = apiFetch,
+            _skipStartFinish = false,
         } = {}
     ) =>
         async ( { select, resolveSelect, dispatch } ) => {
@@ -94,12 +95,14 @@ export const saveCollectionRecord =
                     }
                 }
 
-                dispatch( {
-                    type: 'SAVE_COLLECTION_RECORD_START',
-                    namespace,
-                    collection,
-                    recordId,
-                } );
+                if ( !_skipStartFinish ) {
+                    dispatch( {
+                        type: 'SAVE_COLLECTION_RECORD_START',
+                        namespace,
+                        collection,
+                        recordId,
+                    } );
+                }
                 let updatedRecord;
                 let error;
                 let hasError = false;
@@ -120,17 +123,28 @@ export const saveCollectionRecord =
                         true,
                         data,
                     );
+                    // For new records, the server returns the created record with its real ID.
+                    // Pre-resolve getCollectionRecord so it doesn't trigger a redundant refetch.
+                    if ( !recordId ) {
+                        const entityIdKey = collectionConfig.key || DEFAULT_ENTITY_KEY;
+                        const newRecordId = updatedRecord[ entityIdKey ];
+                        if ( newRecordId ) {
+                            dispatch.finishResolution( 'getCollectionRecord', [ namespace, collection, newRecordId ] );
+                        }
+                    }
                 } catch ( _error ) {
                     hasError = true;
                     error = _error;
                 }
-                dispatch( {
-                    type: 'SAVE_COLLECTION_RECORD_FINISH',
-                    namespace,
-                    collection,
-                    recordId,
-                    error,
-                } );
+                if ( !_skipStartFinish ) {
+                    dispatch( {
+                        type: 'SAVE_COLLECTION_RECORD_FINISH',
+                        namespace,
+                        collection,
+                        recordId,
+                        error,
+                    } );
+                }
 
                 if ( hasError && throwOnError ) {
                     throw error;
@@ -198,7 +212,7 @@ export const saveEditedCollectionRecord =
                         namespace,
                         collection,
                         record,
-                        { ...saveOptions, throwOnError: true }
+                        { ...saveOptions, throwOnError: true, _skipStartFinish: true }
                     );
                     // Clear the draft edits now that the record is persisted.
                     dispatch.clearCollectionRecordEdits( namespace, collection, recordId );
