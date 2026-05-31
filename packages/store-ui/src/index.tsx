@@ -3,7 +3,6 @@
  */
 import domReady from '@wordpress/dom-ready';
 import React, { createRoot } from "@wordpress/element";
-import { SlotFillProvider } from '@wordpress/components';
 import { store as keyboardShortcutsStore } from '@wordpress/keyboard-shortcuts';
 import { dispatch } from '@wordpress/data';
 
@@ -15,7 +14,7 @@ import './style.scss';
 
 declare global {
 	interface Window {
-		hizzleWPStore?: {
+		hizzleWPStoreUi?: {
 			data: {
 				collection: string;
 				namespace: string;
@@ -25,7 +24,7 @@ declare global {
 	}
 }
 
-const { collection, namespace, ...rest } = window.hizzleWPStore?.data || {};
+const { collection, namespace, ...rest } = window.hizzleWPStoreUi?.data || {};
 
 domReady( () => {
 
@@ -47,13 +46,11 @@ domReady( () => {
 	} );
 
 	const App = () => (
-		<SlotFillProvider>
-			<Layout
-				defaultNamespace={ namespace }
-				defaultCollection={ collection }
-				{ ...rest }
-			/>
-		</SlotFillProvider>
+		<Layout
+			defaultNamespace={ namespace }
+			defaultCollection={ collection }
+			{ ...rest }
+		/>
 	);
 
 	createRoot( target ).render( <App /> );

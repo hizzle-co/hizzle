@@ -21,6 +21,8 @@ import {
 import { GetRecordsHttpQuery } from './selectors';
 import { CollectionRecordKey, CollectionConfig } from './types';
 
+const getUniqueId = () => ( window as any ).hizzleWPStore?.requestUUID || Math.random().toString( 36 ).substring( 2 );
+
 const throwWPError = async ( error: Response | unknown ) => {
 	// If error is a Response object, try to extract WP_Error from the body
 	if ( error instanceof Response ) {
@@ -61,7 +63,7 @@ export const getCollectionRecordTabContent =
 				`${ entityConfig.baseURL }/${ recordId }/${ tabName }`,
 				{
 					...entityConfig.baseURLParams,
-					uniqid: Math.random(),
+					uniqid: getUniqueId(),
 				}
 			);
 
@@ -147,7 +149,7 @@ export const getCollectionRecord =
 					entityConfig.baseURL + ( key ? '/' + key : '' ),
 					{
 						...entityConfig.baseURLParams,
-						uniqid: Math.random(),
+						uniqid: getUniqueId(),
 						...query,
 					}
 				);
@@ -301,7 +303,7 @@ export const getCollectionRecords =
 
 				const path = addQueryArgs( entityConfig.baseURL, {
 					...entityConfig.baseURLParams,
-					uniqid: Math.random(),
+					uniqid: getUniqueId(),
 					...query,
 					...includeArgs,
 				} );
@@ -497,7 +499,7 @@ export const getCollectionConfig =
 				collection,
 				props: config.schema || [],
 				baseURL: `/${ namespace }/v1/${ collection }`,
-				baseURLParams: { context: DEFAULT_CONTEXT, uniqid: Math.random() },
+				baseURLParams: { context: DEFAULT_CONTEXT, uniqid: getUniqueId() },
 				transientEdits: {
 					selection: true,
 				},

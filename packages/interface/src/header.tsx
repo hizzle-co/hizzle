@@ -12,9 +12,13 @@ import {
 	__experimentalText as Text,
 	NavigableMenu,
 	Button,
+	DropdownMenu,
+	MenuItem,
 	Slot,
 } from '@wordpress/components';
 import type { ButtonProps } from '@wordpress/components/build-types/button/types';
+import type { MenuItemProps } from '@wordpress/components/build-types/menu-item/types';
+import { arrowRight, chevronDownSmall } from '@wordpress/icons';
 
 /**
  * HizzleWP dependencies
@@ -44,10 +48,81 @@ type HeaderProps = {
 		/**
 		 * Available navigation links.
 		 */
-		menu?: Partial<ButtonProps>[];
+		menu?: HeaderMenuItem[];
 	};
 	actions?: Record<string, any>[];
 	extra?: React.ReactNode;
+};
+
+type HeaderSubMenuItem = Record<string, any> & Partial<ButtonProps>;
+type HeaderMenuItem = HeaderSubMenuItem & {
+	items?: HeaderSubMenuItem[];
+};
+
+const renderHeaderMenuItem = ( item: HeaderMenuItem, index: number ) => {
+	if ( !Array.isArray( item.items ) || 1 > item.items.length ) {
+		return (
+			<Button
+				key={ index }
+				role="menuitem"
+				__next40pxDefaultSize
+				{ ...item as ButtonProps }
+			/>
+		);
+	}
+
+	const { items, href, ...toggleProps } = item;
+
+	return (
+		<DropdownMenu
+			key={ index }
+			icon={ chevronDownSmall }
+			label={ toggleProps.label || toggleProps.text || '' }
+			text={ toggleProps.text || toggleProps.label || '' }
+			className="hizzle-interface__header-menu-dropdown"
+			toggleProps={ {
+				role: 'menuitem',
+				__next40pxDefaultSize: true,
+				iconPosition: 'right',
+				...toggleProps as Record<string, any>,
+			} }
+		>
+			{ ( { onClose } ) => (
+				<>
+					{ items.map( ( child, childIndex ) => {
+						const {
+							onClick: childOnClick,
+							href: childHref,
+							children: childContent,
+							className: childClassName,
+							...childProps
+						} = child;
+
+						return (
+							<MenuItem
+								key={ childIndex }
+								role="menuitem"
+								icon={ arrowRight }
+								iconPosition="left"
+								className={ `${ childClassName || '' } hizzle-interface__header-menu-dropdown-item` }
+								{ ...childProps as MenuItemProps }
+								onClick={ ( event ) => {
+									if ( childHref ) {
+										window.location.href = childHref;
+									}
+
+									childOnClick?.( event );
+									onClose();
+								} }
+							>
+								{ childContent ?? childProps.label }
+							</MenuItem>
+						);
+					} ) }
+				</>
+			) }
+		</DropdownMenu>
+	);
 };
 
 export const Header = ( {
@@ -104,14 +179,7 @@ export const Header = ( {
 					alignment="stretch"
 					wrap
 				>
-					{ brand?.menu && brand.menu.map( ( item, index ) => (
-						<Button
-							key={ index }
-							role="menuitem"
-							__next40pxDefaultSize
-							{ ...item }
-						/>
-					) ) }
+					{ brand?.menu && brand.menu.map( renderHeaderMenuItem ) }
 					{ actions && actions.map( ( action, index ) => (
 						<Button key={ index } role="menuitem" __next40pxDefaultSize { ...action } />
 					) ) }
