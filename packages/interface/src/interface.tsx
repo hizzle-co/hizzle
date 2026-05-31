@@ -13,7 +13,7 @@ import {
 import { store as preferencesStore } from '@wordpress/preferences';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { useViewportMatch } from '@wordpress/compose';
-import { __experimentalVStack as VStack } from '@wordpress/components';
+import { __experimentalVStack as VStack, SlotFillProvider } from '@wordpress/components';
 
 /**
  * Local dependencies.
@@ -144,14 +144,16 @@ export const Interface = ( { className = '', storeName = STORE_NAME, content, ed
 	}
 
 	return (
-		<WithFullscreenMode storeName={ storeName }>
-			<InterfaceSkeleton
-				className={ useClassName }
-				isDistractionFree={ false }
-				content={ newContent }
-				editorNotices={ true === editorNotices ? undefined : editorNotices }
-				{ ...rest }
-			/>
-		</WithFullscreenMode>
+		<SlotFillProvider>
+			<WithFullscreenMode storeName={ storeName }>
+				<InterfaceSkeleton
+					className={ useClassName }
+					isDistractionFree={ false }
+					content={ newContent }
+					editorNotices={ true === editorNotices ? undefined : editorNotices }
+					{ ...rest }
+				/>
+			</WithFullscreenMode>
+		</SlotFillProvider>
 	);
 };
