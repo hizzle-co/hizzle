@@ -60,7 +60,8 @@ const TableCell: React.FC<{ cell: Cell<any, unknown>; primaryField?: string }> =
 	const tdClass = classnames(
 		'hizzlewp-records-view-table__cell', {
 		'hizzlewp-records-view-table__checkbox-column': cell.column.id === 'hizzlewp-selection',
-		'hizzlewp-records-view-table__actions-column': cell.column.id === 'hizzlewp-actions'
+		'hizzlewp-records-view-table__actions-column': cell.column.id === 'hizzlewp-actions',
+		[ `hizzlewp-records-view-table__${ cell.column.id?.replace( /\s/g, '-' ) || 'unknown' }` ]: true
 	} );
 
 	const cellContentWrapperClass = classnames(

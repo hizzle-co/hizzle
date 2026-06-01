@@ -341,6 +341,7 @@ export const Head = () => {
 										'hizzlewp-records-view-table__sorted-column': isSorted,
 										'hizzlewp-records-view-table__pinned-column__left': header.column.getIsPinned() === 'left',
 										'hizzlewp-records-view-table__pinned-column__right': header.column.getIsPinned() === 'right',
+										[ `hizzlewp-records-view-table__${ header.column.id?.replace( /\s/g, '-' ) || 'unknown' }` ]: true
 									} ) }
 								>
 									{ header.isPlaceholder ? (
