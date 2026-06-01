@@ -6,7 +6,7 @@
 		"allowSyntheticDefaultImports": true,
 		"jsx": "preserve",
 		"target": "esnext",
-		"module": "esnext",
+		"module": "nodenext",
 		"lib": ["DOM", "DOM.Iterable", "ESNext"],
 		"declaration": true,
 		"declarationMap": true,
@@ -21,9 +21,7 @@
 		"noImplicitReturns": true,
 		"noFallthroughCasesInSwitch": true,
 		/* Module Resolution Options */
-		"moduleResolution": "node",
-		/* This needs to be false so our types are possible to consume without setting this */
-		"esModuleInterop": false,
+		"moduleResolution": "nodenext",
 		"resolveJsonModule": true,
 		"typeRoots": ["./typings", "./node_modules/@types"],
 		"types": [],
