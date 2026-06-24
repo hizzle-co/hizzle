@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 
 /**
  * Wordpress dependancies.
@@ -209,9 +209,10 @@ export function Setting( {
 	saved,
 	setAttributes,
 }: SettingProps ) {
-	const settingPath: string[] = (
-		prop ? `${ prop }.${ settingKey }` : settingKey
-	).split( '.' );
+	const settingPath: string[] = useMemo(
+		() => ( prop ? `${ prop }.${ settingKey }` : settingKey ).split( '.' ),
+		[ prop, settingKey ]
+	);
 	const sanitize = setting.sanitize ? setting.sanitize : ( value ) => value;
 	const theAvailableSmartTags =
 		'trigger_settings' === prop ||
@@ -275,6 +276,19 @@ export function Setting( {
 		},
 		[ saved, settingPath, setAttributes, sanitize ]
 	);
+
+	useEffect( () => {
+		if (
+			setting.disabled ||
+			!Object.prototype.hasOwnProperty.call( setting, 'default' ) ||
+			setting.default === undefined ||
+			getNestedValue( saved, settingPath ) !== undefined
+		) {
+			return;
+		}
+
+		updateSetting( setting.default );
+	}, [ saved, setting.default, setting.disabled, settingPath, updateSetting ] );
 
 	// If we have options, convert from object to array.
 	const options: SelectOption[] = useOptions( setting.options || [] );
