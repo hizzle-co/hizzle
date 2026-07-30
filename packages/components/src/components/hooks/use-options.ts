@@ -8,6 +8,16 @@ import { useMemo } from 'react';
  */
 import { SelectOption } from '../select';
 
+const prepareOption = ( option: SelectOption ): SelectOption => {
+	const value = String( option.value ?? '' );
+
+	return {
+		...option,
+		value,
+		label: String( option.label ?? value ),
+	};
+};
+
 const prepareOptions = ( options: string[] | SelectOption[] | Record<string, string> ) => {
 
 	// Arrays.
@@ -15,27 +25,28 @@ const prepareOptions = ( options: string[] | SelectOption[] | Record<string, str
 		// Check if the first option is an object (has label and value properties)
 		if (
 			options.length > 0 &&
+			options[ 0 ] !== null &&
 			typeof options[ 0 ] === 'object' &&
 			'label' in options[ 0 ] &&
 			'value' in options[ 0 ]
 		) {
-			return options as SelectOption[];
+			return ( options as SelectOption[] ).map( prepareOption );
 		}
 
 		return options.map( ( label ) => {
-			return {
+			return prepareOption( {
 				label,
 				value: label,
-			};
+			} );
 		} );
 	}
 
 	// Objects.
 	return Object.keys( options ).map( ( value ) => {
-		return {
+		return prepareOption( {
 			label: options[ value ],
 			value,
-		};
+		} );
 	} );
 }
 
