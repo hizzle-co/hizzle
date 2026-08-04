@@ -193,7 +193,7 @@ export const RepeaterItem: React.FC<RepeaterItemProps> = (props) => {
 					aria-expanded={!hideBody}
 					type="button"
 				>
-					<HStack as={FlexBlock}>
+					<HStack as={FlexBlock} justify="flex-start">
 						<Text weight={600}>
 							{(cardLabel as string) ||
 								__('(new)', 'newsletter-optin-box')}
