@@ -51,10 +51,11 @@ export function IntegrationSection( { id, heading, description, help_url, badges
         }
     } )
 
-    const style = {
+    const style: React.CSSProperties = {
         paddingLeft: 16,
         paddingRight: 16,
         height: 48,
+        textAlign: 'left',
     }
 
     const HelpLinkOrDescription = () => {
