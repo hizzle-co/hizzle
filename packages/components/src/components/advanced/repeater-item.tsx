@@ -171,10 +171,11 @@ export const RepeaterItem: React.FC<RepeaterItemProps> = (props) => {
 			) : null;
 
 		// Style for the header button
-		const style = {
+		const style: React.CSSProperties = {
 			paddingLeft: 16,
 			paddingRight: 16,
 			height: 48,
+			textAlign: 'left',
 		};
 
 		// Get the label for the card from the specified path, or fallback if provided
