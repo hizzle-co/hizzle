@@ -22,6 +22,7 @@ import { closeSmall } from '@wordpress/icons';
  * Internal dependencies
  */
 import { EditFilterValue } from './filter-value';
+import type { TableFeaturesConfig } from '../context';
 
 const ENTER = 'Enter';
 const SPACE = ' ';
@@ -37,7 +38,7 @@ export interface ColumnFilter {
 interface FilterValueProps {
 	value?: string | string[],
 	label: string,
-	column: Column<unknown, unknown>
+	column: Column<TableFeaturesConfig, Record<string, any>, unknown>
 	filter: ColumnFilter
 	onRemove: () => void
 	onUpdate: ( filter: string | string[] ) => void
@@ -160,7 +161,7 @@ const FilterValue: React.FC<FilterValueProps> = ( {
 
 interface FilterValuesProps {
 	filter: ColumnFilter;
-	column: Column<unknown, unknown>;
+	column: Column<TableFeaturesConfig, Record<string, any>, unknown>;
 	onRemove: () => void;
 }
 const FilterValues: React.FC<FilterValuesProps> = ( {
@@ -234,7 +235,7 @@ const FilterValues: React.FC<FilterValuesProps> = ( {
 					<FilterValue
 						key={ label }
 						label={
-							column.columnDef.meta?.is_primary ?
+							( column.columnDef.meta as Record<string, any> )?.is_primary ?
 								sprintf(
 									/* translators: 1: Filter name. e.g.: "Status is:". */
 									__( '%1$s in:' ),
@@ -316,7 +317,7 @@ const FilterValues: React.FC<FilterValuesProps> = ( {
 };
 
 type FilterSummaryProps = {
-	column?: Column<unknown, unknown>;
+	column?: Column<TableFeaturesConfig, Record<string, any>, unknown>;
 	filter: ColumnFilter;
 	onRemove: () => void;
 };

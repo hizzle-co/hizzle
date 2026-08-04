@@ -24,7 +24,7 @@ import { ErrorBoundary } from '@hizzlewp/components';
  */
 import { TableProvider, useTable, Table, TableProviderProps, ActionsPanel, Pagination, Filters } from '.';
 
-export type TableProps<TData = Record<string, unknown>> = Omit<TableProviderProps<TData>, 'children'> & {
+export type TableProps<TData extends Record<string, any> = Record<string, unknown>> = Omit<TableProviderProps<TData>, 'children'> & {
 
 	/**
 	 * The message to display when the table is empty.

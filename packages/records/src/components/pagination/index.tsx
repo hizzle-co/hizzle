@@ -29,9 +29,9 @@ export const Pagination: React.FC<{ slotName: string }> = ( { slotName } ) => {
 	const table = useTable();
 	const pageCount = table.getPageCount();
 	const rowCount = table.getRowCount();
-	const pageIndex = table.getState().pagination.pageIndex;
-	const pageSize = table.getState().pagination.pageSize;
-	const currentPage = table.getState().pagination.pageIndex + 1;
+	const pageIndex = table.state.pagination.pageIndex;
+	const pageSize = table.state.pagination.pageSize;
+	const currentPage = table.state.pagination.pageIndex + 1;
 
 	// Don't show pagination if there are no rows.
 	if ( rowCount < 1 ) {

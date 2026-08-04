@@ -14,6 +14,7 @@ import { ErrorBoundary } from '@hizzlewp/components';
  * Internal dependencies
  */
 import { useTable } from '../context';
+import type { TableFeaturesConfig } from '../context';
 
 /**
  * The body component for the table.
@@ -36,7 +37,7 @@ export const Body: React.FC<{}> = () => {
  * @param {Object} props - The component props.
  * @param {Row<any>} props.row - The row to render.
  */
-const TableRow: React.FC<{ row: Row<any>; primaryField?: string }> = ( { row } ) => {
+const TableRow: React.FC<{ row: Row<TableFeaturesConfig, Record<string, any>>; primaryField?: string }> = ( { row } ) => {
 	return (
 		<tr
 			key={ row.id }
@@ -56,7 +57,7 @@ const TableRow: React.FC<{ row: Row<any>; primaryField?: string }> = ( { row } )
  * @param {Object} props - The component props.
  * @param {Cell<any, unknown>} props.cell - The cell to render.
  */
-const TableCell: React.FC<{ cell: Cell<any, unknown>; primaryField?: string }> = ( { cell } ) => {
+const TableCell: React.FC<{ cell: Cell<TableFeaturesConfig, Record<string, any>, unknown>; primaryField?: string }> = ( { cell } ) => {
 	const tdClass = classnames(
 		'hizzlewp-records-view-table__cell', {
 		'hizzlewp-records-view-table__checkbox-column': cell.column.id === 'hizzlewp-selection',

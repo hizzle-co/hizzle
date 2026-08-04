@@ -9,14 +9,23 @@ import React, {
 } from 'react';
 
 import {
-	useReactTable,
-	getCoreRowModel,
-	getFilteredRowModel,
-	getPaginationRowModel,
-	getSortedRowModel,
+	useTable as useReactTable,
+	tableFeatures,
+	columnFilteringFeature,
+	globalFilteringFeature,
+	columnOrderingFeature,
+	columnPinningFeature,
+	columnVisibilityFeature,
+	rowPaginationFeature,
+	rowSelectionFeature,
+	rowSortingFeature,
+	createFilteredRowModel,
+	createPaginatedRowModel,
+	createSortedRowModel,
+	filterFn_includesString,
 	TableOptions,
-	Table,
 	TableState,
+	ReactTable,
 } from '@tanstack/react-table';
 
 /**
@@ -27,8 +36,27 @@ import { CheckboxControl } from '@wordpress/components';
 /**
  * Interface for the TableProvider props
  */
-export interface TableProviderProps<TData>
-	extends Omit<TableOptions<TData>, 'getCoreRowModel'> {
+export const tableFeaturesConfig = tableFeatures( {
+	columnFilteringFeature,
+	globalFilteringFeature,
+	columnOrderingFeature,
+	columnPinningFeature,
+	columnVisibilityFeature,
+	rowPaginationFeature,
+	rowSelectionFeature,
+	rowSortingFeature,
+	filteredRowModel: createFilteredRowModel(),
+	paginatedRowModel: createPaginatedRowModel(),
+	sortedRowModel: createSortedRowModel(),
+	filterFns: {
+		includesString: filterFn_includesString,
+	},
+} );
+
+export type TableFeaturesConfig = typeof tableFeaturesConfig;
+
+export interface TableProviderProps<TData extends Record<string, any>>
+	extends Omit<TableOptions<TableFeaturesConfig, TData>, 'features'> {
 	/**
 	 * The child components to render within the table provider.
 	 */
@@ -49,18 +77,18 @@ export interface TableProviderProps<TData>
 	/**
 	 * The initial state of the table
 	 */
-	state?: Partial<TableState>;
+	state?: Partial<TableState<TableFeaturesConfig>>;
 
 	/**
 	 * On change of the table state
 	 */
-	onChange?: ( state: Partial<TableState> ) => void;
+	onChange?: ( state: Partial<TableState<TableFeaturesConfig>> ) => void;
 }
 
 /**
  * Create the context
  */
-const TableContext = createContext<{ table: Table<any> } | undefined>(
+const TableContext = createContext<{ table: ReactTable<TableFeaturesConfig, Record<string, any>> } | undefined>(
 	undefined
 );
 
@@ -69,7 +97,7 @@ const functionOrValue = ( value: any, oldValue: any ) => typeof value === 'funct
 /**
  * Provider component for the table context
  */
-export function TableProvider<TData>( {
+export function TableProvider<TData extends Record<string, any>>( {
 	children,
 	enableSorting = true,
 	enablePagination = true,
@@ -93,7 +121,7 @@ export function TableProvider<TData>( {
 							type="checkbox"
 							checked={ table.getIsAllPageRowsSelected() }
 							onChange={ table.toggleAllPageRowsSelected }
-							indeterminate={ table.getIsSomeRowsSelected() }
+							indeterminate={ table.getIsSomePageRowsSelected() && !table.getIsAllPageRowsSelected() }
 							aria-label={ table.getIsAllPageRowsSelected() ? 'Deselect all' : 'Select all' }
 							className="hizzlewp-records-view-table-selection-checkbox"
 							__nextHasNoMarginBottom
@@ -104,7 +132,7 @@ export function TableProvider<TData>( {
 					<CheckboxControl
 						type="checkbox"
 						checked={ row.getIsSelected() }
-						onChange={ row.toggleSelected }
+						onChange={ ( selected ) => row.toggleSelected( selected ) }
 						disabled={ !row.getCanSelect() }
 						aria-label={ row.getIsSelected() ? 'Unselect item' : 'Select item' }
 						className="hizzlewp-records-view-table-selection-checkbox"
@@ -122,15 +150,15 @@ export function TableProvider<TData>( {
 
 	const state = tableOptions.state;
 	const table = useReactTable( {
+		features: tableFeaturesConfig,
 		...tableOptions,
 		columns: tableColumns,
-		getCoreRowModel: getCoreRowModel(),
 		enableSorting,
 		initialState: {
 			...initialState,
 			columnPinning: {
-				left: [ 'hizzlewp-selection' ],
-				right: [ 'hizzlewp-actions' ],
+				start: [ 'hizzlewp-selection' ],
+				end: [ 'hizzlewp-actions' ],
 			},
 		},
 
@@ -190,21 +218,14 @@ export function TableProvider<TData>( {
 
 		// Client-side state management.
 		...( !state && {
-			...( enablePagination && {
-				getPaginationRowModel: getPaginationRowModel(),
-			} ),
-			...( enableSorting && {
-				getSortedRowModel: getSortedRowModel(),
-			} ),
 			...( false !== tableOptions.enableFilters && {
-				getFilteredRowModel: getFilteredRowModel(),
 				globalFilterFn: 'includesString',
 			} ),
 		} ),
 	} );
 
 	return (
-		<TableContext.Provider value={ { table } }>{ children }</TableContext.Provider>
+		<TableContext.Provider value={ { table: table as ReactTable<TableFeaturesConfig, Record<string, any>> } }>{ children }</TableContext.Provider>
 	);
 }
 TableProvider.displayName = 'RecordsTableProvider';
@@ -212,12 +233,12 @@ TableProvider.displayName = 'RecordsTableProvider';
 /**
  * Hook to use the table context
  */
-export function useTable<TData>() {
+export function useTable<TData extends Record<string, any>>() {
 	const context = useContext( TableContext );
 
 	if ( context === undefined ) {
 		throw new Error( 'useTable must be used within a TableProvider' );
 	}
 
-	return context.table as Table<TData>;
+	return context.table as unknown as ReactTable<TableFeaturesConfig, TData>;
 }

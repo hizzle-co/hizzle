@@ -177,14 +177,15 @@ export const RecordsTable = () => {
 	const state = useMemo( () => {
 		const querySort = query.orderby;
 		const queryOrder = query.order || 'desc';
+		const savedColumnPinning = preferences?.columnPinning as Record<string, string[]> | undefined;
 
 		const state = {
 			columnVisibility,
-			columnPinning: {
-				left: [ 'hizzlewp-selection', primaryColumn ].filter( Boolean ),
-				right: [ 'hizzlewp-actions' ],
-			},
 			...preferences,
+			columnPinning: {
+				start: savedColumnPinning?.start || savedColumnPinning?.left || [ 'hizzlewp-selection', primaryColumn ].filter( Boolean ),
+				end: savedColumnPinning?.end || savedColumnPinning?.right || [ 'hizzlewp-actions' ],
+			},
 			sorting: querySort ? [ { id: querySort, desc: queryOrder === 'desc' } ] : ( preferences?.sorting || [] ),
 			pagination: {
 				pageSize: preparedQuery.per_page || 25,

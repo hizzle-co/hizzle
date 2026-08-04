@@ -20,6 +20,7 @@ import { __ } from '@wordpress/i18n';
  * HizzleWP dependencies
  */
 import { MultiSelectSetting, useOptions, InputSetting } from '@hizzlewp/components';
+import type { TableFeaturesConfig } from '../context';
 
 const RenderInput = ( { meta, value, onUpdate, label } ) => {
     const options = useOptions( meta.options || [] );
@@ -100,7 +101,7 @@ const RenderInput = ( { meta, value, onUpdate, label } ) => {
 interface Props {
     value?: string | string[];
     onUpdate: ( filter: string | string[] | undefined ) => void;
-    column: Column<any>;
+    column: Column<TableFeaturesConfig, Record<string, any>>;
     label: string;
 }
 

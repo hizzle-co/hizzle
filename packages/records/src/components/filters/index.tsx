@@ -12,7 +12,7 @@ import { useTable } from '..';
 
 export const Filters: React.FC<{ slotName: string }> = ( { slotName } ) => {
 	const table = useTable();
-	const filters = table.getState().columnFilters;
+	const filters = table.state.columnFilters;
 	const columns = table.getAllLeafColumns();
 
 	if ( filters.length === 0 ) {

@@ -11,7 +11,7 @@ import { useTable } from '..';
 
 export const ResetFilters: React.FC = () => {
     const table = useTable();
-    const filters = table.getState().columnFilters;
+    const filters = table.state.columnFilters;
 
     return (
         <Button

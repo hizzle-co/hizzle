@@ -27,7 +27,7 @@ export const RecordsSearch = memo( function Search( { label }: SearchProps ) {
      * Initialize the search input with debounced value handling
      */
     const [ search, setSearch, debouncedSearch ] = useDebouncedInput(
-        table.getState().globalFilter ?? ''
+        table.state.globalFilter ?? ''
     );
 
     /**
@@ -35,7 +35,7 @@ export const RecordsSearch = memo( function Search( { label }: SearchProps ) {
      * and differs from the current search filter
      */
     useEffect( () => {
-        if ( debouncedSearch !== table.getState().globalFilter ) {
+        if ( debouncedSearch !== table.state.globalFilter ) {
             table.setGlobalFilter( debouncedSearch );
         }
     }, [ debouncedSearch, table.setGlobalFilter ] );

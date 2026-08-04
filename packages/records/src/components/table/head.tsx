@@ -8,6 +8,7 @@ import classnames from 'clsx';
  * WordPress dependencies
  */
 import { flexRender, Header } from '@tanstack/react-table';
+import type { TableFeaturesConfig } from '../context';
 import {
 	DropdownMenu,
 	MenuGroup,
@@ -49,7 +50,7 @@ type MenuProps = {
 	/**
 	 * The current header.
 	 */
-	header: Header<any, any>;
+	header: Header<TableFeaturesConfig, any, any>;
 }
 
 const Sort = ( { onClose, header }: MenuProps ) => (
@@ -116,16 +117,16 @@ const MoveOrPin = ( { header, canMoveLeft, canMoveRight, moveLeft, moveRight }: 
 			{ header.column.getCanPin() && (
 				<>
 					<MenuItem
-						isSelected={ header.column.getIsPinned() === 'left' }
-						onClick={ () => header.column.pin( header.column.getIsPinned() === 'left' ? false : 'left' ) }
-						icon={ header.column.getIsPinned() === 'left' ? check : undefined }
+						isSelected={ header.column.getIsPinned() === 'start' }
+						onClick={ () => header.column.pin( header.column.getIsPinned() === 'start' ? false : 'start' ) }
+						icon={ header.column.getIsPinned() === 'start' ? check : undefined }
 					>
 						{ __( 'Pin left' ) }
 					</MenuItem>
 					<MenuItem
-						isSelected={ header.column.getIsPinned() === 'right' }
-						onClick={ () => header.column.pin( header.column.getIsPinned() === 'right' ? false : 'right' ) }
-						icon={ header.column.getIsPinned() === 'right' ? check : undefined }
+						isSelected={ header.column.getIsPinned() === 'end' }
+						onClick={ () => header.column.pin( header.column.getIsPinned() === 'end' ? false : 'end' ) }
+						icon={ header.column.getIsPinned() === 'end' ? check : undefined }
 					>
 						{ __( 'Pin right' ) }
 					</MenuItem>
@@ -154,7 +155,7 @@ const HeaderMenuToggle = memo(
 
 export const Head = () => {
 	const table = useTable();
-	const { columnOrder: stateColumnOrder, columnPinning } = table.getState();
+	const { columnOrder: stateColumnOrder, columnPinning } = table.state;
 
 	return (
 		<thead>
@@ -172,8 +173,8 @@ export const Head = () => {
 				const canMove = headers.length > 1;
 
 				// Can not move before the last left pinned column or after the first right pinned column.
-				const lastLeftPinnedId = columnPinning?.left?.[ columnPinning.left.length - 1 ];
-				const firstRightPinnedId = columnPinning?.right?.[ 0 ];
+				const lastLeftPinnedId = columnPinning?.start?.[ columnPinning.start.length - 1 ];
+				const firstRightPinnedId = columnPinning?.end?.[ 0 ];
 				const lastLeftPinnedIndex = lastLeftPinnedId ? headers.findIndex( header => header.id === lastLeftPinnedId ) : -1;
 				const firstRightPinnedIndex = firstRightPinnedId ? headers.findIndex( header => header.id === firstRightPinnedId ) : -1;
 
@@ -339,8 +340,8 @@ export const Head = () => {
 										'hizzlewp-records-view-table__actions-column': header.column.id === 'hizzlewp-actions',
 										'hizzlewp-records-view-table__filtered-by-column': header.column.getCanFilter() && header.column.getIsFiltered(),
 										'hizzlewp-records-view-table__sorted-column': isSorted,
-										'hizzlewp-records-view-table__pinned-column__left': header.column.getIsPinned() === 'left',
-										'hizzlewp-records-view-table__pinned-column__right': header.column.getIsPinned() === 'right',
+										'hizzlewp-records-view-table__pinned-column__left': header.column.getIsPinned() === 'start',
+										'hizzlewp-records-view-table__pinned-column__right': header.column.getIsPinned() === 'end',
 										[ `hizzlewp-records-view-table__${ header.column.id?.replace( /\s/g, '-' ) || 'unknown' }` ]: true
 									} ) }
 								>

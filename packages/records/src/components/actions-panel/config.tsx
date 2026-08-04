@@ -20,7 +20,7 @@ import { SORTING_DIRECTIONS, SORTING_ICONS, SORTING_LABELS, PER_PAGE_OPTIONS } f
 
 const PageSizeMenu: React.FC = () => {
 	const table = useTable();
-	const pageSize = table.getState().pagination.pageSize;
+	const pageSize = table.state.pagination.pageSize;
 
 	const pageSizeOptions = PER_PAGE_OPTIONS.map( ( value ) => {
 		return {
@@ -125,8 +125,8 @@ const SortMenu: React.FC = () => {
 	const table = useTable();
 	const fields = table.getAllLeafColumns();
 	const sortableFields = fields.filter( field => field.getCanSort() );
-	const sortField = table.getState().sorting?.[ 0 ]?.id;
-	const isDescending = table.getState().sorting?.[ 0 ]?.desc;
+	const sortField = table.state.sorting?.[ 0 ]?.id;
+	const isDescending = table.state.sorting?.[ 0 ]?.desc;
 
 	if ( !sortableFields?.length ) {
 		return null;
