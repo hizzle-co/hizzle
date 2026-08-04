@@ -88,12 +88,14 @@ export function IntegrationSection( { id, heading, description, help_url, badges
 
             <CardHeader style={ { padding: 0 } }>
                 <Flex as={ Button } onClick={ () => setIsOpen( !isOpen ) } style={ style } label={ description } showTooltip>
-                    <HStack as={ FlexBlock }>
-                        <Text as="h3" weight={ 600 }>
-                            { heading }
-                        </Text>
-                        <HelpLinkOrDescription />
-                    </HStack>
+                    <FlexBlock>
+                        <HStack alignment="center" justify="flex-start">
+                            <Text as="h3" weight={ 600 }>
+                                { heading }
+                            </Text>
+                            <HelpLinkOrDescription />
+                        </HStack>
+                    </FlexBlock>
                     <FlexItem>
                         <HStack>
                             { badge }
