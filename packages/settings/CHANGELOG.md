@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.3.16 (2026-08-05)
+
+### Bug Fixes
+
+* Deprecated select(interfaceStore).isFeatureActive ([ae50608](https://github.com/hizzle-co/hizzle/commit/ae5060854a530672af1b5584f7ed769ccf6dcb0b))
+* **deps:** update wordpress monorepo ([#144](https://github.com/hizzle-co/hizzle/issues/144)) ([c7f93f4](https://github.com/hizzle-co/hizzle/commit/c7f93f4ce38fff148de88106d6ec022a460e90cc))
+
+
 ## 1.3.15 (2026-08-05)
 
 ### Bug Fixes
