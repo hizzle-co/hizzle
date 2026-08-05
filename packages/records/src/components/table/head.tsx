@@ -155,7 +155,7 @@ const HeaderMenuToggle = memo(
 
 export const Head = () => {
 	const table = useTable();
-	const { columnOrder: stateColumnOrder, columnPinning } = table.state;
+	const { columnOrder: stateColumnOrder = [], columnPinning = {} } = table.state;
 
 	return (
 		<thead>

@@ -14,7 +14,7 @@ import { sprintf } from "@wordpress/i18n";
  */
 import { useCollectionRecordTabContent } from '@hizzlewp/store';
 import type { CollectionTab } from "@hizzlewp/store";
-import type { TableProviderProps } from '@hizzlewp/records/build-types/components/table/context';
+import type { TableProviderProps } from '@hizzlewp/records';
 import { ErrorBoundary } from "@hizzlewp/components";
 import { Records as RecordsTable } from '@hizzlewp/records';
 import { updateQueryString } from "@hizzlewp/history";

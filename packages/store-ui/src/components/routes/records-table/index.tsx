@@ -21,7 +21,7 @@ import { ErrorBoundary } from '@hizzlewp/components';
 import { useCollectionRecords, useProvidedCollectionConfig, store as hizzleStore, getRawValue } from '@hizzlewp/store';
 import { useQuery, updateQueryString } from '@hizzlewp/history';
 import { Records, PER_PAGE_OPTIONS } from '@hizzlewp/records';
-import type { TableProviderProps } from '@hizzlewp/records/build-types/components/table/context';
+import type { TableProviderProps } from '@hizzlewp/records';
 import { usePreferences } from '@hizzlewp/interface';
 
 /**
@@ -262,10 +262,18 @@ export const RecordsTable = () => {
 					onChange={ onChange }
 					enableRowSelection={ true }
 					onRowSelectionChange={
-						( rowSelection ) => setSelectedCollectionRecords( namespace, collection, preparedQuery, rowSelection( state?.rowSelection || {} ) )
+						( rowSelection ) => setSelectedCollectionRecords(
+							namespace,
+							collection,
+							preparedQuery,
+							typeof rowSelection === 'function' ? rowSelection( state?.rowSelection || {} ) : rowSelection
+						)
 					}
 					onColumnPinningChange={
-						( columnPinning ) => onChange( { ...state, columnPinning: columnPinning( state?.columnPinning || {} ) } )
+						( columnPinning ) => onChange( {
+							...state,
+							columnPinning: typeof columnPinning === 'function' ? columnPinning( state?.columnPinning || { start: [], end: [] } ) : columnPinning,
+						} )
 					}
 					onGlobalFilterChange={
 						( globalFilter ) => {
