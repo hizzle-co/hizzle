@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.3.15 (2026-08-05)
+
+### Bug Fixes
+
+* improve column movement logic in table header for better safety checks ([39cf61b](https://github.com/hizzle-co/hizzle/commit/39cf61b61a9bb5af679be37653c0108ae7ba80b6))
+* pass data prop to TableProvider to handle loading state ([f2de4cc](https://github.com/hizzle-co/hizzle/commit/f2de4cce742af3c16ce776a91009cf15574149fa))
+* pass slotName prop to Pagination component ([4148aa6](https://github.com/hizzle-co/hizzle/commit/4148aa607a4f80c4fa74748640f76cb8fde4595f))
+* Table component should read table.getRowModel().rows.length > 0 to check if there is data ([30ffbb3](https://github.com/hizzle-co/hizzle/commit/30ffbb3c53f5d71bd291cdc30223aabd42bd254f))
+
+### Features
+
+* add bulk actions support and improve table context management ([6102312](https://github.com/hizzle-co/hizzle/commit/61023121e7cf8793dbe10a0cccdaf4ab6931ae4e))
+* enhance table component with footer slot support and pagination styling improvements ([aaa0981](https://github.com/hizzle-co/hizzle/commit/aaa098119d9c209e15d5622ab31a54d7c8a92758))
+* enhance table component with pagination, sorting, and loading states; improve styling and add empty message support ([8b29e0d](https://github.com/hizzle-co/hizzle/commit/8b29e0d6c80fc8f4d9ffbb9efb9ed9015ef93f29))
+* **filters:** add slot support to Filters component for enhanced extending ([51f5845](https://github.com/hizzle-co/hizzle/commit/51f5845208163efb40befc906fed0eb0ea8813f5))
+* improve table context management with function-based value handling and enable global filtering ([39ddae2](https://github.com/hizzle-co/hizzle/commit/39ddae2c6d1ddfc635fd061d1b7ec570e3e7569b))
+* introduce pagination options and improve pagination component logic in table ([aa4a2f6](https://github.com/hizzle-co/hizzle/commit/aa4a2f63205db208c495438589434ae18aa863c3))
+
+
 ## 1.3.14 (2026-07-30)
 
 
