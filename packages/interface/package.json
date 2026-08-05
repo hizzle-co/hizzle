@@ -30,9 +30,9 @@
 	],
 	"dependencies": {
 		"@wordpress/base-styles": "6.20.0",
-		"@wordpress/compose": "7.44.0",
-		"@wordpress/data": "10.44.0",
-		"@wordpress/interface": "9.29.0"
+		"@wordpress/compose": "7.46.0",
+		"@wordpress/data": "10.52.0",
+		"@wordpress/interface": "9.37.0"
 	},
 	"peerDependencies": {
 		"react": "^18.3.1"
