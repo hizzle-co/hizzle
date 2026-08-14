@@ -8,8 +8,19 @@ import { useMemo } from 'react';
  */
 import { __ } from '@wordpress/i18n';
 import type { IconKey as DashiconIconKey } from '@wordpress/components/src/dashicon/types';
+import type { ISetting } from '../setting';
 
 export interface smartTag {
+	/**
+	 * Attributes supported by the merge tag, keyed by attribute name.
+	 */
+	attributes?: Record<string, ISetting>;
+
+	/**
+	 * Whether the merge tag is guaranteed to return a value.
+	 */
+	never_empty?: boolean;
+
 	/**
 	 * The smart tag string.
 	 */
