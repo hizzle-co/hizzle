@@ -29,7 +29,7 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@wordpress/url": "4.44.0"
+		"@wordpress/url": "4.53.0"
 	},
 	"peerDependencies": {
 		"react": "^18 || ^19"
