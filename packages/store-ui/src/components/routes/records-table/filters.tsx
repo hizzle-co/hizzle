@@ -189,12 +189,13 @@ const TheModal = ( { currentFilters, fields, setOpen } ) => {
 	// A function to apply the filters.
 	const onApplyFilters = ( e ) => {
 		e?.preventDefault();
+		const activeFilters = columnFiltersToFlatFilters( flatFiltersToColumnFilters( filters ) );
 
 		// If there are no filters, don't set the query param
-		if ( filters && Object.keys( filters ).length === 0 ) {
+		if ( Object.keys( activeFilters ).length === 0 ) {
 			updateQueryString( { hizzlewp_filters: '', paged: '1' } );
 		} else {
-			updateQueryString( { hizzlewp_filters: JSON.stringify( filters ), paged: '1' } );
+			updateQueryString( { hizzlewp_filters: JSON.stringify( activeFilters ), paged: '1' } );
 		}
 
 		setOpen( false );
