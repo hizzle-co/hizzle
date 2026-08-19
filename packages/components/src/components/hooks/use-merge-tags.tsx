@@ -114,7 +114,7 @@ export const useMergeTags = ( {
 	onMergeTagClick = () => { },
 	raw = false,
 	icon = 'shortcode',
-	label = __( 'Insert dynamic field', 'newsletter-optin-box' ),
+	label = 'Insert dynamic field',
 	...dropdownProps
 }: UseMergeTagsProps ) => {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
@@ -189,7 +189,7 @@ export const useMergeTags = ( {
 		inserter = (
 			<DropdownMenu icon={ icon } label={ label } { ...dropdownProps }>
 				{ ( { onClose } ) => (
-					<VStack>
+					<VStack style={ { minWidth: 200 } }>
 						{ selectedSmartTag ? (
 							<>
 								<Button
@@ -211,22 +211,24 @@ export const useMergeTags = ( {
 									}
 									availableSmartTags={ availableSmartTags }
 								/>
-								<Button
-									variant="primary"
-									onClick={ () => {
-										insertSmartTag(
-											selectedSmartTag,
-											attributes
-										);
-										setSelectedSmartTag( null );
-										onClose();
-									} }
-								>
-									{ __(
-										'Insert',
-										'newsletter-optin-box'
-									) }
-								</Button>
+								<div>
+									<Button
+										variant="primary"
+										onClick={ () => {
+											insertSmartTag(
+												selectedSmartTag,
+												attributes
+											);
+											setSelectedSmartTag( null );
+											onClose();
+										} }
+									>
+										{ __(
+											'Insert',
+											'newsletter-optin-box'
+										) }
+									</Button>
+								</div>
 							</>
 						) : (
 							<>
@@ -324,10 +326,7 @@ export const useMergeTags = ( {
 								{ !hasResults && (
 									<MenuGroup>
 										<MenuItem disabled>
-											{ __(
-												'No matching items found',
-												'newsletter-optin-box'
-											) }
+											No matching items found
 										</MenuItem>
 									</MenuGroup>
 								) }
