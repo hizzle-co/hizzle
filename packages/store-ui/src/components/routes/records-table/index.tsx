@@ -258,6 +258,7 @@ export const RecordsTable = () => {
 					isLoading={ isLoading }
 					enableSorting
 					enablePagination
+					manualFiltering
 					state={ state }
 					onChange={ onChange }
 					enableRowSelection={ true }
