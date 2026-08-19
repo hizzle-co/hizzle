@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.5.17](https://github.com/hizzle-co/hizzle/compare/%40hizzlewp%2Fcomponents%401.0.1...%40hizzlewp%2Fcomponents%401.5.17) (2026-08-19)
+
+### Bug Fixes
+
+* add box-sizing to badge component ([5d35210](https://github.com/hizzle-co/hizzle/commit/5d35210a0e72391f6f648dc26989956f6a2c4abb))
+* Combobox failing when option label === null ([6fd9194](https://github.com/hizzle-co/hizzle/commit/6fd9194edcbe739539a32832ba2cb26c81794efd))
+* Contains and Not Contains does not condition type not shown when there are options ([54ea50e](https://github.com/hizzle-co/hizzle/commit/54ea50ea44c78f43f1b3e9babdfc4904e146bb2c))
+* **deps:** update wordpress monorepo ([#144](https://github.com/hizzle-co/hizzle/issues/144)) ([c7f93f4](https://github.com/hizzle-co/hizzle/commit/c7f93f4ce38fff148de88106d6ec022a460e90cc))
+* **deps:** update wordpress monorepo ([#169](https://github.com/hizzle-co/hizzle/issues/169)) ([64fc6d4](https://github.com/hizzle-co/hizzle/commit/64fc6d4b9f33d88979d55338ee39e161d455ed8b))
+* **deps:** update wordpress monorepo ([#173](https://github.com/hizzle-co/hizzle/issues/173)) ([8581f14](https://github.com/hizzle-co/hizzle/commit/8581f1456556dae64cb818af1c80e1245a32e36c))
+* Don't minize npm releases ([cfdbbdb](https://github.com/hizzle-co/hizzle/commit/cfdbbdbf70ba971cf4b507bffa6f404378991b76))
+* enhance error message in ErrorBoundary to suggest clearing browser cache ([e9573d0](https://github.com/hizzle-co/hizzle/commit/e9573d046ac2efec033ac9eab2c49891a35a7962))
+* Includes conditions inverted ([88274b9](https://github.com/hizzle-co/hizzle/commit/88274b973ac7f908bdf3568b02d84dbd1a154f62))
+* initialize useCustomValue based on rule.value and available options ([51b2967](https://github.com/hizzle-co/hizzle/commit/51b2967c2fb74e3f07c6226ef3c89131936919a1))
+* Remove unstable isPressEnterToChange prop ([0783972](https://github.com/hizzle-co/hizzle/commit/0783972aa6140bea55932644bdc547206f537d38))
+* update className generation to replace dots with double dashes for better CSS compatibility ([b661ac8](https://github.com/hizzle-co/hizzle/commit/b661ac8046d8f45c102d9865e72d84c08f464674))
+* use dynamic alignment and justification for WPHStack in HorizontalSettings ([c6b85b7](https://github.com/hizzle-co/hizzle/commit/c6b85b7585732d8bc576557516cb5ac67ddb5c12))
+
+### Features
+
+* add AnimatedNumber component for animating numerical transitions with customizable duration ([b89b882](https://github.com/hizzle-co/hizzle/commit/b89b88293a534e14c3132250408beae6af2bd45a))
+* Add composer ([9b2c1a9](https://github.com/hizzle-co/hizzle/commit/9b2c1a94a414d9d49a9460661ab0a5056283c387))
+* add RadioControl support in Setting component ([87e73e2](https://github.com/hizzle-co/hizzle/commit/87e73e2764d884a2a5799972bf5e2d4d8c826473))
+* Allow setting merge tag attributes when inserting it ([b2a244e](https://github.com/hizzle-co/hizzle/commit/b2a244e52193b7d18099beec284b40dd79925349))
+* allow specifying custom ifOptions in conditional logic component ([a05a953](https://github.com/hizzle-co/hizzle/commit/a05a953cc270c11a4fc27081ee819a80d2c0f19c))
+
+
 ## [1.5.16](https://github.com/hizzle-co/hizzle/compare/%40hizzlewp%2Fcomponents%401.0.1...%40hizzlewp%2Fcomponents%401.5.16) (2026-08-05)
 
 ### Bug Fixes

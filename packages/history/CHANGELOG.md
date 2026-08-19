@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 1.3.17 (2026-08-19)
+
+### Bug Fixes
+
+* Deprecated select(interfaceStore).isFeatureActive ([ae50608](https://github.com/hizzle-co/hizzle/commit/ae5060854a530672af1b5584f7ed769ccf6dcb0b))
+* prevent infinite loop in Outlet component ([3dd6b61](https://github.com/hizzle-co/hizzle/commit/3dd6b61076132a5afadec969564c1856f7c9548a))
+
+
 ## 1.3.16 (2026-08-05)
 
 ### Bug Fixes
