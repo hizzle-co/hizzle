@@ -29,10 +29,10 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@wordpress/base-styles": "6.20.0",
-		"@wordpress/compose": "7.44.0",
+		"@wordpress/base-styles": "13.0.0",
+		"@wordpress/compose": "8.7.0",
 		"@wordpress/data": "10.44.0",
-		"@wordpress/interface": "9.29.0"
+		"@wordpress/interface": "10.0.0"
 	},
 	"peerDependencies": {
 		"react": "^18 || ^19"
