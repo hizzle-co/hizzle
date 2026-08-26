@@ -32,10 +32,10 @@
 		"@hizzlewp/components": "^1.6.0",
 		"@hizzlewp/history": "^1.4.0",
 		"@hizzlewp/interface": "^1.6.0",
-		"@wordpress/api-fetch": "7.44.0",
-		"@wordpress/data": "10.44.0",
-		"@wordpress/i18n": "6.17.0",
-		"@wordpress/notices": "5.44.0"
+		"@wordpress/api-fetch": "7.54.0",
+		"@wordpress/data": "10.54.0",
+		"@wordpress/i18n": "6.27.0",
+		"@wordpress/notices": "5.54.0"
 	},
 	"publishConfig": {
 		"access": "public"
