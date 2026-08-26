@@ -30,7 +30,7 @@
 	],
 	"dependencies": {
 		"@wordpress/api-fetch": "7.44.0",
-		"@wordpress/components": "32.6.0",
+		"@wordpress/components": "40.0.0",
 		"@wordpress/url": "4.44.0"
 	},
 	"peerDependencies": {
