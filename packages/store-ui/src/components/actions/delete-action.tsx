@@ -2,6 +2,7 @@
  * External dependencies
  */
 import React, { useState } from "react";
+import type { ElementType, ReactElement } from 'react';
 
 /**
  * WordPress dependencies
@@ -17,10 +18,19 @@ import { trash } from "@wordpress/icons";
  */
 import { DeleteModal } from "../routes/view-record/overview/action-buttons/delete";
 
+type DeleteActionProps = {
+    namespace: string;
+    collection: string;
+    id: string;
+    onClick?: () => void;
+    as?: ElementType;
+    [ key: string ]: any;
+};
+
 /**
  * Displays a delete action.
  */
-export const DeleteAction = ( { as = Button, onClick = () => {}, ...props } ) => {
+export const DeleteAction = ( { as = Button, onClick = () => {}, ...props }: DeleteActionProps ): ReactElement => {
 
     // Prepare the state.
     const [ isModalOpen, setIsModalOpen ] = useState( false );
