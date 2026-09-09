@@ -1,4 +1,9 @@
 /**
+ * External dependencies
+ */
+import type { ElementType, ReactElement } from 'react';
+
+/**
  * WordPress dependencies
  */
 import { useDispatch } from "@wordpress/data";
@@ -6,10 +11,17 @@ import { store as noticesStore } from "@wordpress/notices";
 import { Button } from "@wordpress/components";
 import { useCopyToClipboard } from '@wordpress/compose';
 
+type CopyActionProps = {
+    value: string;
+    onClick?: () => void;
+    as?: ElementType;
+    [ key: string ]: any;
+};
+
 /**
  * Displays a copy link.
  */
-export const CopyAction = ( { value, onClick = () => {}, as = Button, ...props } ) => {
+export const CopyAction = ( { value, onClick = () => {}, as = Button, ...props }: CopyActionProps ): ReactElement => {
 
     const { createInfoNotice } = useDispatch( noticesStore );
 
