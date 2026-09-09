@@ -26,7 +26,9 @@ export const getMergeTagValue = ( smartTag: smartTag ): string => {
  */
 export const attributesToMergeTag = (
 	attributes: Record<string, unknown>,
-	mergeTag: string
+	mergeTag: string,
+	openingDelimiter = '[[',
+	closingDelimiter = ']]'
 ): string => {
 	let attributesString = '';
 
@@ -49,5 +51,5 @@ export const attributesToMergeTag = (
 		} );
 	}
 
-	return `[[${ mergeTag }${ attributesString }]]`;
+	return `${ openingDelimiter }${ mergeTag }${ attributesString }${ closingDelimiter }`;
 };

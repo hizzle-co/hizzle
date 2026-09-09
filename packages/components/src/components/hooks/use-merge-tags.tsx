@@ -102,6 +102,12 @@ interface UseMergeTagsProps extends Omit<DropdownMenuProps, 'label'> {
 	 * @default 'Insert dynamic field'
 	 */
 	label?: string;
+
+	/** Opening delimiter used when formatting the inserted merge tag. */
+	openingDelimiter?: string;
+
+	/** Closing delimiter used when formatting the inserted merge tag. */
+	closingDelimiter?: string;
 }
 
 /**
@@ -113,6 +119,8 @@ export const useMergeTags = ( {
 	availableSmartTags = [],
 	onMergeTagClick = () => { },
 	raw = false,
+	openingDelimiter = '[[',
+	closingDelimiter = ']]',
 	icon = 'shortcode',
 	label = 'Insert dynamic field',
 	...dropdownProps
@@ -171,11 +179,11 @@ export const useMergeTags = ( {
 		configuredAttributes?: Record<string, unknown>
 	) => {
 		const full = configuredAttributes
-			? attributesToMergeTag( configuredAttributes, item.smart_tag )
-			: `[[${ getMergeTagValue( item ) }]]`;
+			? attributesToMergeTag( configuredAttributes, item.smart_tag, openingDelimiter, closingDelimiter )
+			: `${ openingDelimiter }${ getMergeTagValue( item ) }${ closingDelimiter }`;
 		const value = raw
 			? configuredAttributes
-				? full.slice( 2, -2 )
+				? full.slice( openingDelimiter.length, -closingDelimiter.length )
 				: item.smart_tag
 			: full;
 

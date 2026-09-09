@@ -79,6 +79,8 @@ export const TextareaSetting: React.FC<TextareaSettingProps> = ({
 	const mergeTagSuffix = useMergeTags({
 		availableSmartTags,
 		onMergeTagClick,
+		openingDelimiter: setting.merge_tag_opening_delimiter,
+		closingDelimiter: setting.merge_tag_closing_delimiter,
 		toggleProps: { size: 'small' },
 	});
 
