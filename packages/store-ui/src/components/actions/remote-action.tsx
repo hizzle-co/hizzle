@@ -2,6 +2,7 @@
  * External dependencies
  */
 import React, { useCallback } from "react";
+import type { ElementType, ReactElement, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -18,12 +19,23 @@ import {
  */
 import { store as hizzleStore } from '@hizzlewp/store';
 
+type RemoteActionProps = {
+    actionName: string;
+    namespace: string;
+    collection: string;
+    id: string;
+    children?: ReactNode;
+    onClick?: () => void;
+    as?: ElementType;
+    [ key: string ]: any;
+};
+
 /**
  * Displays a remote action link.
  *
  * @param {Object} props
  */
-export const RemoteAction = ( { children = null, actionName, as = Button, namespace, collection, id, onClick, ...props } ) => {
+export const RemoteAction = ( { children = null, actionName, as = Button, namespace, collection, id, onClick, ...props }: RemoteActionProps ): ReactElement => {
 
     // Prepare the state.
     const { doRemoteCollectionRecordAction } = useDispatch( hizzleStore );
