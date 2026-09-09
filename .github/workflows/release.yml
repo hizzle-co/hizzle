@@ -82,13 +82,14 @@ jobs:
           echo "Updated version in composer.json"
           cat composer.json | grep "version"
 
+      - name: Update package lock
+        run: npm install --package-lock-only --ignore-scripts --legacy-peer-deps
+
       - name: Build
         run: npm run build
 
       - name: Commit version changes
         run: |
-          # We don't want to commit changes to package-lock.json
-          git checkout -- package-lock.json
           git add .
           git commit -m "chore(release): publish [skip ci]"
           git push
