@@ -1,5 +1,8 @@
 {
 	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
 	"extends": ["config:recommended"],
+	"constraints": {
+		"npm": ">=11.6.3 <12"
+	},
 	"postUpdateOptions": ["npmInstallTwice"]
 }
