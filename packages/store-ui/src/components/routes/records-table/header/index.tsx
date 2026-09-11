@@ -89,9 +89,10 @@ const ActionItem: React.FC<{ children: React.ReactNode }> = ( { children } ) => 
  */
 export const Header: React.FC<{ query: Record<string, any> }> = ( { query } ) => {
 	const args = useBulkActionArgs( query );
+	const bulkActionTargetKey = JSON.stringify( args.query );
 
 	return (
-		<HStack>
+		<HStack key={ bulkActionTargetKey }>
 			<ActionItem>
 				<BulkEdit { ...args } isBulkEditing />
 			</ActionItem>
