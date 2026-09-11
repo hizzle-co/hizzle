@@ -2,7 +2,7 @@
  * External dependencies
  */
 import React from 'react';
-import { Cell, flexRender, Row } from '@tanstack/react-table';
+import { Cell, Row } from '@tanstack/react-table';
 import classnames from 'clsx';
 
 /**
@@ -58,6 +58,7 @@ const TableRow: React.FC<{ row: Row<TableFeaturesConfig, Record<string, any>>; p
  * @param {Cell<any, unknown>} props.cell - The cell to render.
  */
 const TableCell: React.FC<{ cell: Cell<TableFeaturesConfig, Record<string, any>, unknown>; primaryField?: string }> = ( { cell } ) => {
+	const table = useTable();
 	const tdClass = classnames(
 		'hizzlewp-records-view-table__cell', {
 		'hizzlewp-records-view-table__checkbox-column': cell.column.id === 'hizzlewp-selection',
@@ -74,10 +75,7 @@ const TableCell: React.FC<{ cell: Cell<TableFeaturesConfig, Record<string, any>,
 		<td className={ tdClass }>
 			<div className={ cellContentWrapperClass }>
 				<ErrorBoundary>
-					{ flexRender(
-						cell.column.columnDef.cell,
-						cell.getContext()
-					) }
+					<table.FlexRender cell={ cell } />
 				</ErrorBoundary>
 			</div>
 		</td>

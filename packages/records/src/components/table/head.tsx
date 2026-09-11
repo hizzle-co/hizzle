@@ -7,7 +7,7 @@ import classnames from 'clsx';
 /**
  * WordPress dependencies
  */
-import { flexRender, Header } from '@tanstack/react-table';
+import { Header } from '@tanstack/react-table';
 import type { TableFeaturesConfig } from '../context';
 import {
 	DropdownMenu,
@@ -358,14 +358,11 @@ export const Head = () => {
 													}
 													toggleProps={ {
 														as: HeaderMenuToggle,
-														className:
-															'hizzlewp-records-view-table-header-button',
-														children: (
-															<>
-																{ flexRender(
-																	header.column.columnDef.header,
-																	header.getContext()
-																) }
+													className:
+														'hizzlewp-records-view-table-header-button',
+													children: (
+														<>
+															<table.FlexRender header={ header } />
 																{ isSorted && (
 																	<span aria-hidden="true">
 																		{
@@ -408,13 +405,9 @@ export const Head = () => {
 														</>
 													) }
 												</DropdownMenu>
-											) : (
-												<span className="hizzlewp-records-view-table-header">
-													{ flexRender(
-														header.column.columnDef
-															.header,
-														header.getContext()
-													) }
+										) : (
+											<span className="hizzlewp-records-view-table-header">
+												<table.FlexRender header={ header } />
 												</span>
 											) }
 										</>
