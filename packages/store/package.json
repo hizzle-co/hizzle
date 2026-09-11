@@ -29,7 +29,7 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@wordpress/core-data": "7.54.0",
+		"@wordpress/core-data": "8.0.0",
 		"@wordpress/data": "10.55.0",
 		"@wordpress/data-controls": "4.55.0",
 		"@wordpress/url": "4.55.0",
