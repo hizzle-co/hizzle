@@ -101,6 +101,7 @@ export function TableProvider<TData extends Record<string, any>>( {
 	children,
 	enableSorting = true,
 	enablePagination = true,
+	enableRowRangeSelection = true,
 	onChange,
 	columns,
 	initialState,
@@ -132,7 +133,11 @@ export function TableProvider<TData extends Record<string, any>>( {
 					<CheckboxControl
 						type="checkbox"
 						checked={ row.getIsSelected() }
-						onChange={ ( selected ) => row.toggleSelected( selected ) }
+						onClick={ ( event ) => {
+							event.stopPropagation();
+							row.getToggleSelectedHandler()( event );
+						} }
+						onChange={ () => undefined }
 						disabled={ !row.getCanSelect() }
 						aria-label={ row.getIsSelected() ? 'Unselect item' : 'Select item' }
 						className="hizzlewp-records-view-table-selection-checkbox"
@@ -154,6 +159,7 @@ export function TableProvider<TData extends Record<string, any>>( {
 		...tableOptions,
 		columns: tableColumns,
 		enableSorting,
+		enableRowRangeSelection,
 		initialState: {
 			...initialState,
 			columnPinning: {

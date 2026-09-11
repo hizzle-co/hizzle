@@ -38,11 +38,17 @@ export const Body: React.FC<{}> = () => {
  * @param {Row<any>} props.row - The row to render.
  */
 const TableRow: React.FC<{ row: Row<TableFeaturesConfig, Record<string, any>>; primaryField?: string }> = ( { row } ) => {
+	const toggleSelected = row.getToggleSelectedHandler();
+
 	return (
 		<tr
 			key={ row.id }
 			className={ classnames( 'hizzlewp-records__table__row', { 'is-selected': row.getIsSelected() } ) }
-			onClick={ row.getCanSelect() ? row.getToggleSelectedHandler() : undefined }
+			onClick={ row.getCanSelect() ? ( event ) => toggleSelected( {
+				target: { checked: !row.getIsSelected() },
+				shiftKey: event.shiftKey,
+				nativeEvent: event.nativeEvent,
+			} ) : undefined }
 		>
 			{ row.getVisibleCells().map( ( cell ) => (
 				<TableCell key={ cell.id } cell={ cell } />
