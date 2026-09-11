@@ -22,6 +22,12 @@ import { useDispatch } from "@wordpress/data";
  */
 import { store as hizzleStore, useProvidedCollection } from '@hizzlewp/store';
 
+type DeleteTarget = {
+	query: Record<string, any>;
+	isAllSelected: boolean;
+	recordsCount: number;
+};
+
 /**
  * Displays a delete button.
  *
@@ -32,7 +38,7 @@ export const BulkDelete = ( { query, isAllSelected, recordsCount } ) => {
 	const { namespace, collection } = useProvidedCollection() || {};
 
 	// Whether the modal is open.
-	const [ isOpen, setOpen ] = useState( false );
+	const [ deleteTarget, setDeleteTarget ] = useState<DeleteTarget | null>( null );
 
 	// Deleting state.
 	const [ error, setError ] = useState<Error | null>( null );
@@ -40,6 +46,7 @@ export const BulkDelete = ( { query, isAllSelected, recordsCount } ) => {
 
 	// Title.
 	const title = isAllSelected ? __( 'Delete', 'newsletter-optin-box' ) : __( 'Delete Selected', 'newsletter-optin-box' );
+	const modalTitle = deleteTarget?.isAllSelected ? __( 'Delete', 'newsletter-optin-box' ) : __( 'Delete Selected', 'newsletter-optin-box' );
 
 	const { bulkDeleteCollectionRecords } = useDispatch( hizzleStore );
 
@@ -49,15 +56,15 @@ export const BulkDelete = ( { query, isAllSelected, recordsCount } ) => {
 		e?.preventDefault();
 
 		// Delete once.
-		if ( deleting ) {
+		if ( deleting || !deleteTarget ) {
 			return;
 		}
 
 		setDeleting( true );
 
-		bulkDeleteCollectionRecords( namespace as string, collection as string, query )
-			.then( ( res ) => {
-				setOpen( false );
+		bulkDeleteCollectionRecords( namespace as string, collection as string, deleteTarget.query )
+			.then( () => {
+				setDeleteTarget( null );
 			} )
 			.catch( ( error ) => {
 				setError( error );
@@ -65,23 +72,32 @@ export const BulkDelete = ( { query, isAllSelected, recordsCount } ) => {
 			.finally( () => {
 				setDeleting( false );
 			} );
-	}, [ deleting, namespace, collection, query ] );
+	}, [ deleting, namespace, collection, deleteTarget ] );
 
-	const warningText = error?.message || ( isAllSelected ? sprintf(
+	const warningText = error?.message || ( deleteTarget?.isAllSelected ? sprintf(
 		// translators: %d: Number of records being deleted.
 		__( 'Are you sure you want to delete %d matching records?', 'newsletter-optin-box' ),
-		recordsCount
+		deleteTarget.recordsCount
 	) : sprintf(
 		// translators: %d: Number of records being deleted.
 		__( 'Are you sure you want to delete %d selected records?', 'newsletter-optin-box' ),
-		recordsCount
+		deleteTarget?.recordsCount || 0
 	) );
 
 	return (
 		<>
 
 			<Button
-				onClick={ () => setOpen( true ) }
+				onClick={ () => {
+					setError( null );
+					// Freeze the target while the confirmation modal is open. Fetching
+					// records resets table selection and must not broaden this delete.
+					setDeleteTarget( {
+						query: { ...query },
+						isAllSelected,
+						recordsCount,
+					} );
+				} }
 				variant="tertiary"
 				text={ title }
 				label={ !isAllSelected ? __( 'Delete Selected', 'newsletter-optin-box' ) : 'Delete all matching records' }
@@ -89,8 +105,8 @@ export const BulkDelete = ( { query, isAllSelected, recordsCount } ) => {
 				isDestructive
 			/>
 
-			{ isOpen && (
-				<Modal title={ title } onRequestClose={ () => setOpen( false ) }>
+			{ deleteTarget && (
+				<Modal title={ modalTitle } onRequestClose={ () => setDeleteTarget( null ) }>
 					<VStack>
 						{ deleting ? (
 							<>
@@ -108,7 +124,7 @@ export const BulkDelete = ( { query, isAllSelected, recordsCount } ) => {
 										{ __( 'Yes, Delete!', 'newsletter-optin-box' ) }
 									</Button>
 
-									<Button className="hizzlewp-block-button" onClick={ () => setOpen( false ) } variant="secondary">
+									<Button className="hizzlewp-block-button" onClick={ () => setDeleteTarget( null ) } variant="secondary">
 										{ __( 'Cancel', 'newsletter-optin-box' ) }
 									</Button>
 								</HStack>
