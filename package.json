@@ -25,10 +25,12 @@
 		"@wordpress/docgen": "^2.41.0",
 		"@wordpress/eslint-plugin": "^25.0.0",
 		"@wordpress/scripts": "^34.0.0",
+		"ajv": "^8.20.0",
 		"execa": "^10.0.0",
 		"globals": "^17.0.0",
 		"lerna": "^10.0.0",
 		"prettier": "^3.8.1",
+		"typescript": "^6.0.3",
 		"webpack": "^5.105.4",
 		"webpack-cli": "^7.0.0",
 		"webpack-node-externals": "^3.0.0"

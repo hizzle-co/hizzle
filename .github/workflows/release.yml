@@ -33,10 +33,10 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version: '24'
+          node-version: '26'
           registry-url: 'https://registry.npmjs.org'
 
-      # Ensure npm 11.5.1 or later is installed
+      # Ensure the latest npm is installed
       - name: Update npm
         run: npm install -g npm@latest
 
