@@ -35,8 +35,8 @@
 		"@hizzlewp/records": "^1.4.2",
 		"@hizzlewp/store": "^1.4.2",
 		"@wordpress/components": "40.1.0",
-		"@wordpress/data": "10.55.0",
-		"@wordpress/keyboard-shortcuts": "5.55.0",
+		"@wordpress/data": "10.56.0",
+		"@wordpress/keyboard-shortcuts": "5.56.0",
 		"file-saver": "^2.0.5",
 		"papaparse": "^5.5.3"
 	},

@@ -29,9 +29,9 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@wordpress/api-fetch": "7.55.0",
+		"@wordpress/api-fetch": "7.56.0",
 		"@wordpress/components": "40.1.0",
-		"@wordpress/url": "4.55.0"
+		"@wordpress/url": "4.56.0"
 	},
 	"peerDependencies": {
 		"react": "^18 || ^19"
