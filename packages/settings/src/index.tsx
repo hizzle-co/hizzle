@@ -3,6 +3,9 @@ import React, { createRoot } from '@wordpress/element';
 import { SlotFillProvider } from '@wordpress/components';
 import Layout from './components/layout';
 import { SettingsProvider } from './components/settings-provider';
+import { completeOAuthWindow } from './components/oauth-window';
+
+completeOAuthWindow();
 
 export { SettingsList } from './components/section';
 export { SettingsProvider, useSettings } from './components/settings-provider';

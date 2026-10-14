@@ -125,9 +125,12 @@ changes are saved and the refreshed URL is used before authorization starts.
 Popup blocking displays an error without saving or leaving the settings screen.
 
 After successfully processing the OAuth callback, redirect the authorization
-window to a URL on the settings screen's origin with
-`hizzlewp_oauth_complete=1`. The provider observes this marker, closes the window,
-and reloads saved values and field definitions. The marker belongs on the final
+window to a settings page on the original screen's origin that loads
+`hizzlewp-settings`, with `hizzlewp_oauth_complete=1`. The completed page sends a
+same-origin BroadcastChannel notification for that authorization window and
+closes itself. The original provider reloads saved values and field definitions.
+Notifications are matched to the reserved window using a session-storage token;
+no credentials are sent through the channel. The marker belongs on the final
 redirect, after tokens are saved, rather than on the provider's registered OAuth
 callback URL. Closing the window manually also reloads settings; it does not
 imply that authorization succeeded. Edits made while the window is open are
