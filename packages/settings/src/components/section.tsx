@@ -12,6 +12,8 @@ import {
 	__experimentalVStack as VStack,
 	Button,
 	Animate,
+	Spinner,
+	Notice,
 } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
 import { useViewportMatch } from '@wordpress/compose';
@@ -33,6 +35,19 @@ import { SettingsGroup } from './settings-group';
  * Displays the current settings section.
  */
 export const Section = () => {
+	const { settings, isFetching, error, reload } = useSettings();
+	if ( isFetching && !settings.length ) return <Spinner />;
+	if ( !settings.length ) return <div>
+		{ error ? <Notice status="error" isDismissible={ false }>{ error }</Notice> : <p>{ __( 'No settings available.' ) }</p> }
+		<Button variant="secondary" onClick={ reload }>{ __( 'Retry' ) }</Button>
+	</div>;
+	return <>
+		{ error && <Notice status="error" isDismissible={ false }>{ error } <Button variant="link" onClick={ reload }>{ __( 'Retry' ) }</Button></Notice> }
+		<LoadedSection />
+	</>;
+};
+
+const LoadedSection = () => {
 
 	// Whether we are on a small screen.
 	const isSmallScreen = useViewportMatch( 'small', '<' );
@@ -149,7 +164,7 @@ const SectionsList = ( { name, sections, currentTab, currentSection }: SectionsL
 
 	const section = useMemo( () => {
 		return sections.find( ( section ) => section.name === currentSection );
-	}, [ currentTab, currentSection ] );
+	}, [ currentTab, currentSection, sections ] );
 
 	return (
 		<ErrorBoundary>
@@ -181,20 +196,10 @@ const SectionsList = ( { name, sections, currentTab, currentSection }: SectionsL
 
 const MaybeAnimate = ( { children }: { children: React.ReactNode } ) => {
 	const { isSaving } = useSettings();
-
-	if ( isSaving ) {
-		return (
-			<Animate type="loading">{
-				( { className } ) => (
-					<div className={ className } style={ { cursor: 'wait' } }>
-						{ children }
-					</div>
-				)
-			}</Animate>
-		);
-	}
-
-	return children;
+	// Keep the wrapper mounted so saving/reloading does not collapse open panels.
+	return <Animate type="loading">{
+		( { className } ) => <div className={ isSaving ? className : undefined } style={ { cursor: isSaving ? 'wait' : undefined } }>{ children }</div>
+	}</Animate>;
 };
 
 export const SettingsList = ( { settings }: { settings: Record<string, ISetting> } ) => {

@@ -1,310 +1,193 @@
-/**
- * External dependencies.
- */
 import React, { createContext, useContext, useMemo, useState, useCallback, useRef, useEffect } from 'react';
-
-/**
- * WordPress dependencies.
- */
 import apiFetch from '@wordpress/api-fetch';
 import { store as noticesStore } from '@wordpress/notices';
 import { useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
+import { asTabs, FieldTree, ITab, getField, mergePatch, scopedPatch, withDefaults, withLinkHandlers } from './fields';
 
-/**
- * HizzleWP dependencies.
- */
-import { ISetting } from '@hizzlewp/components';
-
-/**
- * Interface for a settings section, e.g, PayPal.
- */
-interface ISection {
-	/**
-	 * The section name.
-	 */
-	name: string;
-
-	/**
-	 * The section title.
-	 */
-	title: string;
-
-	/**
-	 * The section path.
-	 */
-	path: string;
-
-	/**
-	 * The section settings.
-	 */
-	settings: Record<string, ISetting>;
-}
-
-/**
- * Interface for a settings tab, e.g, Payment Methods.
- */
-export interface ITab extends Omit<ISection, 'settings'> {
-	/**
-	 * The tab sections.
-	 */
-	sections: ISection[];
-}
-
-/**
- * Interface for the settings context.
- */
+export type { ITab } from './fields';
 export interface ISettingsContextProps {
-
-	/**
-	 * The setting option name.
-	 */
-	option_name: string;
-
-	/**
-	 * The saved settings.
-	 */
-	saved: Record<string, any>;
-
-	/**
-	 * The available setting as an array of tabs.
-	 */
-	settings: ITab[];
-
-	/**
-	 * Whether we are in the middle of saving the settings.
-	 */
-	isSaving: boolean;
-
-	/**
-	 * Whether there are pending changes.
-	 */
-	hasPendingChanges: boolean;
-
-	/**
-	 * The current savings error.
-	 */
-	error: string | null;
-
-	/**
-	 * Save the settings.
-	 */
-	save: () => Promise<boolean>;
-
-	/**
-	 * Set the attributes.
-	 */
-	setAttributes: ( attributes: Record<string, any> ) => void;
+    option_name: string;
+    saved: Record<string, any>;
+    fields: FieldTree;
+    settings: ITab[];
+    isFetching: boolean;
+    isSaving: boolean;
+    hasPendingChanges: boolean;
+    error: string | null;
+    errorCode: string | null;
+    save: () => Promise<boolean>;
+    reload: () => Promise<boolean>;
+    setAttributes: ( attributes: Record<string, any> ) => void;
 }
 
-/**
- * Context for settings.
- */
 const SettingsContext = createContext<ISettingsContextProps>( {
-	option_name: '',
-	saved: {},
-	settings: [],
-	isSaving: false,
-	hasPendingChanges: false,
-	error: null,
-	setAttributes: () => { },
-	save: async () => false,
+    option_name: '', saved: {}, fields: {}, settings: [], isFetching: true, isSaving: false,
+    hasPendingChanges: false, error: null, errorCode: null, save: async () => false, reload: async () => false, setAttributes: () => {},
 } );
-
-/**
- * Custom hook to access the context.
- */
 export const useSettings = (): ISettingsContextProps => useContext( SettingsContext );
-
-/**
- * Provider component for settings.
- */
 export interface SettingsProviderProps {
-	/** Optional persistence handler for embedded settings editors. */
-	onSave?: ( options: Record<string, any>, changes: Record<string, any> ) => Promise<Record<string, any>>;
-	/**
-	 * The available setting fields grouped by the tab key.
-	 */
-	settings: Record<string, {
-
-		/**
-		 * The tab label.
-		 */
-		label: string;
-
-		/**
-		 * The tab sections grouped by the section key.
-		 */
-		sub_sections: Record<string, {
-			/**
-			 * The section label.
-			 */
-			label: string;
-
-			/**
-			 * The section settings.
-			 */
-			settings: Record<string, ISetting>;
-		}>;
-	}>;
-
-	/**
-	 * The saved settings.
-	 */
-	saved: Record<string, any>;
-
-	/**
-	 * The setting option name.
-	 */
-	option_name: string;
-
-	/**
-	 * The children.
-	 */
-	children: React.ReactNode;
+    option_name: string;
+    /** Select a field/group within the registered field tree. Values retain their normal option keys. */
+    path?: string;
+    children: React.ReactNode;
 }
 
-/**
- * Provider component for settings.
- */
-export const SettingsProvider: React.FC<SettingsProviderProps> = ( {
-	settings,
-	option_name,
-	saved,
-	children,
-	onSave,
-} ) => {
+export const SettingsProvider = ( { option_name, path = '', children }: SettingsProviderProps ) => {
+    const [ saved, setSaved ] = useState<Record<string, any>>( {} );
+    const [ rawFields, setFields ] = useState<FieldTree>( {} );
+    const [ isFetching, setIsFetching ] = useState( true );
+    const [ isSaving, setIsSaving ] = useState( false );
+    const [ hasPendingChanges, setPending ] = useState( false );
+    const [ error, setError ] = useState<string | null>( null );
+    const [ errorCode, setErrorCode ] = useState<string | null>( null );
+    const changes = useRef<Record<string, any>>( {} );
+    const values = useRef<Record<string, any>>( {} );
+    const fieldSnapshot = useRef<FieldTree>( {} );
+    const busy = useRef( false );
+    const generation = useRef( 0 );
+    const mounted = useRef( true );
+    const { createSuccessNotice, createErrorNotice } = useDispatch( noticesStore );
+    const base = `/hizzlewp/v1/settings/${ encodeURIComponent( option_name ) }`;
+    const selector = path ? `?hizzlewp_field=${ encodeURIComponent( path ) }` : '';
 
-	const [ options, setOptions ] = useState( saved );
-	const [ isSaving, setIsSaving ] = useState( false );
-	const [ changes, setChanges ] = useState<Record<string, any>>( {} );
-	const [ error, setError ] = useState<string | null>( null );
-	const savingRef = useRef( false );
-	const hasPendingChanges = useRef( false );
-	const { createSuccessNotice, createErrorNotice } = useDispatch( noticesStore );
+    const report = useCallback( ( err: any, notify = true ) => {
+        if ( !mounted.current ) return;
+        const message = err?.message || __( 'Could not load or save settings.' );
+        setError( message );
+        setErrorCode( err?.code || null );
+        if ( notify ) createErrorNotice( message );
+    }, [ createErrorNotice ] );
 
-	// Prepare the tabs.
-	const tabs = useMemo( () => {
-		return Object.keys( settings ).map( ( tabKey: string ) => {
-			const tab = settings[ tabKey ];
-			const defaultSection = Object.keys( tab.sub_sections )[ 0 ];
-			const sections: ISection[] = [];
+    const apply = useCallback( ( options: Record<string, any>, fields: FieldTree ) => {
+        fieldSnapshot.current = fields;
+        values.current = mergePatch( withDefaults( fields, options ), changes.current );
+        setSaved( values.current );
+        setFields( fields );
+    }, [] );
 
-			Object.keys( tab.sub_sections ).map( ( sectionKey ) => {
-				const section = tab.sub_sections[ sectionKey ];
+    const reload = useCallback( async () => {
+        if ( busy.current ) return false;
+        busy.current = true;
+        const current = generation.current;
+        setIsFetching( true );
+        setError( null );
+        setErrorCode( null );
+        try {
+            // Read all values for conditions referring to fields outside the selected group.
+            const [ options, fields ] = await Promise.all( [
+                apiFetch<Record<string, any>>( { path: base } ),
+                apiFetch<FieldTree>( { path: `${ base }/fields${ selector }` } ),
+            ] );
+            if ( !mounted.current || current !== generation.current ) return false;
+            apply( options, fields );
+            return true;
+        } catch ( err ) {
+            if ( current === generation.current ) report( err, false );
+            return false;
+        } finally {
+            if ( current === generation.current ) { busy.current = false; if ( mounted.current ) setIsFetching( false ); }
+        }
+    }, [ base, selector, apply, report ] );
 
-				sections.push( {
-					name: sectionKey,
-					title: section.label,
-					settings: section.settings,
-					path: `/${ tabKey }/${ sectionKey }`,
-				} );
-			} )
+    useEffect( () => {
+        mounted.current = true;
+        generation.current++;
+        busy.current = false;
+        changes.current = {};
+        values.current = {};
+        fieldSnapshot.current = {};
+        setPending( false );
+        setSaved( {} );
+        setFields( {} );
+        setIsSaving( false );
+        void reload();
+        return () => { mounted.current = false; generation.current++; };
+    }, [ reload ] );
 
-			return {
-				name: tabKey,
-				title: tab.label,
-				path: `/${ tabKey }/${ defaultSection }`,
-				sections,
-			} as ITab;
-		} );
-	}, [ settings ] );
+    useEffect( () => {
+        const warn = ( event: BeforeUnloadEvent ) => {
+            if ( Object.keys( changes.current ).length ) { event.preventDefault(); event.returnValue = ''; }
+        };
+        window.addEventListener( 'beforeunload', warn );
+        return () => window.removeEventListener( 'beforeunload', warn );
+    }, [] );
 
-	// Show unsaved changes warning.
-	useEffect( () => {
+    const save = useCallback( async () => {
+        if ( busy.current ) return false;
+        if ( !Object.keys( changes.current ).length ) return reload();
+        busy.current = true;
+        const current = generation.current;
+        setIsSaving( true );
+        setError( null );
+        setErrorCode( null );
+        let persisted = false;
+        try {
+            // The server merges this patch against the current option and enforces the field selector.
+            await apiFetch<Record<string, any>>( { path: `${ base }${ selector }`, method: 'POST', data: changes.current } );
+            if ( !mounted.current || current !== generation.current ) return false;
+            persisted = true;
+            changes.current = {};
+            setPending( false );
+            // Rebuild server-generated URLs, badges, and remote field choices after every save.
+            const [ options, fields ] = await Promise.all( [
+                apiFetch<Record<string, any>>( { path: base } ),
+                apiFetch<FieldTree>( { path: `${ base }/fields${ selector }` } ),
+            ] );
+            if ( !mounted.current || current !== generation.current ) return false;
+            apply( options, fields );
+            createSuccessNotice( __( 'Settings saved.' ), { type: 'snackbar' } );
+            return true;
+        } catch ( err ) {
+            if ( current === generation.current ) report( persisted ? new Error( __( 'Settings saved, but could not refresh the fields. Retry loading before continuing.' ) ) : err );
+            return false;
+        } finally {
+            if ( current === generation.current ) { busy.current = false; if ( mounted.current ) setIsSaving( false ); }
+        }
+    }, [ base, selector, reload, apply, report, createSuccessNotice ] );
 
-		/**
-		 * Warns the user if there are unsaved changes before leaving the editor.
-		 *
-		 * @param {Event} event `beforeunload` event.
-		 *
-		 * @return {string | undefined} Warning prompt message, if unsaved changes exist.
-		 */
-		const warnIfUnsavedChanges = ( event: BeforeUnloadEvent ) => {
-			if ( hasPendingChanges.current ) {
-				event.preventDefault();
-				event.returnValue = __(
-					'You have unsaved changes. If you proceed, they will be lost.'
-				);
-				return event.returnValue;
-			}
-		};
+    const setAttributes = useCallback( ( attributes: Record<string, any> ) => {
+        if ( busy.current ) return;
+        const patch = path ? scopedPatch( fieldSnapshot.current, attributes ) : attributes;
+        if ( !Object.keys( patch ).length ) return;
+        changes.current = mergePatch( changes.current, patch );
+        values.current = mergePatch( values.current, patch );
+        setSaved( values.current );
+        setPending( true );
+        setError( null );
+        setErrorCode( null );
+    }, [ path ] );
 
-		window.addEventListener( 'beforeunload', warnIfUnsavedChanges );
+    const follow = useCallback( async ( fieldPath: string[], event: React.MouseEvent ) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if ( busy.current ) return;
+        // Inputs that commit on blur must contribute their last edit before saving.
+        ( document.activeElement as HTMLElement )?.blur?.();
+        const previous = getField( fieldSnapshot.current, fieldPath );
+        const separate = previous?.buttonProps?.target === '_blank' || event.ctrlKey || event.metaKey || event.shiftKey || event.button === 1;
+        const popup = separate ? window.open( '', '_blank' ) : null;
+        if ( popup ) popup.opener = null;
+        if ( !await save() ) { popup?.close(); return; }
+        const updated = getField( fieldSnapshot.current, fieldPath );
+        const href = updated?.buttonProps?.href;
+        if ( !href ) { popup?.close(); report( new Error( __( 'This action is not available. Review the refreshed settings.' ) ) ); return; }
+        try {
+            const url = new URL( href, window.location.href );
+            if ( ![ 'http:', 'https:', 'mailto:', 'tel:' ].includes( url.protocol ) ) throw new Error( __( 'This action has an invalid URL.' ) );
+            if ( separate ) {
+                if ( !popup ) throw new Error( __( 'Your browser blocked the new window. Allow pop-ups and try again.' ) );
+                popup.location.href = url.href;
+            } else window.location.assign( url.href );
+        } catch ( err ) { popup?.close(); report( err ); }
+    }, [ save, report ] );
 
-		return () => {
-			window.removeEventListener( 'beforeunload', warnIfUnsavedChanges );
-		};
-	}, [] );
-
-	/**
-	 * Save the settings.
-	 */
-	const save = useCallback( async () => {
-		if ( savingRef.current ) return false;
-		savingRef.current = true;
-		setIsSaving( true );
-		setError( null );
-		try {
-			if ( onSave ) {
-				setOptions( await onSave( options, changes ) );
-			} else {
-				const res = await apiFetch<Record<string, any>>( {
-					path: '/wp/v2/settings', method: 'POST', data: { [ option_name ]: { ...options } },
-				} );
-				if ( res && option_name in res ) setOptions( res[ option_name ] );
-			}
-			hasPendingChanges.current = false;
-			setChanges( {} );
-			createSuccessNotice( __( 'Settings saved.' ), { type: 'snackbar' } );
-			return true;
-		} catch ( err ) {
-			const message = ( err as Error ).message || __( 'An error occurred while saving.' );
-			setError( message );
-			createErrorNotice( message );
-			return false;
-		} finally {
-			savingRef.current = false;
-			setIsSaving( false );
-		}
-	}, [ options, changes, onSave, createSuccessNotice, createErrorNotice, option_name ] );
-
-	/**
-	 * Sets options attributes.
-	 */
-	const setAttributes = useCallback( ( attributes: Record<string, any> ) => {
-		if ( savingRef.current ) return;
-		hasPendingChanges.current = true;
-		setChanges( previous => ( { ...previous, ...attributes } ) );
-		setOptions( previous => ( { ...previous, ...attributes } ) );
-		setError( null );
-	}, [] );
-
-	const prepared = useMemo( () => {
-		return {
-			option_name,
-			saved: options,
-			settings: tabs,
-			isSaving,
-			hasPendingChanges: Object.keys( changes ).length > 0,
-			error,
-			save,
-			setAttributes,
-		};
-	}, [ option_name, options, tabs, isSaving, changes, error, save, setAttributes ] );
-
-	const style: React.CSSProperties = useMemo( () => {
-		return {
-			pointerEvents: isSaving ? 'none' : 'auto',
-			cursor: isSaving ? 'wait' : 'auto',
-		};
-	}, [ isSaving ] );
-
-	return (
-		<SettingsContext.Provider value={ prepared }>
-			<div style={ style }>
-				{ children }
-			</div>
-		</SettingsContext.Provider>
-	);
+    const fields = useMemo( () => withLinkHandlers( rawFields, ( key, event ) => { void follow( key, event ); } ), [ rawFields, follow ] );
+    const settings = useMemo( () => asTabs( fields ), [ fields ] );
+    const context = { option_name, saved, fields, settings, isFetching, isSaving, hasPendingChanges, error, errorCode, save, reload, setAttributes };
+    return <SettingsContext.Provider value={ context }>
+        <div style={ { pointerEvents: isSaving || isFetching ? 'none' : 'auto', cursor: isSaving || isFetching ? 'wait' : 'auto' } }>
+            { children }
+        </div>
+    </SettingsContext.Provider>;
 };

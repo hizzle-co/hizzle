@@ -15,6 +15,10 @@ _Parameters_
 -   _props.to_ `Number`: The value to animate to.
 -   _props.duration_ `Number`: The duration of the animation.
 
+## attributesToMergeTag
+
+Converts merge tag attributes into a complete merge tag.
+
 ## Badge
 
 React component that displays a badge.
@@ -180,6 +184,10 @@ _Type_
 ## LicenseActivation
 
 Undocumented declaration.
+
+## MergeTagSettings
+
+Displays the settings supported by a merge tag.
 
 ## MultiCheckbox
 

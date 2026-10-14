@@ -58,6 +58,10 @@ _Type_
 
 -   `React.FC< React.HTMLAttributes< HTMLTableElement > >`
 
+## tableFeaturesConfig
+
+Interface for the TableProvider props
+
 ## TableProvider
 
 Provider component for the table context
