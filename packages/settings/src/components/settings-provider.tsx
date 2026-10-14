@@ -4,6 +4,7 @@ import { store as noticesStore } from '@wordpress/notices';
 import { useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { asTabs, FieldTree, ITab, getField, mergePatch, scopedPatch, withDefaults, withLinkHandlers } from './fields';
+import { prepareOAuthWindow, clearOAuthWindow, oauthChannelName } from './oauth-window';
 
 export type { ITab } from './fields';
 export interface ISettingsContextProps {
@@ -48,6 +49,7 @@ export const SettingsProvider = ( { option_name, path = '', children }: Settings
     const generation = useRef( 0 );
     const mounted = useRef( true );
     const oauthWatch = useRef<ReturnType<typeof setInterval> | null>( null );
+    const oauthChannel = useRef<BroadcastChannel | null>( null );
     const { createSuccessNotice, createErrorNotice } = useDispatch( noticesStore );
     const base = `/hizzlewp/v1/settings/${ encodeURIComponent( option_name ) }`;
     const selector = path ? `?hizzlewp_field=${ encodeURIComponent( path ) }` : '';
@@ -107,6 +109,8 @@ export const SettingsProvider = ( { option_name, path = '', children }: Settings
             mounted.current = false; generation.current++;
             if ( oauthWatch.current ) clearInterval( oauthWatch.current );
             oauthWatch.current = null;
+            oauthChannel.current?.close();
+            oauthChannel.current = null;
         };
     }, [ reload ] );
 
@@ -173,7 +177,9 @@ export const SettingsProvider = ( { option_name, path = '', children }: Settings
         const oauth = [ previous?.buttonProps?.className, previous?.className, previous?.class ].filter( Boolean ).join( ' ' ).split( /\s+/ ).includes( 'oauth-connect' );
         if ( oauth && oauthWatch.current ) return;
         const separate = oauth || previous?.buttonProps?.target === '_blank' || event.ctrlKey || event.metaKey || event.shiftKey || event.button === 1;
+        const oauthToken = oauth ? prepareOAuthWindow() : '';
         const popup = separate ? window.open( '', '_blank', oauth ? 'popup,width=720,height=760' : undefined ) : null;
+        if ( oauth ) clearOAuthWindow();
         if ( popup ) popup.opener = null;
         if ( separate && !popup ) { report( new Error( 'Your browser blocked the new window. Allow pop-ups and try again.' ) ); return; }
         if ( !await save() ) { popup?.close(); return; }
@@ -186,24 +192,33 @@ export const SettingsProvider = ( { option_name, path = '', children }: Settings
             if ( separate ) {
                 if ( !popup ) throw new Error( __( 'Your browser blocked the new window. Allow pop-ups and try again.' ) );
                 if ( popup.closed ) throw new Error( 'The new window was closed. Try again to continue.' );
-                popup.location.href = url.href;
                 if ( oauth ) {
                     const current = generation.current;
+                    let notified = false;
+                    if ( typeof BroadcastChannel !== 'undefined' ) {
+                        oauthChannel.current = new BroadcastChannel( oauthChannelName );
+                        oauthChannel.current.onmessage = ( message ) => {
+                            if ( message.data?.type === 'complete' && message.data?.token === oauthToken ) notified = true;
+                        };
+                    }
                     oauthWatch.current = setInterval( () => {
-                        let complete = false;
+                        let complete = notified;
                         try {
                             const returned = new URL( popup.location.href );
-                            complete = returned.origin === window.location.origin && returned.searchParams.get( 'hizzlewp_oauth_complete' ) === '1';
+                            complete ||= returned.origin === window.location.origin && returned.searchParams.get( 'hizzlewp_oauth_complete' ) === '1';
                         } catch { /* The provider's page is cross-origin until it returns locally. */ }
                         if ( !popup.closed && !complete ) return;
                         // Wait for any ongoing save/reload before refreshing the connected fields.
                         if ( busy.current ) return;
                         if ( oauthWatch.current ) clearInterval( oauthWatch.current );
                         oauthWatch.current = null;
+                        oauthChannel.current?.close();
+                        oauthChannel.current = null;
                         if ( complete ) popup.close();
                         if ( mounted.current && current === generation.current ) void reload();
                     }, 500 );
                 }
+                popup.location.href = url.href;
             } else window.location.assign( url.href );
         } catch ( err ) { popup?.close(); report( err ); }
     }, [ save, report, reload ] );
