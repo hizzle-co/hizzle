@@ -19,7 +19,7 @@ import { useViewportMatch } from '@wordpress/compose';
 /**
  * HizzleWP dependencies.
  */
-import { Setting, ErrorBoundary } from '@hizzlewp/components';
+import { Setting, ErrorBoundary, ISetting } from '@hizzlewp/components';
 import { updatePath, useRoute } from '@hizzlewp/history';
 
 /**
@@ -197,7 +197,7 @@ const MaybeAnimate = ( { children }: { children: React.ReactNode } ) => {
 	return children;
 };
 
-export const SettingsList = ( { settings } ) => {
+export const SettingsList = ( { settings }: { settings: Record<string, ISetting> } ) => {
 	const { isSaving } = useSettings();
 
 	return (
