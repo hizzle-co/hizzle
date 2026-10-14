@@ -11,6 +11,10 @@ import { SlotFillProvider } from '@wordpress/components';
 import Layout from './components/layout';
 import { SettingsProvider, SettingsProviderProps } from './components/settings-provider';
 
+export { SettingsList } from './components/section';
+export { SettingsProvider, useSettings } from './components/settings-provider';
+export type { SettingsProviderProps, ISettingsContextProps } from './components/settings-provider';
+
 declare global {
 	interface Window {
 		hizzleWPSettings?: {
