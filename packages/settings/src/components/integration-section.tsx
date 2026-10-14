@@ -36,9 +36,9 @@ import { SettingsList } from './section';
  * Displays an integration section.
  *
  */
-export function IntegrationSection( { id, heading, description, help_url, badges, className, settings, cardProps } ): JSX.Element {
+export function IntegrationSection( { id, heading, description, help_url, badges = [], className, settings, cardProps, initiallyOpen = false } ): JSX.Element {
 
-    const [ isOpen, setIsOpen ] = useState( false );
+    const [ isOpen, setIsOpen ] = useState( initiallyOpen );
     const { saved } = useSettings();
 
     let badge: React.ReactNode = null;
