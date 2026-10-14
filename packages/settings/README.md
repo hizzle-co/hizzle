@@ -119,6 +119,20 @@ New-tab targets and Ctrl/Meta/middle clicks reserve a window during the click so
 browser popup blockers do not prevent navigation after the asynchronous save.
 The opener is removed, and failure closes the reserved window.
 
+Buttons with the `oauth-connect` CSS class (on `buttonProps.className`,
+`className`, or `class`) always open a separate authorization window. Pending
+changes are saved and the refreshed URL is used before authorization starts.
+Popup blocking displays an error without saving or leaving the settings screen.
+
+After successfully processing the OAuth callback, redirect the authorization
+window to a URL on the settings screen's origin with
+`hizzlewp_oauth_complete=1`. The provider observes this marker, closes the window,
+and reloads saved values and field definitions. The marker belongs on the final
+redirect, after tokens are saved, rather than on the provider's registered OAuth
+callback URL. Closing the window manually also reloads settings; it does not
+imply that authorization succeeded. Edits made while the window is open are
+preserved. Window polling stops when the provider unmounts.
+
 ## Full settings page
 
 Enqueue `hizzlewp-settings`, render `<div id="hizzlewp-settings__app"></div>`, and
