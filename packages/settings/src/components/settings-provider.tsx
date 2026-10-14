@@ -54,7 +54,7 @@ export interface ITab extends Omit<ISection, 'settings'> {
 /**
  * Interface for the settings context.
  */
-interface ISettingsContextProps {
+export interface ISettingsContextProps {
 
 	/**
 	 * The setting option name.
@@ -77,9 +77,19 @@ interface ISettingsContextProps {
 	isSaving: boolean;
 
 	/**
+	 * Whether there are pending changes.
+	 */
+	hasPendingChanges: boolean;
+
+	/**
+	 * The current savings error.
+	 */
+	error: string | null;
+
+	/**
 	 * Save the settings.
 	 */
-	save: () => void;
+	save: () => Promise<boolean>;
 
 	/**
 	 * Set the attributes.
@@ -95,19 +105,23 @@ const SettingsContext = createContext<ISettingsContextProps>( {
 	saved: {},
 	settings: [],
 	isSaving: false,
+	hasPendingChanges: false,
+	error: null,
 	setAttributes: () => { },
-	save: () => { },
+	save: async () => false,
 } );
 
 /**
  * Custom hook to access the context.
  */
-export const useSettings = () => useContext( SettingsContext );
+export const useSettings = (): ISettingsContextProps => useContext( SettingsContext );
 
 /**
  * Provider component for settings.
  */
 export interface SettingsProviderProps {
+	/** Optional persistence handler for embedded settings editors. */
+	onSave?: ( options: Record<string, any>, changes: Record<string, any> ) => Promise<Record<string, any>>;
 	/**
 	 * The available setting fields grouped by the tab key.
 	 */
@@ -158,10 +172,14 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ( {
 	option_name,
 	saved,
 	children,
+	onSave,
 } ) => {
 
 	const [ options, setOptions ] = useState( saved );
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ changes, setChanges ] = useState<Record<string, any>>( {} );
+	const [ error, setError ] = useState<string | null>( null );
+	const savingRef = useRef( false );
 	const hasPendingChanges = useRef( false );
 	const { createSuccessNotice, createErrorNotice } = useDispatch( noticesStore );
 
@@ -204,6 +222,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ( {
 		 */
 		const warnIfUnsavedChanges = ( event: BeforeUnloadEvent ) => {
 			if ( hasPendingChanges.current ) {
+				event.preventDefault();
 				event.returnValue = __(
 					'You have unsaved changes. If you proceed, they will be lost.'
 				);
@@ -216,66 +235,50 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ( {
 		return () => {
 			window.removeEventListener( 'beforeunload', warnIfUnsavedChanges );
 		};
-	}, [ hasPendingChanges.current ] );
+	}, [] );
 
 	/**
 	 * Save the settings.
 	 */
-	const save = useCallback( () => {
+	const save = useCallback( async () => {
+		if ( savingRef.current ) return false;
+		savingRef.current = true;
 		setIsSaving( true );
-		hasPendingChanges.current = false;
-
-		// Save the options.
-		apiFetch( {
-			path: '/wp/v2/settings',
-			method: 'POST',
-			data: { [ option_name ]: { ...options } },
-		} )
-
-			// Update the state on success.
-			.then( ( res ) => {
-
-				// Display a success message.
-				createSuccessNotice(
-					__( 'Settings saved.' ),
-					{
-						type: 'snackbar',
-					}
-				);
-
-				// Update the options.
-				if ( typeof res === 'object' && res !== null && option_name in res ) {
-					setOptions( res[ option_name ] as Record<string, any> );
-				}
-
-				return res;
-			} )
-
-			// Display an error on failure.
-			.catch( ( err ) => {
-				if ( err.message ) {
-					createErrorNotice( err.message );
-				} else {
-					createErrorNotice( __( 'An error occurred while saving.' ) );
-				}
-			} )
-
-			// Reset the state.
-			.finally( () => {
-				setIsSaving( false );
-			} );
-	}, [ options, setOptions, setIsSaving, createSuccessNotice, createErrorNotice, option_name ] );
+		setError( null );
+		try {
+			if ( onSave ) {
+				setOptions( await onSave( options, changes ) );
+			} else {
+				const res = await apiFetch<Record<string, any>>( {
+					path: '/wp/v2/settings', method: 'POST', data: { [ option_name ]: { ...options } },
+				} );
+				if ( res && option_name in res ) setOptions( res[ option_name ] );
+			}
+			hasPendingChanges.current = false;
+			setChanges( {} );
+			createSuccessNotice( __( 'Settings saved.' ), { type: 'snackbar' } );
+			return true;
+		} catch ( err ) {
+			const message = ( err as Error ).message || __( 'An error occurred while saving.' );
+			setError( message );
+			createErrorNotice( message );
+			return false;
+		} finally {
+			savingRef.current = false;
+			setIsSaving( false );
+		}
+	}, [ options, changes, onSave, createSuccessNotice, createErrorNotice, option_name ] );
 
 	/**
 	 * Sets options attributes.
 	 */
 	const setAttributes = useCallback( ( attributes: Record<string, any> ) => {
+		if ( savingRef.current ) return;
 		hasPendingChanges.current = true;
-		setOptions( {
-			...options,
-			...attributes,
-		} );
-	}, [ options, setOptions ] );
+		setChanges( previous => ( { ...previous, ...attributes } ) );
+		setOptions( previous => ( { ...previous, ...attributes } ) );
+		setError( null );
+	}, [] );
 
 	const prepared = useMemo( () => {
 		return {
@@ -283,10 +286,12 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ( {
 			saved: options,
 			settings: tabs,
 			isSaving,
+			hasPendingChanges: Object.keys( changes ).length > 0,
+			error,
 			save,
 			setAttributes,
 		};
-	}, [ option_name, options, tabs, isSaving, save, setAttributes ] );
+	}, [ option_name, options, tabs, isSaving, changes, error, save, setAttributes ] );
 
 	const style: React.CSSProperties = useMemo( () => {
 		return {
