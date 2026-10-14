@@ -39,6 +39,9 @@ export const SettingsProvider = ( { option_name, path = '', children }: Settings
     const [ rawFields, setFields ] = useState<FieldTree>( {} );
     const [ isFetching, setIsFetching ] = useState( true );
     const [ isSaving, setIsSaving ] = useState( false );
+    const [ isRunningAction, setIsRunningAction ] = useState( false );
+    const [ activeButton, setActiveButton ] = useState<string | null>( null );
+    const following = useRef( false );
     const [ hasPendingChanges, setPending ] = useState( false );
     const [ error, setError ] = useState<string | null>( null );
     const [ errorCode, setErrorCode ] = useState<string | null>( null );
@@ -104,6 +107,9 @@ export const SettingsProvider = ( { option_name, path = '', children }: Settings
         setSaved( {} );
         setFields( {} );
         setIsSaving( false );
+        setIsRunningAction( false );
+        setActiveButton( null );
+        following.current = false;
         void reload();
         return () => {
             mounted.current = false; generation.current++;
@@ -170,23 +176,41 @@ export const SettingsProvider = ( { option_name, path = '', children }: Settings
     const follow = useCallback( async ( fieldPath: string[], event: React.MouseEvent ) => {
         event.preventDefault();
         event.stopPropagation();
-        if ( busy.current ) return;
+        if ( busy.current || following.current ) return;
         // Inputs that commit on blur must contribute their last edit before saving.
         ( document.activeElement as HTMLElement )?.blur?.();
         const previous = getField( fieldSnapshot.current, fieldPath );
         const oauth = [ previous?.buttonProps?.className, previous?.className, previous?.class ].filter( Boolean ).join( ' ' ).split( /\s+/ ).includes( 'oauth-connect' );
         if ( oauth && oauthWatch.current ) return;
-        const separate = oauth || previous?.buttonProps?.target === '_blank' || event.ctrlKey || event.metaKey || event.shiftKey || event.button === 1;
+        following.current = true;
+        const current = generation.current;
+        setActiveButton( JSON.stringify( fieldPath ) );
+        const separate = !previous?.action && ( oauth || previous?.buttonProps?.target === '_blank' || event.ctrlKey || event.metaKey || event.shiftKey || event.button === 1 );
         const oauthToken = oauth ? prepareOAuthWindow() : '';
         const popup = separate ? window.open( '', '_blank', oauth ? 'popup,width=720,height=760' : undefined ) : null;
         if ( oauth ) clearOAuthWindow();
         if ( popup ) popup.opener = null;
-        if ( separate && !popup ) { report( new Error( 'Your browser blocked the new window. Allow pop-ups and try again.' ) ); return; }
-        if ( !await save() ) { popup?.close(); return; }
-        const updated = getField( fieldSnapshot.current, fieldPath );
-        const href = updated?.buttonProps?.href;
-        if ( !href ) { popup?.close(); report( new Error( __( 'This action is not available. Review the refreshed settings.' ) ) ); return; }
         try {
+            if ( separate && !popup ) { report( new Error( 'Your browser blocked the new window. Allow pop-ups and try again.' ) ); return; }
+            if ( !await save() ) { popup?.close(); return; }
+            const updated = getField( fieldSnapshot.current, fieldPath );
+            if ( updated?.action ) {
+                busy.current = true;
+                setIsRunningAction( true );
+                const response = await fetch( ( window as any ).ajaxurl, {
+                    method: 'POST', credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    body: new URLSearchParams( { action: updated.action, nonce: updated.nonce || '' } ).toString(),
+                } );
+                const result = await response.json();
+                if ( !response.ok || result?.success !== true ) throw new Error( result?.data?.message || result?.data?.errorMessage || 'The action failed.' );
+                if ( !mounted.current || current !== generation.current ) return;
+                busy.current = false;
+                if ( !await reload() ) report( new Error( 'The action completed, but settings could not be refreshed. Retry loading settings.' ) );
+                return;
+            }
+            const href = updated?.buttonProps?.href;
+            if ( !href ) { popup?.close(); report( new Error( 'This action is not available. Review the refreshed settings.' ) ); return; }
             const url = new URL( href, window.location.href );
             if ( ![ 'http:', 'https:', 'mailto:', 'tel:' ].includes( url.protocol ) ) throw new Error( __( 'This action has an invalid URL.' ) );
             if ( separate ) {
@@ -221,13 +245,21 @@ export const SettingsProvider = ( { option_name, path = '', children }: Settings
                 popup.location.href = url.href;
             } else window.location.assign( url.href );
         } catch ( err ) { popup?.close(); report( err ); }
+        finally {
+            if ( mounted.current && current === generation.current ) {
+                busy.current = false;
+                following.current = false;
+                setIsRunningAction( false );
+                setActiveButton( null );
+            }
+        }
     }, [ save, report, reload ] );
 
-    const fields = useMemo( () => withLinkHandlers( rawFields, ( key, event ) => { void follow( key, event ); } ), [ rawFields, follow ] );
+    const fields = useMemo( () => withLinkHandlers( rawFields, ( key, event ) => { void follow( key, event ); }, [], activeButton ), [ rawFields, follow, activeButton ] );
     const settings = useMemo( () => asTabs( fields ), [ fields ] );
-    const context = { option_name, saved, fields, settings, isFetching, isSaving, hasPendingChanges, error, errorCode, save, reload, setAttributes };
+    const context = { option_name, saved, fields, settings, isFetching, isSaving: isSaving || isRunningAction, hasPendingChanges, error, errorCode, save, reload, setAttributes };
     return <SettingsContext.Provider value={ context }>
-        <div style={ { pointerEvents: isSaving || isFetching ? 'none' : 'auto', cursor: isSaving || isFetching ? 'wait' : 'auto' } }>
+        <div style={ { pointerEvents: isSaving || isFetching || isRunningAction ? 'none' : 'auto', cursor: isSaving || isFetching || isRunningAction ? 'wait' : 'auto' } }>
             { children }
         </div>
     </SettingsContext.Provider>;

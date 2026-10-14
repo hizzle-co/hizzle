@@ -1,5 +1,6 @@
 import { ISetting } from '@hizzlewp/components';
-import type React from 'react';
+import React from 'react';
+import { Spinner } from '@wordpress/components';
 
 export type FieldTree = Record<string, any>;
 const wrappers = [ 'sub_sections', 'settings', 'children' ];
@@ -59,24 +60,27 @@ export const withDefaults = ( fields: FieldTree, saved: Record<string, any> ) =>
     return result;
 };
 
-/** Decorate every declared URL button, including buttons in nested groups. */
-export const withLinkHandlers = ( fields: FieldTree, follow: ( path: string[], event: React.MouseEvent ) => void, prefix: string[] = [] ): FieldTree =>
+/** Decorate URL and AJAX action buttons, including buttons in nested groups. */
+export const withLinkHandlers = ( fields: FieldTree, follow: ( path: string[], event: React.MouseEvent ) => void, prefix: string[] = [], activeButton: string | null = null ): FieldTree =>
     Object.fromEntries( Object.entries( fields ).map( ( [ key, value ] ) => {
         if ( !value || typeof value !== 'object' ) return [ key, value ];
         const path = [ ...prefix, key ];
         const field = { ...value };
         wrappers.forEach( ( wrapper ) => {
-            if ( field[ wrapper ] ) field[ wrapper ] = withLinkHandlers( field[ wrapper ], follow, [ ...path, wrapper ] );
+            if ( field[ wrapper ] ) field[ wrapper ] = withLinkHandlers( field[ wrapper ], follow, [ ...path, wrapper ], activeButton );
         } );
-        if ( field.el === 'button' && field.buttonProps && 'href' in field.buttonProps ) {
+        if ( field.el === 'button' && ( field.action || ( field.buttonProps && 'href' in field.buttonProps ) ) ) {
             field.buttonProps = { ...field.buttonProps,
+                isBusy: field.buttonProps?.isBusy || activeButton === JSON.stringify( path ),
+                icon: activeButton === JSON.stringify( path ) ? React.createElement( Spinner ) : field.buttonProps?.icon,
+                disabled: field.buttonProps?.disabled || activeButton !== null,
                 onClick: ( event: React.MouseEvent ) => follow( path, event ),
                 onAuxClick: ( event: React.MouseEvent ) => { if ( event.button === 1 ) follow( path, event ); },
             };
         }
         // Root tab and subsection maps have no field type.
         if ( !field.el && !field.type && !wrappers.some( ( wrapper ) => wrapper in field ) ) {
-            return [ key, withLinkHandlers( value, follow, path ) ];
+            return [ key, withLinkHandlers( value, follow, path, activeButton ) ];
         }
         return [ key, field ];
     } ) );

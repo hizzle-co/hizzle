@@ -115,6 +115,28 @@ identify the action across refreshes. A failed save, failed refresh, removed
 button, or unavailable URL prevents navigation. Ordinary description/help links
 retain their normal behavior.
 
+Dynamic buttons declare `action` and `nonce` on the field itself:
+
+```php
+array(
+    'el' => 'button',
+    'action' => 'my_plugin_disconnect',
+    'nonce' => wp_create_nonce( 'my_plugin_disconnect' ),
+    'buttonProps' => array( 'text' => 'Disconnect', 'isDestructive' => true ),
+)
+```
+
+Register a `wp_ajax_my_plugin_disconnect` callback that checks permissions and
+the submitted `nonce`, then returns `wp_send_json_success()` or
+`wp_send_json_error( array( 'message' => 'Explanation' ), 403 )`. The provider uses
+WordPress's admin `ajaxurl`, POSTs `action` and `nonce`, and refreshes fields and
+saved values after success. `action` takes precedence over an optional `href`,
+which can remain as a fallback for other renderers. Pending changes are saved
+first, and the freshly generated action and nonce are used. Save or action
+failures keep the editor open. `isSaving` includes the action request and refresh
+so hosts can guard their close controls. URL and dynamic buttons show a spinner
+on the clicked button throughout saving and execution.
+
 New-tab targets and Ctrl/Meta/middle clicks reserve a window during the click so
 browser popup blockers do not prevent navigation after the asynchronous save.
 The opener is removed, and failure closes the reserved window.
