@@ -67,6 +67,7 @@ const TableCell: React.FC<{ cell: Cell<TableFeaturesConfig, Record<string, any>,
 	const table = useTable();
 	const tdClass = classnames(
 		'hizzlewp-records-view-table__cell', {
+		'hizzlewp-records-view-table__numeric-column': cell.column.columnDef.meta?.is_numeric,
 		'hizzlewp-records-view-table__checkbox-column': cell.column.id === 'hizzlewp-selection',
 		'hizzlewp-records-view-table__actions-column': cell.column.id === 'hizzlewp-actions',
 		[ `hizzlewp-records-view-table__${ cell.column.id?.replace( /\s/g, '-' ) || 'unknown' }` ]: true

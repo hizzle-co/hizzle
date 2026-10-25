@@ -50,9 +50,11 @@ table.hizzlewp-records-view-table {
         --checkbox-input-size: 24px;
     }
 
-    .hizzlewp-view-table__cell--null {
-        display: block;
-        width: 100%;
+    .hizzlewp-records-view-table__numeric-column {
         text-align: center;
+
+        .hizzlewp-records-view-table__cell-content-wrapper {
+            justify-content: center;
+        }
     }
 }
