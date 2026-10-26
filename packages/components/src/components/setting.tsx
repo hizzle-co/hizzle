@@ -512,7 +512,7 @@ export function Setting( {
 				}
 				__nextHasNoMarginBottom
 				__next40pxDefaultSize
-				__experimentalShowHowTo={ false }
+				help=""
 				__experimentalExpandOnFocus={ true }
 				tokenizeOnBlur={ true }
 			/>

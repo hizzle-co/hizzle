@@ -9,7 +9,6 @@ import React, { useMemo } from "react";
 import {
 	Spinner,
 	Tip,
-	Animate,
 	Slot,
 	Button,
 	__experimentalVStack as VStack,
@@ -25,23 +24,6 @@ import {
 import { Setting, ErrorBoundary } from '@hizzlewp/components';
 import type { RecordProp } from '@hizzlewp/store/build-types/types';
 import { prepareField } from "./routes/records-table/filters";
-
-const MaybeAnimate = ( { children, loading }: { children: React.ReactNode, loading: boolean } ) => {
-
-	if ( loading ) {
-		return (
-			<Animate type="loading">{
-				( { className } ) => (
-					<div className={ className } style={ { cursor: 'wait' } }>
-						{ children }
-					</div>
-				)
-			}</Animate>
-		);
-	}
-
-	return children;
-};
 
 type EditRecordFormProps = {
 	record: Record<string, any>;
@@ -85,7 +67,7 @@ export const EditRecordForm = ( { record, onChange, schema, hidden, ignore, onSu
 	} );
 
 	return (
-		<MaybeAnimate loading={ loading }>
+		<div className={ loading ? 'hizzlewp-is-loading' : undefined }>
 			<VStack as="form" spacing={ 6 } style={ { pointerEvents: loading ? 'none' : 'auto' } } onSubmit={ onSubmit }>
 
 				{ fields.map( ( field ) => (
@@ -115,7 +97,7 @@ export const EditRecordForm = ( { record, onChange, schema, hidden, ignore, onSu
 					{ loading ? <Spinner /> : submitText }
 				</Button>
 			</VStack>
-		</MaybeAnimate>
+		</div>
 	);
 }
 

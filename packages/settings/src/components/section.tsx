@@ -10,7 +10,6 @@ import {
 	NavigableMenu,
 	__experimentalVStack as VStack,
 	Button,
-	Animate,
 	Spinner,
 	Notice,
 } from '@wordpress/components';
@@ -194,19 +193,11 @@ const SectionsList = ( { name, sections, currentTab, currentSection }: SectionsL
 	);
 }
 
-const MaybeAnimate = ( { children }: { children: React.ReactNode } ) => {
-	const { isSaving } = useSettings();
-	// Keep the wrapper mounted so saving/reloading does not collapse open panels.
-	return <Animate type="loading">{
-		( { className } ) => <div className={ isSaving ? className : undefined } style={ { cursor: isSaving ? 'wait' : undefined } }>{ children }</div>
-	}</Animate>;
-};
-
 export const SettingsList = ( { settings }: { settings: Record<string, ISetting> } ) => {
 	const { isSaving } = useSettings();
 
 	return (
-		<MaybeAnimate>
+		<div className={ isSaving ? 'hizzlewp-is-loading' : undefined }>
 			<VStack spacing={ 4 } style={ { maxWidth: 620, pointerEvents: isSaving ? 'none' : 'auto' } }>
 				{ Object.keys( settings ).map( ( setting ) => (
 					<ErrorBoundary key={ setting }>
@@ -217,7 +208,7 @@ export const SettingsList = ( { settings }: { settings: Record<string, ISetting>
 					</ErrorBoundary>
 				) ) }
 			</VStack>
-		</MaybeAnimate>
+		</div>
 	);
 }
 
