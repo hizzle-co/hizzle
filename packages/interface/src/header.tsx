@@ -8,7 +8,6 @@ import React from 'react';
  */
 import {
 	__experimentalHStack as HStack,
-	__experimentalSurface as Surface,
 	__experimentalText as Text,
 	NavigableMenu,
 	Button,
@@ -136,8 +135,14 @@ export const Header = ( {
 
 	return (
 		<HStack
-			as={ Surface }
-			style={ { paddingLeft: 20, paddingRight: 20, zIndex: 1000 } }
+			as="div"
+			style={ {
+				paddingLeft: 20,
+				paddingRight: 20,
+				zIndex: 1000,
+				backgroundColor: '#fff',
+				position: 'relative',
+			} }
 			spacing={ 4 }
 			wrap
 		>

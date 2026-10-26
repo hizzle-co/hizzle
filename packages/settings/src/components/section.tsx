@@ -8,7 +8,6 @@ import React, { useMemo } from 'react';
  */
 import {
 	NavigableMenu,
-	__experimentalSurface as Surface,
 	__experimentalVStack as VStack,
 	Button,
 	Animate,
@@ -118,15 +117,16 @@ const LoadedSection = () => {
 				} }
 			>
 				{ 1 < tabs.length && (
-					<Surface
+					<NavigableMenu
 						className="hizzlewp-settings__tabs"
 						orientation={ isSmallScreen ? 'vertical' : 'horizontal' }
 						onNavigate={ ( index ) => updatePath( tabs[ index ].path ) }
-						as={ NavigableMenu }
-						borderBottom
-						borderTop
-						borderLeft
-						borderRight
+						as="div"
+						style={ {
+							backgroundColor: '#fff',
+							position: 'relative',
+							border: '1px solid var(--wpds-color-stroke-surface-neutral, #ddd)',
+						} }
 					>
 						{ tabs.map( ( _tab ) => (
 							<Button
@@ -138,7 +138,7 @@ const LoadedSection = () => {
 								{ _tab.title }
 							</Button>
 						) ) }
-					</Surface>
+					</NavigableMenu>
 				) }
 
 				{ currentTab && (
