@@ -43,6 +43,25 @@
     }
 }
 
+.hizzlewp-is-loading {
+    cursor: wait;
+
+    @media (prefers-reduced-motion: no-preference) {
+        animation: hizzlewp-loading-pulse 1.6s ease-in-out infinite;
+    }
+}
+
+@keyframes hizzlewp-loading-pulse {
+    0%,
+    100% {
+        opacity: 0.5;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
 @media (min-width:782px) {
     .hizzlewp-app__interface.has-footer .interface-interface-skeleton__body {
         padding-bottom: 41px;
