@@ -21,8 +21,10 @@ import { SelectOption } from '.';
 /**
  * The multi checkbox setting props.
  */
-interface MultiSelectSettingProps
-	extends Omit<FormTokenFieldProps, 'children'> {
+interface MultiSelectSettingProps extends Omit<
+	FormTokenFieldProps,
+	'children'
+> {
 	/**
 	 * The options.
 	 */
@@ -33,76 +35,76 @@ interface MultiSelectSettingProps
  * Multi select control.
  *
  */
-export const MultiSelectSetting = ({
+export const MultiSelectSetting = ( {
 	options,
 	value,
 	onChange,
 	...attributes
-}: MultiSelectSettingProps) => {
-	const theValue = Array.isArray(value) ? value : [];
+}: MultiSelectSettingProps ) => {
+	const theValue = Array.isArray( value ) ? value : value ? [ value ] : [];
 	const suggestions = useMemo(
-		() => options.map((option: SelectOption) => option.label),
-		[options]
+		() => options.map( ( option: SelectOption ) => option.label ),
+		[ options ]
 	);
 	const validate = useCallback(
-		(input: string) => suggestions.includes(input),
-		[suggestions]
+		( input: string ) => suggestions.includes( input ),
+		[ suggestions ]
 	);
 	const valueLabels = useMemo(
 		() =>
-			theValue.map((value) => {
-				const option = options.find((option) => option.value === value);
+			theValue.map( ( value ) => {
+				const option = options.find( ( option ) => option.value === value );
 				return option ? option.label : value;
-			}),
-		[value, options]
+			} ),
+		[ value, options ]
 	);
 
 	const onValueChange = useCallback(
-		(labels) => {
+		( labels ) => {
 			const newValues = new Set<string | TokenItem>();
-			for (const label of labels) {
+			for ( const label of labels ) {
 				// Search for option with this label.
 				const option: SelectOption | undefined = options.find(
-					(option) => option.label === label
+					( option ) => option.label === label
 				);
 
-				if (undefined !== option) {
-					newValues.add(option.value);
+				if ( undefined !== option ) {
+					newValues.add( option.value );
 				}
 			}
 
-			if (onChange) {
-				onChange(Array.from(newValues));
+			if ( onChange ) {
+				onChange( Array.from( newValues ) );
 			}
 		},
-		[onChange, options]
+		[ onChange, options ]
 	);
 
 	const render = useCallback(
-		(args: { item: string }) => {
-			const option = options.find((option) => option.label === args.item);
+		( args: { item: string } ) => {
+			const option = options.find( ( option ) => option.label === args.item );
 
-			if (option && option.render) {
-				return <RawHTML>{option.render as string}</RawHTML>;
+			if ( option && option.render ) {
+				return <RawHTML>{ option.render as string }</RawHTML>;
 			}
 
-			return <>{args.item}</>;
+			return <>{ args.item }</>;
 		},
-		[options]
+		[ options ]
 	);
 
 	return (
 		<FormTokenField
-			value={valueLabels}
-			suggestions={suggestions}
-			onChange={onValueChange}
+			value={ valueLabels }
+			suggestions={ suggestions }
+			onChange={ onValueChange }
 			help=""
-			__experimentalExpandOnFocus={true}
-			__nextHasNoMarginBottom={true}
-			__next40pxDefaultSize={true}
-			__experimentalValidateInput={validate}
-			__experimentalRenderItem={render}
-			{...attributes}
+			__experimentalExpandOnFocus={ true }
+			__nextHasNoMarginBottom={ true }
+			__next40pxDefaultSize={ true }
+			__experimentalValidateInput={ validate }
+			__experimentalRenderItem={ render }
+			{ ...attributes }
 		/>
 	);
 };
