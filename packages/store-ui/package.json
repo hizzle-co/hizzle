@@ -36,6 +36,7 @@
 		"@hizzlewp/store": "^1.4.5",
 		"@wordpress/components": "44.0.0",
 		"@wordpress/data": "11.1.0",
+		"@wordpress/date": "6.1.0",
 		"@wordpress/keyboard-shortcuts": "6.1.0",
 		"file-saver": "^2.0.5",
 		"papaparse": "^5.5.3"

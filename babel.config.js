@@ -3,6 +3,5 @@ module.exports = (api) => {
 
 	return {
 		presets: ['@wordpress/babel-preset-default'],
-		plugins: ['@emotion/babel-plugin'],
 	};
 };

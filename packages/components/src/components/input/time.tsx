@@ -2,7 +2,6 @@
  * External dependencies
  */
 import React, { useEffect, useState } from 'react';
-import styled from '@emotion/styled';
 
 /**
  * WordPress dependencies
@@ -54,10 +53,6 @@ function buildPadInputStateReducer( pad: number ) {
 	};
 }
 
-const StyledTimeZone = styled.div`
-	text-decoration: underline dotted;
-`;
-
 /**
  * Displays timezone information when user timezone is different from site
  * timezone.
@@ -94,61 +89,17 @@ export const TimeZone = () => {
 		prettyTimezoneString.trim().length === 0;
 
 	return hasNoAdditionalTimezoneDetail ? (
-		<StyledTimeZone className="components-datetime__timezone">
+		<div className="components-datetime__timezone hizzlewp-time-control__timezone">
 			{ zoneAbbr }
-		</StyledTimeZone>
+		</div>
 	) : (
 		<Tooltip placement="top" text={ timezoneDetail }>
-			<StyledTimeZone className="components-datetime__timezone">
+			<div className="components-datetime__timezone hizzlewp-time-control__timezone">
 				{ zoneAbbr }
-			</StyledTimeZone>
+			</div>
 		</Tooltip>
 	);
 };
-
-const TimeSeparator = styled.span`
-	border-top: 1px solid #757575;
-	border-bottom: 1px solid #757575;
-	display: inline-flex;
-	align-items: center;
-`;
-
-const HoursInput = styled( NumberControl )`
-	width: 36px;
-
-	&&& .components-input-control__input {
-		padding-right: 0;
-		padding-left: 8px;
-		text-align: center;
-	}
-
-	&&& .components-input-control__backdrop {
-		border-right: 0;
-		border-top-right-radius: 0;
-		border-bottom-right-radius: 0;
-	}
-`;
-
-const MinutesInput = styled( NumberControl )`
-	width: 36px;
-
-	&&& .components-input-control__input {
-		padding-left: 0;
-		text-align: center;
-		padding-left: 8px;
-	}
-
-	&&& .components-input-control__backdrop {
-		border-left: 0;
-		border-top-left-radius: 0;
-		border-bottom-left-radius: 0;
-	}
-`;
-
-const TimeWrapper = styled.div`
-	direction: ltr;
-	display: flex;
-`;
 
 export const TimeControl = ( {
 	value,
@@ -186,14 +137,15 @@ export const TimeControl = ( {
 	return (
 		<BaseControl { ...baseControlProps }>
 			<HStack>
-				<TimeWrapper>
-					<HoursInput
+				<div className="hizzlewp-time-control__inputs" dir="ltr">
+					<NumberControl
 						value={ pad( hours ) }
 						onChange={ setHours }
 						min={ 0 }
 						max={ 23 }
 						step={ 1 }
 						{ ...controlProps }
+						className="hizzlewp-time-control__hours"
 						label={ __( 'Hours' ) }
 						spinControls="none"
 						isDragEnabled={ false }
@@ -203,8 +155,9 @@ export const TimeControl = ( {
 						__next40pxDefaultSize
 						__unstableStateReducer={ buildPadInputStateReducer( 2 ) }
 					/>
-					<TimeSeparator aria-hidden="true">:</TimeSeparator>
-					<MinutesInput
+					<span className="hizzlewp-time-control__separator" aria-hidden="true">:</span>
+					<NumberControl
+						className="hizzlewp-time-control__minutes"
 						value={ pad( minutes ) }
 						onChange={ setMinutes }
 						min={ 0 }
@@ -219,7 +172,7 @@ export const TimeControl = ( {
 						__next40pxDefaultSize
 						__unstableStateReducer={ buildPadInputStateReducer( 2 ) }
 					/>
-				</TimeWrapper>
+				</div>
 				<TimeZone />
 			</HStack>
 		</BaseControl>
