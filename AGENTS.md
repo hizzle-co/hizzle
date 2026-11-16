@@ -1,0 +1,2 @@
+- Keep these instructions current
+- Datastore create/update responses honor validated `context`, defaulting to `edit`. Hizzle saves request `view` by default and cache the response in the requested context. Successful saves invalidate other cached contexts of the record and collection queries so filtering, ordering, and pagination totals refresh.
