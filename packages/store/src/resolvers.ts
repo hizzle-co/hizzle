@@ -17,6 +17,7 @@ import {
 	ALLOWED_RESOURCE_ACTIONS,
 	RECEIVE_INTERMEDIATE_RESULTS,
 	isNewCollectionRecordKey,
+	getRawValue,
 } from './utils';
 import { GetRecordsHttpQuery } from './selectors';
 import { CollectionRecordKey, CollectionConfig } from './types';
@@ -210,7 +211,17 @@ export const getCollectionRecord =
 			}
 		};
 
-getCollectionRecord.shouldInvalidate = ( action, namespace: string, collection: string ) => {
+getCollectionRecord.shouldInvalidate = ( action, namespace: string, collection: string, key: CollectionRecordKey, query: GetRecordsHttpQuery = {} ) => {
+	// Invalidate a cached record lookup when a successful save updates the same record in another context.
+	// The conditions check that the action represents a save, requests cache invalidation, matches the store and collection, and includes this record’s ID. String() makes numeric and string IDs compare equally.
+	// For example, saving subscriber 7 in view context updates its view cache immediately and invalidates its cached edit lookup. The next read in edit context fetches fresh data.
+	// The saved context stays valid because it already contains the server’s latest response. Other records stay cached.
+	if ( action.type === 'RECEIVE_COLLECTION_RECORDS' && action.persistedEdits && action.invalidateCache ) {
+		return namespace === action.namespace &&
+			collection === action.collection &&
+			( query.context ?? DEFAULT_CONTEXT ) !== ( action.query?.context ?? DEFAULT_CONTEXT ) &&
+			action.records.some( ( record ) => String( getRawValue( record, action.key || DEFAULT_ENTITY_KEY ) ) === String( key ) );
+	}
 	return (
 		( [ 'DO_BATCH_COLLECTION_ACTION_FINISH' ].includes( action.type ) ) &&
 		action.invalidateCache &&
@@ -223,11 +234,13 @@ getCollectionRecord.shouldInvalidate = ( action, namespace: string, collection: 
  * Requests a collection's record from the REST API.
  */
 export const getRawCollectionRecord = forwardResolver( 'getCollectionRecord' );
+getRawCollectionRecord.shouldInvalidate = getCollectionRecord.shouldInvalidate;
 
 /**
  * Requests an collection's edited record from the REST API.
  */
 export const getEditedCollectionRecord = forwardResolver( 'getCollectionRecord' );
+getEditedCollectionRecord.shouldInvalidate = getCollectionRecord.shouldInvalidate;
 
 /**
  * Requests the collection's records from the REST API.
