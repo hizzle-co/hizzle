@@ -312,7 +312,9 @@ const setSelectedCollectionRecords = withQueryComposables( ( state, action ) => 
 const queries = ( state: QueriedDataState[ 'queries' ] = { view: {}, edit: {} }, action: RemoveItemsAction | ReceiveCollectionRecordsAction | ToggleAllCollectionRecordsSelectedAction | SetSelectedCollectionRecordsAction ): QueriedDataState[ 'queries' ] => {
 	switch ( action.type ) {
 		case 'RECEIVE_COLLECTION_RECORDS':
-			return receiveQueries( state, action );
+			// A save response updates individual records, not a complete list result.
+			// Keep list IDs and pagination metadata until the invalidated query refetches.
+			return action.persistedEdits ? state : receiveQueries( state, action );
 		case 'REMOVE_ITEMS':
 			const removedItems = action.itemIds.reduce( ( result, itemId ) => {
 				result[ itemId ] = true;
@@ -378,9 +380,36 @@ const tabs = ( state: QueriedDataState[ 'tabs' ] = {}, action: ReceiveCollection
 	return state;
 }
 
-export const queriedData = combineReducers( {
+const reduceQueriedData = combineReducers( {
 	items,
 	itemIsComplete,
 	tabs,
 	queries,
 } );
+
+/**
+ * Reduce responses, discarding other cached contexts of a successfully saved record.
+ *
+ * @param state Collection query state.
+ * @param action Received collection action.
+ * @return Updated collection query state.
+ */
+export const queriedData = ( state: QueriedDataState | undefined, action ) => {
+	if ( state && action.type === 'RECEIVE_COLLECTION_RECORDS' && action.persistedEdits ) {
+		const savedContext = getContextFromAction( action );
+		const ids = action.records.map( ( record ) => getRawValue( record, action.key || DEFAULT_ENTITY_KEY ) );
+		const items = { ...state.items };
+		const itemIsComplete = { ...state.itemIsComplete };
+		for ( const context of Object.keys( items ) ) {
+			if ( context !== savedContext ) {
+				items[ context ] = removeRecordsById( items[ context ], ids );
+				itemIsComplete[ context ] = { ...itemIsComplete[ context ] };
+				for ( const id of ids ) {
+					delete itemIsComplete[ context ][ id ];
+				}
+			}
+		}
+		state = { ...state, items, itemIsComplete };
+	}
+	return reduceQueriedData( state, action );
+};
