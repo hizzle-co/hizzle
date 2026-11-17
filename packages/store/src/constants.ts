@@ -42,3 +42,6 @@ export const DEFAULT_PAGE = 1;
  * ```
  */
 export const NEW_RECORD_KEY = 'new';
+
+/** Page sizes shared by collection resolution and the records table controls. */
+export const PER_PAGE_OPTIONS = [ 10, 25, 50, 75, 100, 250, 500, 1000 ];
