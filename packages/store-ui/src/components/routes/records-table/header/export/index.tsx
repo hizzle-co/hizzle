@@ -25,6 +25,14 @@ import { Modal as ExportModal } from './modal';
  */
 export const ExportButton = ( { query, cacheQuery, isAllSelected, recordsCount } ) => {
 
+    // Export the table selection in its displayed order without changing other bulk actions.
+    const exportQuery = { ...cacheQuery, ...query };
+    delete exportQuery.paged;
+    delete exportQuery.per_page;
+    if ( typeof exportQuery.page === 'number' || ( typeof exportQuery.page === 'string' && exportQuery.page.trim() !== '' && Number.isFinite( Number( exportQuery.page ) ) ) ) {
+        delete exportQuery.page;
+    }
+
     // Whether the modal is open.
     const [ isOpen, setOpen ] = useState( false );
 
@@ -55,7 +63,7 @@ export const ExportButton = ( { query, cacheQuery, isAllSelected, recordsCount }
                 <Modal title={ modalTitle } onRequestClose={ () => setOpen( false ) }>
                     <div className="hizzle-records-export-modal__body">
                         <ErrorBoundary>
-                            <ExportModal query={ query } cacheQuery={ cacheQuery } recordsCount={ recordsCount } />
+                            <ExportModal query={ exportQuery } cacheQuery={ cacheQuery } recordsCount={ recordsCount } />
                         </ErrorBoundary>
                     </div>
                 </Modal>
