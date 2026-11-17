@@ -34,11 +34,12 @@ export interface RecordResolution<RecordType> {
 	 * the ID is omitted from the POST body so the server creates a fresh record.
 	 * Draft edits are automatically removed from the store upon success.
 	 *
+	 * @param saveOptions.context Response context and cache to update. Defaults to view.
 	 * @param saveOptions.extraData Additional data to merge into the save payload
 	 *                              without storing it in the edits (e.g. defaultProps).
 	 * @return The saved record returned by the server, or `undefined` on failure.
 	 */
-	save: ( saveOptions?: { throwOnError?: boolean, fetchHandler?: typeof apiFetch, extraData?: Record<string, any> } ) => Promise<RecordType | undefined>;
+	save: ( saveOptions?: { throwOnError?: boolean, fetchHandler?: typeof apiFetch, extraData?: Record<string, any>, context?: string } ) => Promise<RecordType | undefined>;
 
 	/**
 	 * Is the record being saved?
@@ -194,7 +195,7 @@ export const useCollectionRecord = <RecordType extends CollectionRecord>(
 		(): Pick<RecordResolution<RecordType>, 'edit' | 'save'> => ( {
 			edit: ( edits: Partial<RecordType>, editOptions: { undoIgnore?: boolean } = {} ) =>
 				editCollectionRecord( namespace, collection, recordId, edits, editOptions ),
-			save: ( saveOptions: { throwOnError?: boolean, fetchHandler?: typeof apiFetch, extraData?: Record<string, any> } = {} ) =>
+			save: ( saveOptions: { throwOnError?: boolean, fetchHandler?: typeof apiFetch, extraData?: Record<string, any>, context?: string } = {} ) =>
 				saveEditedCollectionRecord( namespace, collection, recordId, {
 					throwOnError: true,
 					...saveOptions,
