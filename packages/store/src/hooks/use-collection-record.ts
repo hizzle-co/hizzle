@@ -11,6 +11,9 @@ import useQuerySelect from './use-query-select';
 import { store as hizzleStore } from '..';
 import type { Status } from './constants';
 import { CollectionRecordKey, CollectionRecord } from '../types';
+import type { GetRecordsHttpQuery } from '../selectors';
+import { addQueryArgs } from '@wordpress/url';
+import { DEFAULT_CONTEXT } from '../constants';
 import apiFetch from '@wordpress/api-fetch';
 import { isNewCollectionRecordKey } from '../utils';
 
@@ -34,7 +37,7 @@ export interface RecordResolution<RecordType> {
 	 * the ID is omitted from the POST body so the server creates a fresh record.
 	 * Draft edits are automatically removed from the store upon success.
 	 *
-	 * @param saveOptions.context Response context and cache to update. Defaults to view.
+	 * @param saveOptions.context Response context and cache to update. Defaults to the hook query context.
 	 * @param saveOptions.extraData Additional data to merge into the save payload
 	 *                              without storing it in the edits (e.g. defaultProps).
 	 * @return The saved record returned by the server, or `undefined` on failure.
@@ -81,10 +84,14 @@ export interface Options {
 	 *
 	 * @default true
 	 */
-	enabled: boolean;
+	enabled?: boolean;
+
+	/** REST query for the record, including context and _fields. */
+	query?: GetRecordsHttpQuery;
 }
 
 const EMPTY_OBJECT = {};
+const EMPTY_QUERY = {};
 
 /**
  * Resolves the specified collection record.
@@ -92,7 +99,8 @@ const EMPTY_OBJECT = {};
  * @param    namespace  Namespace e.g, noptin.
  * @param    collection Collection e.g, `subscribers`.
  * @param    recordId   ID of the requested record.
- * @param    options    Optional hook options.
+ * @param    options    Optional hook options. Pass query to select a context or field subset.
+ *                      _fields selects fields within the requested context.
  * @example
  * ```js
  * import { useCollectionRecord } from '@hizzlewp/store';
@@ -190,23 +198,28 @@ export const useCollectionRecord = <RecordType extends CollectionRecord>(
 	const { editCollectionRecord, saveEditedCollectionRecord } = useDispatch( hizzleStore );
 
 	const isNew = isNewCollectionRecordKey( recordId );
+	const recordQuery = options.query;
+	const queryKey = addQueryArgs( '', recordQuery ?? EMPTY_QUERY );
+	const enabled = options.enabled !== false;
+	const context = recordQuery?.context ?? DEFAULT_CONTEXT;
 
 	const mutations = useMemo(
 		(): Pick<RecordResolution<RecordType>, 'edit' | 'save'> => ( {
 			edit: ( edits: Partial<RecordType>, editOptions: { undoIgnore?: boolean } = {} ) =>
-				editCollectionRecord( namespace, collection, recordId, edits, editOptions ),
+				editCollectionRecord( namespace, collection, recordId, edits, { ...editOptions, query: recordQuery } ),
 			save: ( saveOptions: { throwOnError?: boolean, fetchHandler?: typeof apiFetch, extraData?: Record<string, any>, context?: string } = {} ) =>
 				saveEditedCollectionRecord( namespace, collection, recordId, {
 					throwOnError: true,
+					context,
 					...saveOptions,
 				} ),
 		} ),
-		[ editCollectionRecord, namespace, collection, recordId, saveEditedCollectionRecord ]
+		[ editCollectionRecord, namespace, collection, recordId, saveEditedCollectionRecord, context, queryKey ]
 	);
 
 	const edits = useSelect(
 		( select ): Pick<RecordResolution<RecordType>, 'editedRecord' | 'hasEdits' | 'edits' | 'isSaving' | 'savingError' > => {
-			if ( !options.enabled ) {
+			if ( !enabled ) {
 				return {
 					editedRecord: EMPTY_OBJECT as RecordType,
 					hasEdits: false,
@@ -220,7 +233,8 @@ export const useCollectionRecord = <RecordType extends CollectionRecord>(
 				editedRecord: select( hizzleStore ).getEditedCollectionRecord(
 					namespace,
 					collection,
-					recordId
+					recordId,
+					...( recordQuery ? [ recordQuery ] : [] )
 				) as RecordType | undefined,
 				hasEdits: select( hizzleStore ).hasEditsForCollectionRecord(
 					namespace,
@@ -244,14 +258,14 @@ export const useCollectionRecord = <RecordType extends CollectionRecord>(
 				),
 			};
 		},
-		[ namespace, collection, recordId, options.enabled ]
+		[ namespace, collection, recordId, enabled, queryKey ]
 	);
 
 	const { data: record, ...querySelectRest } = useQuerySelect<RecordType>(
 		( query ) => {
 			// New (unsaved) records don't exist on the server – skip the fetch and
 			// return a resolved-with-null state immediately.
-			if ( !options.enabled || isNew ) {
+			if ( !enabled || isNew ) {
 				return {
 					data: null,
 				};
@@ -259,10 +273,11 @@ export const useCollectionRecord = <RecordType extends CollectionRecord>(
 			return query( hizzleStore ).getCollectionRecord(
 				namespace,
 				collection,
-				recordId
+				recordId,
+				...( recordQuery ? [ recordQuery ] : [] )
 			);
 		},
-		[ namespace, collection, recordId, options.enabled, isNew ]
+		[ namespace, collection, recordId, enabled, isNew, queryKey ]
 	);
 
 	return {
