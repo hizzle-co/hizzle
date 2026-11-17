@@ -33,9 +33,9 @@ export const Download = ( { fields, back, query, recordsCount } ) => {
     // Fetch the records.
     const exportArgs = {
         ...query,
-        __fields: fields.join( ',' ),
+        _fields: fields.join( ',' ),
         per_page: shouldBackgroundExport ? 1 : -1,
-        context: 'edit',
+        context: 'export',
         background_export: shouldBackgroundExport,
     }
 

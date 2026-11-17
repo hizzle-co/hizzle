@@ -11,7 +11,8 @@ import { State, CollectionRecordKey } from './types';
 export * from './collection/selectors';
 
 /**
- * HTTP Query parameters sent with the API request to fetch the entity records.
+ * REST query arguments, including context and partial field selections.
+ * Use _fields to select fields and context=export for datastore export formatting.
  */
 export type GetRecordsHttpQuery = Record<string, any>;
 

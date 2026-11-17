@@ -443,7 +443,7 @@ export type CollectionRecordKey = string | number;
 /**
  * The REST API context parameter.
  */
-export type API_CONTEXT = 'view' | 'edit';
+export type API_CONTEXT = 'view' | 'edit' | 'export';
 
 /**
  * The type of a collection record.
