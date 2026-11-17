@@ -1,6 +1,7 @@
 <?php return array(
 	'dependencies' => array(
 		'hizzlewp-components',
+		'hizzlewp-store',
 		'react',
 		'react-jsx-runtime',
 		'wp-components',
@@ -9,5 +10,5 @@
 		'wp-i18n',
 		'wp-primitives'
 	),
-	'version' => 'c58e05e9eb6f0d8fb479'
+	'version' => 'c7c9a575aaede0859216'
 );
