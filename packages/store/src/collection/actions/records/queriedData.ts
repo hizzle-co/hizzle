@@ -107,6 +107,7 @@ export type SetSelectedCollectionRecordsAction = CollectionAction & {
  * @param {?boolean}     invalidateCache Should invalidate query caches.
  * @param {?Object}      persistedEdits  Edits to reset.
  * @param {?Object}      meta            Meta information about pagination.
+ * @param {?string}      key             Record identifier property, when different from id.
  * @return {Object} Action object.
  */
 export function receiveCollectionRecords(
@@ -117,6 +118,7 @@ export function receiveCollectionRecords(
 	meta: object | undefined = undefined,
 	invalidateCache: boolean = false,
 	persistedEdits: object | undefined = undefined,
+	key?: string,
 ): ReceiveCollectionRecordsAction {
 
 	const action: ReceiveCollectionRecordsAction = {
@@ -127,6 +129,7 @@ export function receiveCollectionRecords(
 		records: Array.isArray( records ) ? records : [ records ],
 		persistedEdits,
 		meta,
+		...( key ? { key } : {} ),
 	}
 
 	if ( query ) {
