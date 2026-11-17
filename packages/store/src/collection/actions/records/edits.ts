@@ -62,12 +62,13 @@ export const createUndoLevel =
  * @param {number|string} recordId             Record ID of the edited collection record.
  * @param {Object}        edits                The edits.
  * @param {Object}        options              Options for the edit.
+ * @param {Object}        [options.query]      Query selecting the editing baseline, including context and fields.
  * @param {boolean}       [options.undoIgnore] Whether to ignore the edit in undo history or not.
  *
  * @return {Object} Action object.
  */
 export const editCollectionRecord =
-	( namespace: string, collection: string, recordId: CollectionRecordKey, edits: object, options: { undoIgnore?: boolean, isCached?: boolean } = {} ) =>
+	( namespace: string, collection: string, recordId: CollectionRecordKey, edits: object, options: { undoIgnore?: boolean, isCached?: boolean, query?: Record<string, any> } = {} ) =>
 		( { select, dispatch }: ThunkArgs ) => {
 			const collectionConfig = select.getCollectionConfig( namespace, collection );
 			if ( !collectionConfig ) {
@@ -76,11 +77,12 @@ export const editCollectionRecord =
 				);
 			}
 			const { mergedEdits = {} } = collectionConfig;
-			const record = select.getRawCollectionRecord( namespace, collection, recordId );
+			const record = select.getRawCollectionRecord( namespace, collection, recordId, options.query );
 			const editedRecord = select.getEditedCollectionRecord(
 				namespace,
 				collection,
-				recordId
+				recordId,
+				options.query
 			);
 
 			const edit = {
