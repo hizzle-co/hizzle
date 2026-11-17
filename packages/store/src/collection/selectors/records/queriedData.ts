@@ -11,10 +11,9 @@ import { createSelector } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import { getNormalizedCommaSeparable, setNestedValue } from '../../../utils';
-import { State, CollectionRecordKey, API_CONTEXT, CollectionRecord } from '../../../types';
+import { setNestedValue } from '../../../utils';
+import { State, CollectionRecordKey, CollectionRecord } from '../../../types';
 import getQueryParts from '../../get-query-parts';
-import { DEFAULT_CONTEXT } from '../../../constants';
 
 /**
  * Returns the Collection's record object by key. Returns `null` if the record is not
@@ -43,27 +42,34 @@ export const getCollectionRecord = createSelector(
 		if ( !queriedState ) {
 			return undefined;
 		}
-		const context: API_CONTEXT = query?.context ?? DEFAULT_CONTEXT;
-
-		if ( query === undefined ) {
-			// If expecting a complete item, validate that completeness.
-			if ( !queriedState.itemIsComplete[ context ]?.[ key ] ) {
-				return undefined;
-			}
-
-			return queriedState.items[ context ][ key ];
-		}
+		const { context, fields } = getQueryParts( query ?? {} );
 
 		const item = queriedState.items[ context ]?.[ key ];
-		if ( item && query.__fields ) {
+		// A context-only query still needs a complete record. A partial response
+		// must never fulfill a later full-record request in the same context.
+		if ( !fields?.length ) {
+			return queriedState.itemIsComplete[ context ]?.[ key ] ? item : undefined;
+		}
+
+		if ( item ) {
 			const filteredItem = {};
-			const fields = getNormalizedCommaSeparable( query.__fields ) ?? [];
 			for ( let f = 0; f < fields.length; f++ ) {
 				const field = fields[ f ].split( '.' );
 				let value = item;
-				field.forEach( ( fieldName ) => {
-					value = value?.[ fieldName ];
-				} );
+				for ( const fieldName of field ) {
+					if ( value === null || typeof value !== 'object' ) {
+						value = undefined;
+						break;
+					}
+					if ( !Object.prototype.hasOwnProperty.call( value, fieldName ) ) {
+						if ( queriedState.itemIsComplete[ context ]?.[ key ] ) {
+							value = undefined;
+							break;
+						}
+						return undefined;
+					}
+					value = value[ fieldName ];
+				}
 				setNestedValue( filteredItem, field, value );
 			}
 			return filteredItem as Partial<CollectionRecord>;
@@ -72,7 +78,7 @@ export const getCollectionRecord = createSelector(
 		return item;
 	} ),
 	( state: State, namespace, collection, recordId, query ) => {
-		const context: API_CONTEXT = query?.context ?? DEFAULT_CONTEXT;
+		const { context } = getQueryParts( query ?? {} );
 		return [
 			state.collections.records?.[ namespace ]?.[ collection ]?.queriedData?.items[
 			context
@@ -93,11 +99,12 @@ export const getCollectionRecord = createSelector(
  * @param namespace  The namespace of the collection.
  * @param collection The collection name.
  * @param key        Record's key / id.
+ * @param query      Optional context and field selection.
  *
  * @return Record.
  */
-export function getCollectionRecordNoResolver( state: State, namespace: string, collection: string, key: CollectionRecordKey ) {
-	return getCollectionRecord( state, namespace, collection, key );
+export function getCollectionRecordNoResolver( state: State, namespace: string, collection: string, key: CollectionRecordKey, query?: Record<string, any> ) {
+	return getCollectionRecord( state, namespace, collection, key, query );
 }
 
 /**
@@ -116,13 +123,15 @@ export const getRawCollectionRecord = createSelector(
 		state: State,
 		namespace: string,
 		collection: string,
-		key: CollectionRecordKey
+		key: CollectionRecordKey,
+		query?: Record<string, any>
 	): CollectionRecord | undefined => {
 		const record = getCollectionRecord(
 			state,
 			namespace,
 			collection,
-			key
+			key,
+			query
 		);
 		return (
 			record &&
@@ -147,7 +156,7 @@ export const getRawCollectionRecord = createSelector(
 		recordId: CollectionRecordKey,
 		query?: Record<string, any>
 	) => {
-		const context = query?.context ?? DEFAULT_CONTEXT;
+		const { context } = getQueryParts( query ?? {} );
 		return [
 			state.collections.config,
 			state.collections.records?.[ namespace ]?.[ collection ]?.queriedData?.items[
@@ -207,6 +216,19 @@ export const getCollectionRecords = ( (
 	// Get the items for the given query.
 	return getQueriedItems( queriedState, query );
 } );
+
+/**
+ * Read cached list results without starting a REST request.
+ *
+ * @param state Store state.
+ * @param namespace Collection namespace.
+ * @param collection Collection name.
+ * @param query Query whose cached membership should be read.
+ * @return Cached records, or null when membership is unknown.
+ */
+export function getCollectionRecordsNoResolver( state: State, namespace: string, collection: string, query: Record<string, any> = {} ) {
+	return getCollectionRecords( state, namespace, collection, query );
+}
 
 /**
  * Cache of state keys to EquivalentKeyMap where the inner map tracks queries
