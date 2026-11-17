@@ -2,3 +2,5 @@
 - Datastore create/update responses honor validated `context`, defaulting to `edit`. Hizzle saves request `view` by default and cache the response in the requested context. Successful saves invalidate other cached contexts of the record and collection queries so filtering, ordering, and pagination totals refresh.
 - Reconcile local edits against raw server values in every response context. Clear matching edits while preserving differing edits and fields omitted by partial responses; successful saves also clear the edits submitted in that request.
 - Add explanatory comments when changing behavior whose purpose may be unclear. Explain the reason, relevant invariant, or edge case rather than restating the code.
+- Receive single-record responses as objects and collection responses as arrays. Single reads and saves update item caches without replacing list membership or pagination metadata.
+- Record hooks accept REST parameters through options.query and use that query for record reads, edited baselines, and the default save context. _fields selects typed fields; __fields retains export formatting and uses a separate cache representation.
