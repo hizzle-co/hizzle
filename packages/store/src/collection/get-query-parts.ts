@@ -88,7 +88,14 @@ export function getQueryParts( query: Record<string, any> ): WPQueriedDataQueryP
 				parts.fields = getNormalizedCommaSeparable( value ) ?? [];
 				break;
 			case 'page':
-				// Page is the admin page, so we use paged instead.
+				// URL queries may contain either a numeric page or an admin screen slug.
+				// Accept numeric strings too; an explicit paged value takes precedence.
+				if (
+					( typeof value === 'number' || ( typeof value === 'string' && value.trim() !== '' ) ) &&
+					Number.isFinite( Number( value ) )
+				) {
+					parts.page = Number( value );
+				}
 				break;
 			default:
 
