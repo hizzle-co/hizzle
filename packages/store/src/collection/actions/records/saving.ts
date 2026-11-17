@@ -120,7 +120,7 @@ export const saveCollectionRecord =
                     dispatch.receiveCollectionRecords(
                         namespace,
                         collection,
-                        [ updatedRecord ],
+                        updatedRecord,
                         { context },
                         undefined,
                         true,

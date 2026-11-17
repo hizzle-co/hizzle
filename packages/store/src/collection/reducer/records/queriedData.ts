@@ -312,9 +312,9 @@ const setSelectedCollectionRecords = withQueryComposables( ( state, action ) => 
 const queries = ( state: QueriedDataState[ 'queries' ] = { view: {}, edit: {} }, action: RemoveItemsAction | ReceiveCollectionRecordsAction | ToggleAllCollectionRecordsSelectedAction | SetSelectedCollectionRecordsAction ): QueriedDataState[ 'queries' ] => {
 	switch ( action.type ) {
 		case 'RECEIVE_COLLECTION_RECORDS':
-			// A save response updates individual records, not a complete list result.
-			// Keep list IDs and pagination metadata until the invalidated query refetches.
-			return action.persistedEdits ? state : receiveQueries( state, action );
+			// Single-record reads and saves update items without replacing list IDs or totals.
+			// Keep the persistedEdits fallback for older callers dispatching actions directly.
+			return action.isCollectionQuery === false || action.persistedEdits ? state : receiveQueries( state, action );
 		case 'REMOVE_ITEMS':
 			const removedItems = action.itemIds.reduce( ( result, itemId ) => {
 				result[ itemId ] = true;

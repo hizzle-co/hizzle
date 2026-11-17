@@ -37,6 +37,9 @@ export type ReceiveCollectionRecordsAction = CollectionAction & {
 	 */
 	records: Array<any>;
 
+	/** Whether this response contains a list result rather than one record. */
+	isCollectionQuery?: boolean;
+
 	/**
 	 * The query object.
 	 */
@@ -102,7 +105,7 @@ export type SetSelectedCollectionRecordsAction = CollectionAction & {
  *
  * @param {string}       namespace       Namespace of the received entity records.
  * @param {string}       collection      Collection of the received entity records.
- * @param {Array}        records         Records received.
+ * @param {Object|Array} records         A single record object or an array from a list endpoint.
  * @param {?Object}      query           Query Object.
  * @param {?boolean}     invalidateCache Should invalidate query caches.
  * @param {?Object}      persistedEdits  Edits to reset.
@@ -113,7 +116,7 @@ export type SetSelectedCollectionRecordsAction = CollectionAction & {
 export function receiveCollectionRecords(
 	namespace: string,
 	collection: string,
-	records: Array<any>,
+	records: Record<string, any> | Array<any>,
 	query: object | undefined = undefined,
 	meta: object | undefined = undefined,
 	invalidateCache: boolean = false,
@@ -127,6 +130,8 @@ export function receiveCollectionRecords(
 		collection,
 		invalidateCache,
 		records: Array.isArray( records ) ? records : [ records ],
+		// Preserve response cardinality before normalizing records for the item reducers.
+		isCollectionQuery: Array.isArray( records ) && !persistedEdits,
 		persistedEdits,
 		meta,
 		...( key ? { key } : {} ),

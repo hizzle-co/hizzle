@@ -92,7 +92,7 @@ export const doRemoteCollectionRecordAction =
                         dispatch.receiveCollectionRecords(
                             namespace,
                             collection,
-                            [ response.record?.data ],
+                            response.record?.data,
                             undefined,
                             undefined,
                             true,
