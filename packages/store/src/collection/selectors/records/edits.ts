@@ -9,7 +9,7 @@ import { createSelector } from '@wordpress/data';
 import { isSavingCollectionRecord, getRawCollectionRecord } from '.';
 import type { CollectionRecordKey, CollectionRecord, State } from '../../../types';
 import { getCollectionConfig } from '../config';
-import { DEFAULT_CONTEXT } from '../../../constants';
+import getQueryParts from '../../get-query-parts';
 
 /**
  * Returns the specified collection record's edits.
@@ -110,9 +110,10 @@ export const getEditedCollectionRecord = createSelector( (
     state: State,
     namespace: string,
     collection: string,
-    recordId: CollectionRecordKey
+    recordId: CollectionRecordKey,
+    query?: Record<string, any>
 ): CollectionRecord | undefined => {
-    const raw = getRawCollectionRecord( state, namespace, collection, recordId );
+    const raw = getRawCollectionRecord( state, namespace, collection, recordId, query );
     const edited = getCollectionRecordEdits( state, namespace, collection, recordId );
 
     if ( !raw && !edited ) {
@@ -130,7 +131,7 @@ export const getEditedCollectionRecord = createSelector( (
         recordId: CollectionRecordKey,
         query?: Record<string, any>
     ) => {
-        const context = query?.context ?? DEFAULT_CONTEXT;
+        const { context } = getQueryParts( query ?? {} );
         return [
             state.collections.config,
             state.collections.records?.[ namespace ]?.[ collection ]?.queriedData.items[
