@@ -7,12 +7,13 @@ import { v4 as uuid } from 'uuid';
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import { CollectionRecordKey } from '../../../types';
-import { DEFAULT_ENTITY_KEY, STORE_NAME } from '../../../constants';
+import { DEFAULT_CONTEXT, DEFAULT_ENTITY_KEY, STORE_NAME } from '../../../constants';
 import type { CollectionAction } from '..';
 import { getNestedValue, setNestedValue, isNewCollectionRecordKey } from '../../../utils';
 
@@ -42,6 +43,7 @@ export type SaveCollectionRecordAction = CollectionAction & {
  * @param {Object}   options      Options for the action.
  * @param {boolean}  options.throwOnError If false, this action suppresses all
  *                                the exceptions. Defaults to false.
+ * @param {string}   options.context Response context and cache to update. Defaults to view.
  * @param {Function} options.fetchHandler The fetch handler to use. Defaults to apiFetch.
  */
 export const saveCollectionRecord =
@@ -53,6 +55,7 @@ export const saveCollectionRecord =
             throwOnError = true,
             fetchHandler = apiFetch,
             _skipStartFinish = false,
+            context = DEFAULT_CONTEXT,
         } = {}
     ) =>
         async ( { select, resolveSelect, dispatch } ) => {
@@ -90,8 +93,8 @@ export const saveCollectionRecord =
                         data[ key ] = evaluatedValue;
                     }
 
-                    if ( value?.raw ) {
-                        data[ key ] = value.raw;
+                    if ( data[ key ] && typeof data[ key ] === 'object' && 'raw' in data[ key ] ) {
+                        data[ key ] = data[ key ].raw;
                     }
                 }
 
@@ -110,18 +113,19 @@ export const saveCollectionRecord =
                     const path = `${ collectionConfig.baseURL }${ recordId ? '/' + recordId : '' }`;
 
                     updatedRecord = await fetchHandler( {
-                        path,
+                        path: addQueryArgs( path, { context } ),
                         method: recordId ? 'PUT' : 'POST',
-                        data,
+                        data: { ...data, context },
                     } );
                     dispatch.receiveCollectionRecords(
                         namespace,
                         collection,
                         [ updatedRecord ],
-                        undefined,
+                        { context },
                         undefined,
                         true,
                         data,
+                        collectionConfig.key,
                     );
                     // For new records, the server returns the created record with its real ID.
                     // Pre-resolve getCollectionRecord so it doesn't trigger a redundant refetch.
@@ -129,7 +133,10 @@ export const saveCollectionRecord =
                         const entityIdKey = collectionConfig.key || DEFAULT_ENTITY_KEY;
                         const newRecordId = updatedRecord[ entityIdKey ];
                         if ( newRecordId ) {
-                            dispatch.finishResolution( 'getCollectionRecord', [ namespace, collection, newRecordId ] );
+                            dispatch.finishResolution( 'getCollectionRecord', [ namespace, collection, newRecordId, { context } ] );
+                            if ( context === DEFAULT_CONTEXT ) {
+                                dispatch.finishResolution( 'getCollectionRecord', [ namespace, collection, newRecordId ] );
+                            }
                         }
                     }
                 } catch ( _error ) {
@@ -165,7 +172,7 @@ export const saveCollectionRecord =
  * @param {Object=} options  Saving options.
  */
 export const saveEditedCollectionRecord =
-    ( namespace: string, collection: string, recordId: CollectionRecordKey, options: { throwOnError?: boolean, fetchHandler?: typeof apiFetch, extraData?: Record<string, any> } = {} ) =>
+    ( namespace: string, collection: string, recordId: CollectionRecordKey, options: { throwOnError?: boolean, fetchHandler?: typeof apiFetch, extraData?: Record<string, any>, context?: string } = {} ) =>
         async ( { select, dispatch, resolveSelect } ) => {
             const isNew = isNewCollectionRecordKey( recordId );
 
