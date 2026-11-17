@@ -8,7 +8,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { STORE_NAME } from './constants';
-import { DEFAULT_ENTITY_KEY, DEFAULT_CONTEXT } from './constants';
+import { DEFAULT_ENTITY_KEY, DEFAULT_CONTEXT, DEFAULT_PER_PAGE, PER_PAGE_OPTIONS } from './constants';
 import {
 	forwardResolver,
 	getNormalizedCommaSeparable,
@@ -52,6 +52,51 @@ function markMissingFields( record: Record<string, any>, fields: string[] ) {
 			target[ last ] = undefined;
 		}
 	}
+}
+
+/**
+ * Resolve pages fully contained in the response just received.
+ *
+ * @param dispatch Store actions.
+ * @param namespace Collection namespace.
+ * @param collection Collection name.
+ * @param query Original request filters, fields, context, and pagination.
+ * @param count Number of records received for this request so far.
+ * @param total Total matching records reported by REST.
+ */
+function finishPaginationResolutions( dispatch: any, namespace: string, collection: string, query: Record<string, any>, count: number, total: number ) {
+	if ( !Number.isFinite( total ) ) return;
+	const { perPage, page } = getQueryParts( query );
+	const start = perPage === -1 ? 0 : ( page - 1 ) * perPage;
+	const end = Math.min( start + count, total );
+	const finished: any[][] = [];
+	const hasAdminPage = typeof query.page === 'string' && query.page.trim() !== '' && !Number.isFinite( Number( query.page ) );
+	for ( const size of new Set( [ ...PER_PAGE_OPTIONS, perPage ] ) ) {
+		if ( size === -1 && ( start !== 0 || end !== total ) ) continue;
+		const firstPage = size === -1 ? 1 : Math.ceil( start / size ) + 1;
+		// The final server page is complete even when it contains fewer than `size` rows.
+		let lastPage = Math.floor( end / size );
+		if ( end === total ) lastPage = Math.ceil( end / size );
+		if ( total === 0 || size === -1 ) lastPage = 1;
+		for ( let current = firstPage; current <= lastPage; ++current ) {
+			const pagination: Record<string, any>[] = [ { paged: current }, { paged: String( current ) } ];
+			if ( !hasAdminPage ) pagination.push( { page: current }, { page: String( current ) } );
+			if ( current === 1 ) pagination.push( {} );
+			// WordPress resolver keys distinguish string/numeric values and omitted defaults.
+			const sizes: ( number | string | undefined )[] = [ size, String( size ) ];
+			if ( size === DEFAULT_PER_PAGE ) sizes.push( undefined );
+			for ( const requestedSize of sizes ) {
+				const base: Record<string, any> = { ...query, per_page: requestedSize };
+				delete base.paged;
+				if ( !hasAdminPage ) delete base.page;
+				if ( requestedSize === undefined ) delete base.per_page;
+				for ( const paginationQuery of pagination ) {
+					finished.push( [ namespace, collection, { ...base, ...paginationQuery } ] );
+				}
+			}
+		}
+	}
+	if ( finished.length ) dispatch.finishResolutions( 'getCollectionRecords', finished );
 }
 
 const getUniqueId = () => ( window as any ).hizzleWPStore?.requestUUID || Math.random().toString( 36 ).substring( 2 );
@@ -396,6 +441,7 @@ export const getCollectionRecords =
 								query,
 								meta,
 							);
+							finishPaginationResolutions( dispatch, namespace, collection, rawQuery, records.length, meta.totalItems );
 							dispatch.finishResolutions(
 								'getCollectionRecord',
 								getResolutionsArgs( pageRecords, rawQuery )
@@ -434,6 +480,8 @@ export const getCollectionRecords =
 						query,
 						meta,
 					);
+
+					finishPaginationResolutions( dispatch, namespace, collection, rawQuery, records.length, meta.totalItems );
 
 					const targetHints = records
 						.filter(
