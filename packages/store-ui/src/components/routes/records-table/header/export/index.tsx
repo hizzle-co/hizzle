@@ -23,7 +23,7 @@ import { Modal as ExportModal } from './modal';
  * Displays a modal allowing users to export all records matching the current collection.
  *
  */
-export const ExportButton = ( { query, isAllSelected, recordsCount } ) => {
+export const ExportButton = ( { query, cacheQuery, isAllSelected, recordsCount } ) => {
 
     // Whether the modal is open.
     const [ isOpen, setOpen ] = useState( false );
@@ -55,7 +55,7 @@ export const ExportButton = ( { query, isAllSelected, recordsCount } ) => {
                 <Modal title={ modalTitle } onRequestClose={ () => setOpen( false ) }>
                     <div className="hizzle-records-export-modal__body">
                         <ErrorBoundary>
-                            <ExportModal query={ query } recordsCount={ recordsCount } />
+                            <ExportModal query={ query } cacheQuery={ cacheQuery } recordsCount={ recordsCount } />
                         </ErrorBoundary>
                     </div>
                 </Modal>

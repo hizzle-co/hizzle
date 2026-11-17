@@ -7,6 +7,7 @@
 		'hizzlewp-store',
 		'react',
 		'react-jsx-runtime',
+		'wp-api-fetch',
 		'wp-components',
 		'wp-compose',
 		'wp-data',
@@ -19,5 +20,5 @@
 		'wp-primitives',
 		'wp-url'
 	),
-	'version' => '7fef37323fec0a7f1598'
+	'version' => '56614dde1dea33bc896e'
 );

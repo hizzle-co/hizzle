@@ -18,7 +18,7 @@ import { SelectFields } from './select-fields';
  * The modal content.
  *
  */
-export const Modal = ( { query, recordsCount } ) => {
+export const Modal = ( { query, cacheQuery, recordsCount } ) => {
 
     // Prepare state.
     const { config: { hidden, ignore, props } } = useProvidedCollectionConfig();
@@ -44,6 +44,7 @@ export const Modal = ( { query, recordsCount } ) => {
         <Download
             fields={ fields }
             query={ query }
+            cacheQuery={ cacheQuery }
             recordsCount={ recordsCount }
             back={ () => setStep( 'fields' ) }
         />
