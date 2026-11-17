@@ -29,6 +29,9 @@ export type SavedFilter = {
  * A prop / field of a record.
  */
 export type RecordProp = {
+	/** REST contexts in which this field may be returned. */
+	context?: string[];
+
 	/**
 	 * The prop name, e.g first_name
 	 */
@@ -443,7 +446,7 @@ export type CollectionRecordKey = string | number;
 /**
  * The REST API context parameter.
  */
-export type API_CONTEXT = 'view' | 'edit' | 'export';
+export type API_CONTEXT = 'view' | 'edit';
 
 /**
  * The type of a collection record.

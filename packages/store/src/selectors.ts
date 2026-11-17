@@ -12,7 +12,7 @@ export * from './collection/selectors';
 
 /**
  * REST query arguments, including context and partial field selections.
- * Use _fields to select fields and context=export for datastore export formatting.
+ * Use _fields to select fields within the requested view or edit context.
  */
 export type GetRecordsHttpQuery = Record<string, any>;
 

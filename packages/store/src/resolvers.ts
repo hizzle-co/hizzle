@@ -21,6 +21,38 @@ import {
 } from './utils';
 import { GetRecordsHttpQuery } from './selectors';
 import { CollectionRecordKey, CollectionConfig } from './types';
+import getQueryParts from './collection/get-query-parts';
+
+/**
+ * Mark omitted requested fields without changing values explicitly returned by REST.
+ *
+ * @param record Record returned by the endpoint.
+ * @param fields Requested property paths.
+ */
+function markMissingFields( record: Record<string, any>, fields: string[] ) {
+	for ( const field of fields ) {
+		const path = field.split( '.' );
+		let target: Record<string, any> | null = record;
+		for ( const part of path.slice( 0, -1 ) ) {
+			if ( target === null ) {
+				break;
+			}
+			if ( !Object.prototype.hasOwnProperty.call( target, part ) ) {
+				target[ part ] = {};
+			}
+			if ( target[ part ] === null || typeof target[ part ] !== 'object' ) {
+				// A returned null or scalar already establishes that descendants are absent.
+				target = null;
+				break;
+			}
+			target = target[ part ];
+		}
+		const last = path[ path.length - 1 ];
+		if ( target && !Object.prototype.hasOwnProperty.call( target, last ) ) {
+			target[ last ] = undefined;
+		}
+	}
+}
 
 const getUniqueId = () => ( window as any ).hizzleWPStore?.requestUUID || Math.random().toString( 36 ).substring( 2 );
 
@@ -122,16 +154,16 @@ export const getCollectionRecord =
 			const ID_KEY = entityConfig.key || DEFAULT_ENTITY_KEY;
 
 			try {
-				if ( query !== undefined && query.__fields ) {
+				if ( query !== undefined && query._fields ) {
 					// If requesting specific fields, items and query association to said
 					// records are stored by ID reference. Thus, fields must always include
 					// the ID.
 					query = {
 						...query,
-						__fields: [
+						_fields: [
 							...new Set( [
 								...( getNormalizedCommaSeparable(
-									query.__fields
+									query._fields
 								) || [] ),
 								ID_KEY,
 							] ),
@@ -155,24 +187,17 @@ export const getCollectionRecord =
 					}
 				);
 
-				if ( query !== undefined && query.__fields ) {
-					query = { ...query, include: [ key ] };
-
-					// The resolution cache won't consider query as reusable based on the
-					// fields, so it's tested here, prior to initiating the REST request,
-					// and without causing `getCollectionRecords` resolution to occur.
-					const hasRecords = select.hasCollectionRecords(
-						namespace,
-						collection,
-						query
-					);
-					if ( hasRecords ) {
+				if ( query._fields ) {
+					// Reuse only a record with every requested field in this representation.
+					// A single-record request must not depend on cached list membership.
+					if ( select.getCollectionRecord( namespace, collection, key, query ) !== undefined ) {
 						return;
 					}
 				}
 
 				const response = await apiFetch<Response>( { path, parse: false } );
 				const record = await response.json();
+				markMissingFields( record, getQueryParts( query ).fields ?? [] );
 				const permissions = getUserPermissionsFromAllowHeader(
 					response.headers?.get( 'allow' )
 				);
@@ -195,7 +220,7 @@ export const getCollectionRecord =
 				}
 
 				registry.batch( () => {
-					dispatch.receiveCollectionRecords( namespace, collection, [ record ], query );
+					dispatch.receiveCollectionRecords( namespace, collection, record, query );
 					dispatch.receiveUserPermissions(
 						receiveUserPermissionArgs
 					);
@@ -219,7 +244,7 @@ getCollectionRecord.shouldInvalidate = ( action, namespace: string, collection: 
 	if ( action.type === 'RECEIVE_COLLECTION_RECORDS' && action.persistedEdits && action.invalidateCache ) {
 		return namespace === action.namespace &&
 			collection === action.collection &&
-			( query.context ?? DEFAULT_CONTEXT ) !== ( action.query?.context ?? DEFAULT_CONTEXT ) &&
+			getQueryParts( query ).context !== getQueryParts( action.query ?? {} ).context &&
 			action.records.some( ( record ) => String( getRawValue( record, action.key || DEFAULT_ENTITY_KEY ) ) === String( key ) );
 	}
 	return (
@@ -274,7 +299,7 @@ export const getCollectionRecords =
 			function getResolutionsArgs( records, recordsQuery ) {
 				const queryArgs = Object.fromEntries(
 					Object.entries( recordsQuery ).filter( ( [ k, v ] ) => {
-						return [ 'context', '__fields' ].includes( k ) && !!v;
+						return [ 'context', '_fields' ].includes( k ) && !!v;
 					} )
 				);
 				return records
@@ -288,15 +313,15 @@ export const getCollectionRecords =
 			}
 
 			try {
-				if ( query.__fields ) {
+				if ( query._fields ) {
 					// If requesting specific fields, items and query association to said
 					// records are stored by ID reference. Thus, fields must always include
 					// the ID.
 					query = {
 						...query,
-						__fields: [
+						_fields: [
 							...new Set( [
-								...( getNormalizedCommaSeparable( query.__fields ) ||
+								...( getNormalizedCommaSeparable( query._fields ) ||
 									[] ),
 								ID_KEY,
 							] ),
@@ -395,16 +420,10 @@ export const getCollectionRecords =
 				// If we request fields but the result doesn't contain the fields,
 				// explicitly set these fields as "undefined"
 				// that way we consider the query "fulfilled".
-				if ( query.__fields ) {
-					records = records.map( ( record ) => {
-						query.__fields.split( ',' ).forEach( ( field ) => {
-							if ( !record.hasOwnProperty( field ) ) {
-								record[ field ] = undefined;
-							}
-						} );
-
-						return record;
-					} );
+				if ( query._fields ) {
+					for ( const record of records ) {
+						markMissingFields( record, getQueryParts( query ).fields ?? [] );
+					}
 				}
 
 				registry.batch( () => {
