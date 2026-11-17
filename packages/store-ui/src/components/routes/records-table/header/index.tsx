@@ -51,12 +51,19 @@ export const useBulkActionArgs = ( query: Record<string, any> ) => {
 	const isAllSelected = records.isAllSelected || !selected.length;
 
 	const toIgnore = [ 'order', 'orderby', 'paged', 'per_page' ];
+
+	// Bulk actions apply to the selection rather than the visible numeric page.
+	if ( typeof query.page === 'number' || ( typeof query.page === 'string' && query.page.trim() !== '' && Number.isFinite( Number( query.page ) ) ) ) {
+		toIgnore.push( 'page' );
+	}
+
 	const filteredQuery = Object.fromEntries(
 		Object.entries( query ).filter( ( [ key ] ) => !toIgnore.includes( key ) )
 	);
 
 	return {
 		isAllSelected,
+		cacheQuery: query,
 		query: isAllSelected ? filteredQuery : {
 			include: Object.keys( records.selected ).filter( key => records.selected[ key ] ),
 		},

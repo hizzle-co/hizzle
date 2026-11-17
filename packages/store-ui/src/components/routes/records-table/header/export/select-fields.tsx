@@ -26,7 +26,8 @@ import { useProvidedCollectionConfig } from '@hizzlewp/store';
  */
 export const SelectFields = ( { fields, setFields, next } ) => {
     const { config: { ignore, props } } = useProvidedCollectionConfig();
-    const schema = useMemo( () => props.filter( ( field ) => !ignore.includes( field.name ) ), [ props, ignore ] );
+    // Missing context metadata remains selectable for older datastore releases.
+    const schema = useMemo( () => props.filter( ( field ) => !ignore.includes( field.name ) && ( !field.context || field.context.includes( 'export' ) ) ), [ props, ignore ] );
 
     return (
         <Flex direction={ 'column' } gap={ 4 }>

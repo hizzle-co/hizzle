@@ -22,7 +22,9 @@ export const Modal = ( { query, cacheQuery, recordsCount } ) => {
 
     // Prepare state.
     const { config: { hidden, ignore, props } } = useProvidedCollectionConfig();
+    // Older datastore versions omit contexts; only explicit restrictions exclude fields.
     const [ fields, setFields ] = useState( ( props
+        .filter( ( field ) => !field.context || field.context.includes( 'export' ) )
         .map( ( field ) => ( hidden.includes( field.name ) || ignore.includes( field.name ) ) ? null : field.name )
         .filter( Boolean )
     ) );
