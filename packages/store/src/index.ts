@@ -37,3 +37,5 @@ export * from './hooks';
 export * from './constants';
 export * from './types';
 export { getRawValue } from './utils';
+
+export { normalizeCollectionQuery } from './collection/get-query-parts';

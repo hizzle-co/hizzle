@@ -8,7 +8,7 @@ import apiFetch from '@wordpress/api-fetch';
  * Internal dependencies
  */
 import { STORE_NAME } from './constants';
-import { DEFAULT_ENTITY_KEY, DEFAULT_CONTEXT, DEFAULT_PER_PAGE, PER_PAGE_OPTIONS } from './constants';
+import { DEFAULT_ENTITY_KEY, DEFAULT_CONTEXT, PER_PAGE_OPTIONS } from './constants';
 import {
 	forwardResolver,
 	getNormalizedCommaSeparable,
@@ -21,7 +21,7 @@ import {
 } from './utils';
 import { GetRecordsHttpQuery } from './selectors';
 import { CollectionRecordKey, CollectionConfig } from './types';
-import getQueryParts from './collection/get-query-parts';
+import getQueryParts, { normalizeCollectionQuery } from './collection/get-query-parts';
 
 /**
  * Mark omitted requested fields without changing values explicitly returned by REST.
@@ -70,7 +70,6 @@ function finishPaginationResolutions( dispatch: any, namespace: string, collecti
 	const start = perPage === -1 ? 0 : ( page - 1 ) * perPage;
 	const end = Math.min( start + count, total );
 	const finished: any[][] = [];
-	const hasAdminPage = typeof query.page === 'string' && query.page.trim() !== '' && !Number.isFinite( Number( query.page ) );
 	for ( const size of new Set( [ ...PER_PAGE_OPTIONS, perPage ] ) ) {
 		if ( size === -1 && ( start !== 0 || end !== total ) ) continue;
 		const firstPage = size === -1 ? 1 : Math.ceil( start / size ) + 1;
@@ -79,21 +78,7 @@ function finishPaginationResolutions( dispatch: any, namespace: string, collecti
 		if ( end === total ) lastPage = Math.ceil( end / size );
 		if ( total === 0 || size === -1 ) lastPage = 1;
 		for ( let current = firstPage; current <= lastPage; ++current ) {
-			const pagination: Record<string, any>[] = [ { paged: current }, { paged: String( current ) } ];
-			if ( !hasAdminPage ) pagination.push( { page: current }, { page: String( current ) } );
-			if ( current === 1 ) pagination.push( {} );
-			// WordPress resolver keys distinguish string/numeric values and omitted defaults.
-			const sizes: ( number | string | undefined )[] = [ size, String( size ) ];
-			if ( size === DEFAULT_PER_PAGE ) sizes.push( undefined );
-			for ( const requestedSize of sizes ) {
-				const base: Record<string, any> = { ...query, per_page: requestedSize };
-				delete base.paged;
-				if ( !hasAdminPage ) delete base.page;
-				if ( requestedSize === undefined ) delete base.per_page;
-				for ( const paginationQuery of pagination ) {
-					finished.push( [ namespace, collection, { ...base, ...paginationQuery } ] );
-				}
-			}
+			finished.push( [ namespace, collection, normalizeCollectionQuery( { ...query, per_page: size, paged: current } ) ] );
 		}
 	}
 	if ( finished.length ) dispatch.finishResolutions( 'getCollectionRecords', finished );
@@ -414,7 +399,7 @@ export const getCollectionRecords =
 
 					do {
 						const response = await apiFetch<Response>( {
-							path: addQueryArgs( path, { page, per_page: 1000 } ),
+							path: addQueryArgs( path, normalizeCollectionQuery( { ...query, paged: page, per_page: 1000 } ) ),
 							parse: false,
 						} );
 						const pageRecords = await response.json() as Record<string, any>[];
