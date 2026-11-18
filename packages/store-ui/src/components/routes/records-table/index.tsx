@@ -207,10 +207,12 @@ export const RecordsTable = () => {
 	// Update state.
 	const onChange = useCallback( ( state: Partial<TableProviderProps<Record<string, any>>[ 'state' ]> ) => {
 		setPreferences( state );
+		const sorting = state?.sorting?.[ 0 ];
 
 		updateQueryString( {
-			orderby: state?.sorting?.[ 0 ]?.id || '',
-			order: state?.sorting?.[ 0 ]?.desc ? 'desc' : 'asc',
+			orderby: sorting?.id || '',
+			// Pagination changes must not invent ascending order when no sort is selected.
+			order: sorting?.id ? ( sorting.desc ? 'desc' : 'asc' ) : '',
 			per_page: `${ state?.pagination?.pageSize || 25 }`,
 			paged: `${ ( state?.pagination?.pageIndex || 0 ) + 1 }`,
 		} );
