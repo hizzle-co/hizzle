@@ -18,7 +18,7 @@ import { __, sprintf } from "@wordpress/i18n";
  * HizzleWP dependencies.
  */
 import { ErrorBoundary } from '@hizzlewp/components';
-import { useCollectionRecords, useProvidedCollectionConfig, store as hizzleStore, getRawValue } from '@hizzlewp/store';
+import { useCollectionRecords, useProvidedCollectionConfig, store as hizzleStore, getRawValue, normalizeCollectionQuery } from '@hizzlewp/store';
 import { useQuery, updateQueryString } from '@hizzlewp/history';
 import { Records, PER_PAGE_OPTIONS } from '@hizzlewp/records';
 import type { TableProviderProps } from '@hizzlewp/records';
@@ -66,11 +66,14 @@ export const usePreparedQuery = ( namespace: string, collection: string ): Recor
 			preparedQuery.per_page = 1000;
 		}
 
-		// Remove page and hizzlewp_filters from the query.
-		delete preparedQuery.page;
+		// Remove the admin screen slug, while allowing numeric REST pagination through.
+		if ( typeof preparedQuery.page === 'string' && !Number.isFinite( Number( preparedQuery.page ) ) ) {
+			delete preparedQuery.page;
+		}
 		delete preparedQuery.hizzlewp_filters;
 
-		return preparedQuery;
+		// Reads and Refresh share these exact arguments; WordPress actions stay untouched.
+		return normalizeCollectionQuery( preparedQuery );
 	}, [ query, preparedFilters, preferences ] );
 };
 
