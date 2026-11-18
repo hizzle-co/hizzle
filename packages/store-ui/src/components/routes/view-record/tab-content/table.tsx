@@ -24,6 +24,7 @@ import { updateQueryString } from "@hizzlewp/history";
  */
 import getEnumBadge from "../../records-table/enum-colors";
 import { hasCollectionNavigationLink } from "../../records-table/display-cell";
+import { sanitizeCellHtml } from "../../records-table/sanitize-cell-html";
 
 const prepareSearchValue = ( row: Record<string, any>, header: CollectionTab[ 'headers' ][ number ] ) => {
     const { is_list, item, args, is_boolean, label } = header;
@@ -91,7 +92,7 @@ const DisplayCell = ( { row, header, headerKey }: { row: Record<string, any>, he
                         value = sprintf( item, ...replacements );
                     }
 
-                    return <li key={ index } style={ { margin: 0 } } dangerouslySetInnerHTML={ { __html: value } } />
+                    return <li key={ index } style={ { margin: 0 } } dangerouslySetInnerHTML={ { __html: sanitizeCellHtml( value ) } } />
                 } ) }
             </VStack>
         );
@@ -142,7 +143,7 @@ const DisplayCell = ( { row, header, headerKey }: { row: Record<string, any>, he
         const theContent = value.replace( /data-navigate-collection/g, 'href="#" data-navigate-collection' );
         return (
             <div
-                dangerouslySetInnerHTML={ { __html: theContent } }
+                dangerouslySetInnerHTML={ { __html: sanitizeCellHtml( theContent ) } }
                 onClick={ ( e ) => {
                     const link = e?.target?.closest?.( 'a[data-navigate-collection]' );
                     if ( link ) {
@@ -156,7 +157,7 @@ const DisplayCell = ( { row, header, headerKey }: { row: Record<string, any>, he
         );
     }
 
-    return <div dangerouslySetInnerHTML={ { __html: value } } />;
+    return <div dangerouslySetInnerHTML={ { __html: sanitizeCellHtml( value ) } } />;
 }
 
 type TableProps = {
