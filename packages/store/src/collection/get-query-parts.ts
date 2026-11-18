@@ -11,6 +11,38 @@ import { DEFAULT_PAGE, DEFAULT_PER_PAGE, DEFAULT_CONTEXT } from '../constants';
 import { CollectionRecordKey } from '../types';
 
 /**
+ * Check whether a pagination value can be represented as a finite number.
+ *
+ * @param value Query parameter value.
+ * @return Whether the value is numeric, including nonempty numeric strings.
+ */
+function isNumericPaginationValue( value: unknown ): value is number | string {
+	return ( typeof value === 'number' || ( typeof value === 'string' && value.trim() !== '' ) ) && Number.isFinite( Number( value ) );
+}
+
+/**
+ * Give equivalent pagination queries one representation without changing filters or fields.
+ *
+ * @param query Collection REST query.
+ * @return A new query with numeric pagination values and explicit defaults.
+ */
+export function normalizeCollectionQuery( query: Record<string, any> = {} ): Record<string, any> {
+	const normalized = { ...query };
+	const hasAdminPage = query.page !== undefined && !isNumericPaginationValue( query.page );
+	const page = query.paged !== undefined ? query.paged : hasAdminPage ? DEFAULT_PAGE : query.page ?? DEFAULT_PAGE;
+	const perPage = query.per_page === undefined ? DEFAULT_PER_PAGE : query.per_page;
+	normalized.per_page = isNumericPaginationValue( perPage ) ? Number( perPage ) : perPage;
+	// Native REST endpoints use page. Preserve nonnumeric admin page values alongside paged.
+	if ( hasAdminPage ) {
+		normalized.paged = isNumericPaginationValue( page ) ? Number( page ) : page;
+	} else {
+		normalized.page = isNumericPaginationValue( page ) ? Number( page ) : page;
+		delete normalized.paged;
+	}
+	return normalized;
+}
+
+/**
  * An object of properties describing a specific query.
  */
 type WPQueriedDataQueryParts = {
@@ -90,10 +122,7 @@ export function getQueryParts( query: Record<string, any> ): WPQueriedDataQueryP
 			case 'page':
 				// URL queries may contain either a numeric page or an admin screen slug.
 				// Accept numeric strings too; an explicit paged value takes precedence.
-				if (
-					( typeof value === 'number' || ( typeof value === 'string' && value.trim() !== '' ) ) &&
-					Number.isFinite( Number( value ) )
-				) {
+				if ( isNumericPaginationValue( value ) ) {
 					parts.page = Number( value );
 				}
 				break;

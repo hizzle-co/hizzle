@@ -294,10 +294,11 @@ function getQueriedItemsUncached( state: State[ 'collections' ][ 'records' ][ 'n
 
 	// If we're requesting paged results, calculate the start and end offsets.
 	const startOffset = perPage === -1 ? 0 : ( page - 1 ) * perPage;
-	const endOffset =
-		perPage === -1
-			? itemIds.length
-			: Math.min( startOffset + perPage, itemIds.length );
+	const total = state.queries[ context ][ stableKey ].meta?.totalItems;
+	// A sparse cache is not a shorter server page. Only known totals can truncate a range.
+	const endOffset = perPage === -1
+		? ( total ?? itemIds.length )
+		: Math.min( startOffset + perPage, total ?? Infinity );
 
 	// Initialize an empty array to store the filtered items.
 	const items: CollectionRecord[] = [];
@@ -305,10 +306,10 @@ function getQueriedItemsUncached( state: State[ 'collections' ][ 'records' ][ 'n
 	// Iterate through the item IDs in the specified range.
 	for ( let i = startOffset; i < endOffset; i++ ) {
 		const itemId = itemIds[ i ];
-		if ( Array.isArray( include ) && !include.includes( itemId ) ) {
-			continue;
-		}
 		if ( itemId === undefined ) {
+			return null;
+		}
+		if ( Array.isArray( include ) && !include.includes( itemId ) ) {
 			continue;
 		}
 		// Having a target item ID doesn't guarantee that this object has been queried.
@@ -328,9 +329,20 @@ function getQueriedItemsUncached( state: State[ 'collections' ][ 'records' ][ 'n
 			for ( let f = 0; f < fields.length; f++ ) {
 				const field = fields[ f ].split( '.' );
 				let value = item;
-				field.forEach( ( fieldName ) => {
-					value = value?.[ fieldName ];
-				} );
+				for ( const fieldName of field ) {
+					if ( value === null || typeof value !== 'object' ) {
+						value = undefined;
+						break;
+					}
+					if ( !Object.prototype.hasOwnProperty.call( value, fieldName ) ) {
+						if ( !state.itemIsComplete[ context ]?.[ itemId ] ) {
+							return null;
+						}
+						value = undefined;
+						break;
+					}
+					value = value[ fieldName ];
+				}
 
 				setNestedValue( filteredItem, field, value );
 			}
@@ -412,18 +424,10 @@ export const getCollectionRecordsTotalPages = (
 
 	const { stableKey, context, perPage } = getQueryParts( query );
 
-	// If `per_page` is not set, get the info from query's meta.
-	if ( !query.per_page ) {
-		const totalPages = queriedState.queries?.[ context ]?.[ stableKey ]?.meta?.totalPages;
-
-		if ( totalPages ) {
-			return totalPages;
-		}
-	}
 
 	// Get the total number of items.
 	const totalItems = queriedState.queries?.[ context ]?.[ stableKey ]?.meta?.totalItems ?? null;
-	if ( !totalItems ) {
+	if ( totalItems === null ) {
 		return null;
 	}
 
