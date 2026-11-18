@@ -23,12 +23,12 @@ import { __ } from "@wordpress/i18n";
 import { getRawValue } from "@hizzlewp/store";
 import type { RecordProp } from "@hizzlewp/store/build-types/types";
 import { updatePath, updateQueryString } from '@hizzlewp/history';
+import { sanitizeHtml } from '@hizzlewp/components';
 
 /**
  * Local dependencies.
  */
 import getEnumBadge from "./enum-colors";
-import { sanitizeCellHtml } from "./sanitize-cell-html";
 
 /**
  * Displays a badge.
@@ -132,10 +132,10 @@ const PrimaryColumn: React.FC<PrimaryColumnProps> = ( { record, value, rawValue,
 		if ( hasCollectionNavigationLink( value ) ) {
 			// replace all instances of data-navigate-collection with href="#" data-navigate-collection in the value.
 			const theContent = value.replace( /data-navigate-collection/g, 'href="#" data-navigate-collection' );
-			return <div dangerouslySetInnerHTML={ { __html: sanitizeCellHtml( theContent ) } } onClick={ handleClick } />;
+			return <div dangerouslySetInnerHTML={ { __html: sanitizeHtml( theContent ) } } onClick={ handleClick } />;
 		}
 
-		theValue = <div dangerouslySetInnerHTML={ { __html: sanitizeCellHtml( value ) } } />;
+		theValue = <div dangerouslySetInnerHTML={ { __html: sanitizeHtml( value ) } } />;
 	}
 
 	const clickableProps = useMemo( () => {
@@ -333,9 +333,9 @@ export const DisplayCell: React.FC<CellProps> = ( { row, header, viewType = 'tab
 			if ( hasCollectionNavigationLink( value ) ) {
 				// replace all instances of data-navigate-collection with href="#" data-navigate-collection in the value.
 				const theContent = value.replace( /data-navigate-collection/g, 'href="#" data-navigate-collection' );
-				return <div dangerouslySetInnerHTML={ { __html: sanitizeCellHtml( theContent ) } } onClick={ handleClick } />;
+				return <div dangerouslySetInnerHTML={ { __html: sanitizeHtml( theContent ) } } onClick={ handleClick } />;
 			}
-			return <div dangerouslySetInnerHTML={ { __html: sanitizeCellHtml( value ) } } />;
+			return <div dangerouslySetInnerHTML={ { __html: sanitizeHtml( value ) } } />;
 		}
 
 		return value;

@@ -4,3 +4,4 @@ export * from './update-nested-value';
 export * from './operators';
 export * from './prepare-available-merge-tags';
 export * from './colors';
+export * from './sanitize-html';

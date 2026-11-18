@@ -8,6 +8,7 @@ import {
     __experimentalText as Text,
 } from "@wordpress/components";
 import React from "react";
+import { sanitizeHtml } from '@hizzlewp/components';
 
 /**
  * Displays a stat card
@@ -53,7 +54,7 @@ export const Stats = ( { cards } ) => (
                 <StatCard
                     status={ status || 'info' }
                     label={ title }
-                    value={ <span dangerouslySetInnerHTML={ { __html: value } } /> }
+                    value={ <span dangerouslySetInnerHTML={ { __html: sanitizeHtml( value ) } } /> }
                 />
             </FlexItem>
         ) ) }

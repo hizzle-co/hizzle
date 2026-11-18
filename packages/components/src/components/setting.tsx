@@ -24,6 +24,7 @@ import {
 } from '@wordpress/components';
 import { tip } from '@wordpress/icons';
 import { __ } from '@wordpress/i18n';
+import { sanitizeHtml } from './utils/sanitize-html';
 
 /**
  * Local dependancies.
@@ -360,7 +361,7 @@ export function Setting( {
 	// Help text.
 	const help =
 		typeof setting.description === 'string' ? (
-			<span dangerouslySetInnerHTML={ { __html: setting.description } } />
+			<span dangerouslySetInnerHTML={ { __html: sanitizeHtml( setting.description ) } } />
 		) : (
 			setting.description
 		);
@@ -371,7 +372,7 @@ export function Setting( {
 		: {};
 	const defaultAttributes: defaultAttributesType = {
 		label: typeof setting.label === 'string' ? (
-			<span dangerouslySetInnerHTML={ { __html: setting.label } } />
+			<span dangerouslySetInnerHTML={ { __html: sanitizeHtml( setting.label ) } } />
 		) : (
 			setting.label
 		),
@@ -730,7 +731,9 @@ export function Setting( {
 				{ setting.raw ? (
 					<div className="components-tip">
 						<Icon icon={ tip } />
-						<RawHTML>{ setting.content }</RawHTML>
+						{ typeof setting.content === 'string'
+							? <RawHTML>{ sanitizeHtml( setting.content ) }</RawHTML>
+							: setting.content }
 					</div>
 				) : (
 					<Tip>{ setting.content }</Tip>

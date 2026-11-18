@@ -26,6 +26,7 @@ import type { DropdownMenuProps } from '@wordpress/components/src/dropdown-menu/
 import { SettingProps, ISetting, Setting } from '..';
 import { useMergeTagGroups, smartTag } from '.';
 import { attributesToMergeTag, getMergeTagValue } from '../utils';
+import { sanitizeHtml } from '../utils/sanitize-html';
 
 export interface MergeTagSettingsProps {
 	/** The merge tag attribute definitions to display. */
@@ -206,7 +207,7 @@ export const useMergeTags = ( {
 								>
 									Go Back
 								</Button>
-								<RawHTML>{ selectedSmartTag.label }</RawHTML>
+								<RawHTML>{ sanitizeHtml( selectedSmartTag.label ) }</RawHTML>
 								<MergeTagSettings
 									settings={ selectedSmartTag.attributes || {} }
 									neverEmpty={ selectedSmartTag.never_empty }
@@ -319,7 +320,7 @@ export const useMergeTags = ( {
 																>
 																	<RawHTML>
 																		{
-																			itemLabel
+																			sanitizeHtml( itemLabel )
 																		}
 																	</RawHTML>
 																</MenuItem>

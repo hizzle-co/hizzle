@@ -25,7 +25,7 @@ import { useDispatch } from '@wordpress/data';
 /**
  * HizzleWP dependencies.
  */
-import { ErrorBoundary } from '@hizzlewp/components';
+import { ErrorBoundary, sanitizeHtml } from '@hizzlewp/components';
 import { Outlet, useRoute, updatePath } from '@hizzlewp/history';
 import { CollectionProvider, useProvidedCollectionConfig, store as hizzleStore } from '@hizzlewp/store';
 
@@ -164,7 +164,7 @@ const Layout = (): React.ReactNode => {
 				{ fills && fills.map( ( fill ) => (
 					<Fill key={ fill.name } name={ `${ fill.name }` }>
 						<ErrorBoundary>
-							{ fill.content && <span dangerouslySetInnerHTML={ { __html: fill.content } } /> }
+							{ fill.content && <span dangerouslySetInnerHTML={ { __html: sanitizeHtml( fill.content ) } } /> }
 							{ fill.upsell && <UpsellCard upsell={ fill.upsell } /> }
 						</ErrorBoundary>
 					</Fill>

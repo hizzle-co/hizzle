@@ -8,6 +8,7 @@ import {
     __experimentalVStack as VStack,
 } from "@wordpress/components";
 import { RawHTML } from "@wordpress/element";
+import { sanitizeHtml } from '@hizzlewp/components';
 
 /**
  * Displays a normal card.
@@ -22,7 +23,7 @@ export const Card = ( { content, buttonText, buttonLink } ) => (
         <CardBody>
             <VStack spacing={ 8 }>
                 <RawHTML>
-                    { content }
+                    { sanitizeHtml( content ) }
                 </RawHTML>
 
                 { ( buttonText && buttonLink ) && (

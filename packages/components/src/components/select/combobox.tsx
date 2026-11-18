@@ -13,6 +13,7 @@ import type { ComboboxControlProps } from '@wordpress/components/src/combobox-co
  * Local dependancies.
  */
 import { useCombineOptions, smartTag } from '../hooks';
+import { sanitizeHtml } from '../utils/sanitize-html';
 
 /**
  * A single select option.
@@ -105,7 +106,7 @@ export const ComboboxSetting = ({
 						<div
 							{...props}
 							dangerouslySetInnerHTML={{
-								__html: item.render_filtered,
+								__html: sanitizeHtml( item.render_filtered ),
 							}}
 						/>
 					);
@@ -118,7 +119,7 @@ export const ComboboxSetting = ({
 							<div
 								{...props}
 								dangerouslySetInnerHTML={{
-									__html: item.render,
+									__html: sanitizeHtml( item.render ),
 								}}
 							/>
 						);

@@ -17,6 +17,7 @@ import type {
  * Local dependencies.
  */
 import { SelectOption } from '.';
+import { sanitizeHtml } from '../utils/sanitize-html';
 
 /**
  * The multi checkbox setting props.
@@ -85,7 +86,9 @@ export const MultiSelectSetting = ( {
 			const option = options.find( ( option ) => option.label === args.item );
 
 			if ( option && option.render ) {
-				return <RawHTML>{ option.render as string }</RawHTML>;
+				return typeof option.render === 'string'
+					? <RawHTML>{ sanitizeHtml( option.render ) }</RawHTML>
+					: option.render;
 			}
 
 			return <>{ args.item }</>;
