@@ -1,5 +1,6 @@
 import apiFetch from '@wordpress/api-fetch';
 import { addQueryArgs } from '@wordpress/url';
+import { __, sprintf } from '@wordpress/i18n';
 import type { CollectionConfig } from '@hizzlewp/store';
 
 type ExportRecord = Record<string, any>;
@@ -196,6 +197,32 @@ export function getCachedExport(
 }
 
 /**
+ * Request an export page while preserving REST error messages for the modal.
+ *
+ * @param path REST request path.
+ * @return Successful response with pagination headers.
+ */
+async function fetchExportPage( path: string ): Promise<Response> {
+	try {
+		return await apiFetch( { path, parse: false } );
+	} catch ( error ) {
+		// With parse:false, apiFetch throws the Response rather than its JSON error body.
+		if ( !( error instanceof Response ) ) throw error;
+		let details: { message?: string; data?: { params?: Record<string, string> } } | undefined;
+		try {
+			details = await error.json();
+		} catch {
+			// Empty or invalid error bodies still need an actionable message with the HTTP status.
+		}
+		if ( typeof details?.message === 'string' ) {
+			const params = Object.values( details.data?.params ?? {} ).filter( ( value ) => typeof value === 'string' );
+			throw new Error( [ details.message, ...params ].join( ' ' ) );
+		}
+		throw new Error( sprintf( 'Unable to export records (HTTP %d). Please try again.', error.status ) );
+	}
+}
+
+/**
  * Fetch download data directly, without dispatching records into the shared store.
  *
  * @param config Collection endpoint and default parameters.
@@ -239,14 +266,11 @@ export async function fetchExport(
 	let page = 1;
 	let totalPages = 1;
 	do {
-		const response = await apiFetch( {
-			path: addQueryArgs( config.baseURL, {
-				...params,
-				paged: page,
-				per_page: 500,
-			} ),
-			parse: false,
-		} );
+		const response = await fetchExportPage( addQueryArgs( config.baseURL, {
+			...params,
+			paged: page,
+			per_page: 500,
+		} ) );
 		const data = await response.json();
 		if ( !Array.isArray( data ) ) {
 			throw new Error( 'Invalid export response.' );
