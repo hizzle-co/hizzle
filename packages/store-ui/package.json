@@ -1,6 +1,6 @@
 {
 	"name": "@hizzlewp/store-ui",
-	"version": "1.4.5",
+	"version": "1.5.0",
 	"description": "This package displays data provided by the `@hizzlewp/store` package.",
 	"scripts": {
 		"test:security": "npm run test:security --workspace=@hizzlewp/components"
@@ -32,11 +32,11 @@
 		"build-types/"
 	],
 	"dependencies": {
-		"@hizzlewp/components": "^1.6.5",
-		"@hizzlewp/history": "^1.4.5",
-		"@hizzlewp/interface": "^1.6.5",
-		"@hizzlewp/records": "^1.4.5",
-		"@hizzlewp/store": "^1.4.5",
+		"@hizzlewp/components": "^1.7.0",
+		"@hizzlewp/history": "^1.5.0",
+		"@hizzlewp/interface": "^1.7.0",
+		"@hizzlewp/records": "^1.5.0",
+		"@hizzlewp/store": "^1.5.0",
 		"@wordpress/components": "44.0.0",
 		"@wordpress/data": "11.1.0",
 		"@wordpress/date": "6.1.0",

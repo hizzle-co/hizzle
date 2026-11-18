@@ -1,6 +1,6 @@
 {
 	"name": "@hizzlewp/components",
-	"version": "1.6.5",
+	"version": "1.7.0",
 	"description": "Reusable React UI components for WordPress plugins",
 	"scripts": {
 		"test:security": "node --test test/sanitize-html.cjs"
