@@ -32,9 +32,14 @@ import { ImportFile } from "./import-file";
  */
 export const Import: React.FC = () => {
 
-    const { config: { namespace, collection, labels } } = useProvidedCollectionConfig() || {};
+    const { config: { namespace, collection, labels, permissions } } = useProvidedCollectionConfig() || {};
 
     const [ file, setFile ] = useState<File | null>( null );
+
+	// Direct navigation must not mount a form that the server will reject.
+	if ( permissions?.create === false ) {
+		return null;
+	}
 
     // Display the add record form.
     return (

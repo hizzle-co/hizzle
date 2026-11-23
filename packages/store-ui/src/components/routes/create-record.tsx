@@ -127,7 +127,12 @@ export const SectionWithErrorBoundary: React.FC<{ children: React.ReactNode }> =
  */
 export const CreateRecord: React.FC = () => {
 
-	const { config: { namespace, collection, labels } } = useProvidedCollectionConfig() || {};
+	const { config: { namespace, collection, labels, permissions } } = useProvidedCollectionConfig() || {};
+
+	// Direct navigation must not mount a form that the server will reject.
+	if ( permissions?.create === false ) {
+		return null;
+	}
 
 	// Display the add record form.
 	return (

@@ -36,9 +36,10 @@ type EditRecordFormProps = {
 	slotName: string;
 	submitText: string;
 	extraSettings?: Record<string, any>;
+	readOnly?: boolean;
 };
 
-export const EditRecordForm = ( { record, onChange, schema, hidden, ignore, onSubmit, loading, slotName, submitText, extraSettings }: EditRecordFormProps ) => {
+export const EditRecordForm = ( { record, onChange, schema, hidden, ignore, onSubmit, loading, slotName, submitText, extraSettings, readOnly = false }: EditRecordFormProps ) => {
 
 	// Prepare form fields.
 	const fields = useMemo( () => {
@@ -63,23 +64,27 @@ export const EditRecordForm = ( { record, onChange, schema, hidden, ignore, onSu
 	// Handle the save shortcut.
 	useShortcut( 'hizzlewp/save-record', ( e: React.KeyboardEvent<HTMLFormElement> ) => {
 		e?.preventDefault();
-		onSubmit();
+		if ( ! readOnly ) {
+			onSubmit();
+		}
 	} );
 
 	return (
 		<div className={ loading ? 'hizzlewp-is-loading' : undefined }>
-			<VStack as="form" spacing={ 6 } style={ { pointerEvents: loading ? 'none' : 'auto' } } onSubmit={ onSubmit }>
+			<VStack as="form" spacing={ 6 } style={ { pointerEvents: loading ? 'none' : 'auto' } } onSubmit={ readOnly ? ( event ) => event.preventDefault() : onSubmit }>
 
-				{ fields.map( ( field ) => (
-					<ErrorBoundary key={ field.name }>
-						<Setting
-							settingKey={ field.name }
-							saved={ record }
-							setAttributes={ onChange }
-							setting={ field }
-						/>
-					</ErrorBoundary>
-				) ) }
+				<VStack as="fieldset" disabled={ readOnly } spacing={ 6 } className="hizzlewp-record-fields">
+					{ fields.map( ( field ) => (
+						<ErrorBoundary key={ field.name }>
+							<Setting
+								settingKey={ field.name }
+								saved={ record }
+								setAttributes={ readOnly ? () => {} : onChange }
+								setting={ field }
+							/>
+						</ErrorBoundary>
+					) ) }
+				</VStack>
 
 				{ slotName && (
 					<Slot name={ slotName }>
@@ -93,9 +98,11 @@ export const EditRecordForm = ( { record, onChange, schema, hidden, ignore, onSu
 					</Slot>
 				) }
 
-				<Button className="hizzlewp-block-button" variant="primary" onClick={ onSubmit } isBusy={ loading }>
-					{ loading ? <Spinner /> : submitText }
-				</Button>
+				{ ! readOnly && (
+					<Button className="hizzlewp-block-button" variant="primary" onClick={ onSubmit } isBusy={ loading }>
+						{ loading ? <Spinner /> : submitText }
+					</Button>
+				) }
 			</VStack>
 		</div>
 	);

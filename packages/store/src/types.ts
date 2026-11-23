@@ -213,6 +213,9 @@ export type CollectionTab = {
  * The config of a collection.
  */
 export type CollectionConfig = {
+	/** Resolved collection permissions; omitted by older datastore versions. */
+	permissions?: Partial<Record<'create' | 'edit' | 'delete', boolean>>;
+
 	/**
 	 * The properties of the collection.
 	 */

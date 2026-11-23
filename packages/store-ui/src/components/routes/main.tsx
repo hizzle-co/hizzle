@@ -60,7 +60,7 @@ const RefreshRecords = ( { namespace, collection } ) => {
  * @param {Object} props
  */
 const Layout = (): React.ReactNode => {
-	const { config: { namespace, collection, labels, routes, fills } } = useProvidedCollectionConfig();
+	const { config: { namespace, collection, labels, routes, fills, permissions } } = useProvidedCollectionConfig();
 	const { path } = useRoute();
 
 	const basePath = `/${ namespace }/${ collection }`;
@@ -73,11 +73,13 @@ const Layout = (): React.ReactNode => {
 		}
 
 		// Show button to add new item.
-		actions.push( {
-			text: labels?.add_new_item || 'Add New',
-			onClick: () => updatePath( `${ basePath }/add` ),
-			variant: 'primary',
-		} );
+		if ( permissions?.create !== false ) {
+			actions.push( {
+				text: labels?.add_new_item || 'Add New',
+				onClick: () => updatePath( `${ basePath }/add` ),
+				variant: 'primary',
+			} );
+		}
 
 		if ( routes ) {
 			Object.entries( routes ).forEach( ( [ route, { title, ...extra } ] ) => {
@@ -91,7 +93,7 @@ const Layout = (): React.ReactNode => {
 		}
 
 		return actions;
-	}, [ labels, routes, path ] );
+	}, [ labels, routes, path, permissions ] );
 
 	/**
 	 * Goes to the collection index.

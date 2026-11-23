@@ -20,6 +20,7 @@ import { moreVertical } from '@wordpress/icons';
  * HizzleWP dependencies
  */
 import { updatePath } from '@hizzlewp/history';
+import { useProvidedCollectionConfig } from '@hizzlewp/store';
 
 /**
  * Local dependencies
@@ -47,23 +48,24 @@ type ItemActionsProps = {
 const EMPTY_ACTIONS: Action[] = [];
 export const ItemActions = ( { actions, isOverview = false, ...props }: ItemActionsProps ) => {
 
+	const permissions = useProvidedCollectionConfig().config?.permissions;
 	const { primaryActions, preparedActions } = useMemo(
 		() => {
-			const preparedActions = [ ...actions || EMPTY_ACTIONS ];
+			const preparedActions = [ ...actions || EMPTY_ACTIONS ].filter( ( action ) => action.type !== 'delete' || permissions?.delete !== false );
 
 			// Prepend edit action if it doesn't exist.
 			if ( !isOverview && !preparedActions.find( ( action ) => action.id === 'edit' ) ) {
 				preparedActions.unshift( {
 					id: 'edit',
 					type: 'edit',
-					text: __( 'Edit' ),
-					icon: 'edit',
+					text: permissions?.edit === false ? __( 'View' ) : __( 'Edit' ),
+					icon: permissions?.edit === false ? 'visibility' : 'edit',
 					isPrimary: true,
 				} );
 			}
 
 			// Append delete action if it doesn't exist.
-			if ( !preparedActions.find( ( action ) => action.id === 'delete' ) ) {
+			if ( permissions?.delete !== false && !preparedActions.find( ( action ) => action.id === 'delete' ) ) {
 				preparedActions.push( {
 					id: 'delete',
 					type: 'delete',
@@ -78,7 +80,7 @@ export const ItemActions = ( { actions, isOverview = false, ...props }: ItemActi
 				preparedActions,
 			};
 		},
-		[ actions ]
+		[ actions, isOverview, permissions ]
 	);
 
 

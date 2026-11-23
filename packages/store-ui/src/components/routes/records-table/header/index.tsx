@@ -14,7 +14,7 @@ import { useSelect } from "@wordpress/data";
  * HizzleWP dependencies.
  */
 import { ErrorBoundary } from '@hizzlewp/components';
-import { useProvidedCollection, store as hizzleStore } from '@hizzlewp/store';
+import { useProvidedCollection, useProvidedCollectionConfig, store as hizzleStore } from '@hizzlewp/store';
 
 /**
  * Local dependencies.
@@ -96,19 +96,24 @@ const ActionItem: React.FC<{ children: React.ReactNode }> = ( { children } ) => 
  */
 export const Header: React.FC<{ query: Record<string, any> }> = ( { query } ) => {
 	const args = useBulkActionArgs( query );
+	const permissions = useProvidedCollectionConfig().config?.permissions;
 	const bulkActionTargetKey = JSON.stringify( args.query );
 
 	return (
 		<HStack key={ bulkActionTargetKey }>
-			<ActionItem>
-				<BulkEdit { ...args } isBulkEditing />
-			</ActionItem>
+			{ permissions?.edit !== false && (
+				<ActionItem>
+					<BulkEdit { ...args } isBulkEditing />
+				</ActionItem>
+			) }
 			<ActionItem>
 				<ExportButton { ...args } />
 			</ActionItem>
-			<ActionItem>
-				<BulkDelete { ...args } />
-			</ActionItem>
+			{ permissions?.delete !== false && (
+				<ActionItem>
+					<BulkDelete { ...args } />
+				</ActionItem>
+			) }
 		</HStack>
 	);
 };
