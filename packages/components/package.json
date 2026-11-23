@@ -33,7 +33,7 @@
 	],
 	"dependencies": {
 		"@wordpress/api-fetch": "8.1.0",
-		"@wordpress/components": "44.0.0",
+		"@wordpress/components": "45.0.0",
 		"@wordpress/date": "6.1.0",
 		"@wordpress/url": "5.1.0",
 		"dompurify": "^3.4.18"
